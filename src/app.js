@@ -16,7 +16,7 @@ const app = express()
 //-------------- Listo
 app.listen(PORT, async () => {
   try {
-    // await db.sequelize.sync({force:false})
+    await db.sequelize.sync({force:true})
     console.log(`Servidor Corriendo en http://localhost:${PORT}`)
   } catch (error) {
     console.log(error)

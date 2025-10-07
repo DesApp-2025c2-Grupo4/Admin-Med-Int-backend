@@ -1,0 +1,32 @@
+'use strict';
+const {
+  Model
+} = require('sequelize');
+module.exports = (sequelize, DataTypes) => {
+  class TipoDocumento extends Model {
+    /**
+     * Helper method for defining associations.
+     * This method is not a part of Sequelize lifecycle.
+     * The `models/index` file will call this method automatically.
+     */
+    static associate(models) {
+      TipoDocumento.hasMany(models.Persona, {foreignKey:'tipoDocId'})
+    }
+  }
+  TipoDocumento.init({
+    tipoDocId:{
+      type:DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
+    },
+    descripcion: {
+      type: DataTypes.STRING,
+      allowNull: false
+    }
+  }, {
+    sequelize,
+    modelName: 'TipoDocumento',
+    timestamps: false
+  });
+  return TipoDocumento;
+};
