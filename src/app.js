@@ -13,10 +13,13 @@ const db = require('./db/models')
 //-------------- Instancio
 const app = express()
 
+//Configuración
+app.use(express.json())
+
 //-------------- Listo
 app.listen(PORT, async () => {
   try {
-    await db.sequelize.sync({force:true})
+    //await db.sequelize.sync({force:true})
     console.log(`Servidor Corriendo en http://localhost:${PORT}`)
   } catch (error) {
     console.log(error)
