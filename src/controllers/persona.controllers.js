@@ -1,17 +1,12 @@
-const { Persona, TipoDocumento } = require('../db/models');
+const { Persona } = require('../db/models');
 
 //Get
 const getPersonas = async (_, res) => {
     try {
         const personas = await Persona.findAll(
-             {
+             /*{
                 include: [
-                     {
-                        model: TipoDocumento,
-                        attributes: ["descripcion"]
-                        
-                    }
-                    /*Esto para cuando se hagan las demas tablas ;)
+                    Esto para cuando se hagan las demas tablas ;)
                     {
                         model: Telefono
                     },
@@ -23,10 +18,9 @@ const getPersonas = async (_, res) => {
                     },
                     {
                         model: Email
-                    }*/
-
+                    }
                 ]
-            } 
+            } */
         )
         res.status(200).json(personas);
     } catch (error) {
