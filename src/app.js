@@ -2,6 +2,9 @@
 //Express
 const express = require('express')
 
+//Cors
+const cors = require('cors')
+
 //Dotenv
 const dotenv = require('dotenv')
 dotenv.config()
@@ -12,6 +15,18 @@ const db = require('./db/models')
 
 //-------------- Instancio
 const app = express()
+
+//Configuración
+app.use(express.json())
+
+app.use(
+  cors({
+    origin: "http://localhost:5173", // tu frontend de React
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
 
 //-------------- Listo
 app.listen(PORT, async () => {
