@@ -47,7 +47,7 @@ const deletePersona = async (req, res) => {
     try {
         const { id } = req.params; 
         const deleted = await Persona.destroy({
-            where: { id: id }
+            where: { personaId: id }
         });
 
         //que pasa con la persona si no la encuentra? AGREGAR
