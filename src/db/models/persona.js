@@ -28,7 +28,7 @@ module.exports = (sequelize, DataTypes) => {
       //Relacion con email
       Persona.hasMany(models.Email, {foreignKey:'personaId', onDelete: 'CASCADE', hooks: true})
       //Relacion con grupo
-      Persona.belongsTo(models.Grupo, {foreignKey:'idGrupo', onDelete: 'CASCADE'})
+      Persona.belongsTo(models.Grupo, {foreignKey:'idGrupo', onDelete: 'SET NULL'})
     }
   }
   Persona.init({
