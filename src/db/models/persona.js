@@ -12,21 +12,23 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       //Relacion con Direccion
-      Persona.hasMany(models.Direccion, {foreignKey:'personaId'})
+      Persona.hasMany(models.Direccion, {foreignKey:'personaId', onDelete: 'CASCADE', hooks: true})
       //Relacion con telefono
-      Persona.hasMany(models.Telefono, {foreignKey:'personaId'})
+      Persona.hasMany(models.Telefono, {foreignKey:'personaId', onDelete: 'CASCADE', hooks: true})
       //Relacion con tipoDoc
-      Persona.belongsTo(models.TipoDocumento, {foreignKey: 'tipoDocId'})
+      Persona.belongsTo(models.TipoDocumento, {foreignKey: 'tipoDocId', onDelete: 'CASCADE', hooks: true})
       //Relacion con situaciones
       Persona.belongsToMany(models.SituacionesTerapeuticas, {
         through: 'situacion-persona',
         foreignKey: 'personaId',
-        otherKey:'situacionId'
+        otherKey:'situacionId',
+        onDelete: 'CASCADE',
+         hooks: true
       })
       //Relacion con email
-      Persona.hasMany(models.Email, {foreignKey:'personaId'})
+      Persona.hasMany(models.Email, {foreignKey:'personaId', onDelete: 'CASCADE', hooks: true})
       //Relacion con grupo
-      Persona.belongsTo(models.Grupo, {foreignKey:'idGrupo'})
+      Persona.belongsTo(models.Grupo, {foreignKey:'idGrupo', onDelete: 'CASCADE'})
     }
   }
   Persona.init({
