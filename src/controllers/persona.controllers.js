@@ -1,4 +1,4 @@
-const { Persona } = require('../db/models');
+const { Persona, Grupo, Telefono, Email, Direccion, SituacionesTerapeuticas } = require('../db/models');
 
 //Get
 const getPersonas = async (_, res) => {

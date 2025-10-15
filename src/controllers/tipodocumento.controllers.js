@@ -12,4 +12,19 @@ const createTipoDoc = async (req, res) => {
   }
 };
 
-module.exports = { createTipoDoc };
+const getTipoDoc = async (req, res) => {
+    try {
+        const tiposDocumento = await TipoDocumento.findAll({
+            attributes: ['descripcion'] 
+        });
+        res.status(200).json(tiposDocumento);
+    } catch (error) {
+        console.error('Error al obtener los tipos de documento:', error);
+        res.status(500).json({ 
+            message: "Error en el servidor al obtener los tipos de documento.",
+            details: error.message
+        });
+    }
+};
+
+module.exports = { createTipoDoc, getTipoDoc };
