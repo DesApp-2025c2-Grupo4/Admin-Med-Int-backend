@@ -1,4 +1,4 @@
-const { Persona, Grupo, PlanMedico } = require("../db/models");
+const { Persona, Grupo, Telefono, Email, Direccion, SituacionesTerapeuticas } = require('../db/models');
 
 //Get
 const getPersonas = async (_, res) => {
@@ -43,4 +43,20 @@ const createPersona = async (req, res) => {
   }
 };
 
-module.exports = { getPersonas, createPersona };
+const deletePersona = async (req, res) => {
+    try {
+        const { id } = req.params; 
+        const deleted = await Persona.destroy({
+            where: { personaId: id }
+        });
+
+        //que pasa con la persona si no la encuentra? AGREGAR
+
+        res.status(200).json({ message: 'Persona eliminada correctamente' });
+    } catch (error) {
+        console.error(`Error al eliminar la persona: ${error}`);
+        res.status(500).json({ message: 'Error al eliminar la persona' });
+    }
+};
+
+module.exports = { getPersonas, createPersona, deletePersona };

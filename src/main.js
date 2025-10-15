@@ -1,9 +1,13 @@
-const { app } = require('./app.js')
-
+const { app } = require('./app.js');
 //Importaciones de rutas
-const { personaRoutes, grupoRoutes, tipoDocRoutes } = require('./routes') 
+const { personaRoutes, grupoRoutes, tipoDocRoutes, planMedicoRoutes, telefonoRoutes, emailRoutes, direccionRoutes, situacionRoutes } = require('./routes') 
 
 //Uso de las rutas
 app.use('/persona', personaRoutes);
 app.use('/grupo', grupoRoutes);
 app.use('/tipoDocumento', tipoDocRoutes)
+app.use('/planMedico', planMedicoRoutes)
+app.use('/telefonos', telefonoRoutes)
+app.use('/emails', emailRoutes)
+app.use('/direcciones', direccionRoutes)
+app.use('/situaciones', situacionRoutes)
