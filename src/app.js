@@ -19,19 +19,12 @@ const app = express()
 //Configuración
 app.use(express.json())
 
-app.use(
-  cors({
-    origin: "http://localhost:5173", // tu frontend de React
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
-
+app.use(cors());
 
 //-------------- Listo
 app.listen(PORT, async () => {
   try {
-    await db.sequelize.sync({force:true})
+    //await db.sequelize.sync({force:true})
     console.log(`Servidor Corriendo en http://localhost:${PORT}`)
   } catch (error) {
     console.log(error)
