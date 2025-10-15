@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
       Persona.belongsTo(models.TipoDocumento, {foreignKey: 'tipoDocId'})
       //Relacion con situaciones
       Persona.belongsToMany(models.SituacionesTerapeuticas, {
-        through: 'situacion-persona',
+        through: models.SituacionPersona,
         foreignKey: 'personaId',
         otherKey:'situacionId'
       })
