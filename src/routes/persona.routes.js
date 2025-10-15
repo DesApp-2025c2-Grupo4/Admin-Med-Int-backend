@@ -5,7 +5,7 @@ const personaRoutes = Router();
 
 personaRoutes.get('/', personaControllers.getPersonas);
 personaRoutes.post('/', personaControllers.createPersona);
-
+personaRoutes.delete('/:id', personaControllers.deletePersona);
 //Telefono
 personaRoutes.get('/:personaId/telefonos', telefonoControllers.getTelefonosByPersona);
 personaRoutes.post('/:personaId/telefonos', requireAttribute('nroTelefono', 'Telefono'), ifPersonaExists, telefonoControllers.addTelefonoToPersona);
