@@ -50,6 +50,8 @@ const deletePersona = async (req, res) => {
             where: { id: id }
         });
 
+        //que pasa con la persona si no la encuentra? AGREGAR
+
         res.status(200).json({ message: 'Persona eliminada correctamente' });
     } catch (error) {
         console.error(`Error al eliminar la persona: ${error}`);
