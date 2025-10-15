@@ -1,10 +1,11 @@
 const { Router } = require("express");
 const { personaControllers, telefonoControllers, emailControllers, direccionControllers, situacionPersonaControllers } = require("../controllers");
-const { requireAttribute, ifPersonaExists } = require('../middleware/generic.middleware')
+const { requireAttribute, ifPersonaExists } = require('../middleware/generic.middleware');
+const validarPersona = require("../middleware/validarPersona.js");
 const personaRoutes = Router();
 
 personaRoutes.get('/', personaControllers.getPersonas);
-personaRoutes.post('/', personaControllers.createPersona);
+personaRoutes.post('/', validarPersona ,personaControllers.createPersona);
 personaRoutes.delete('/:id', personaControllers.deletePersona);
 //Telefono
 personaRoutes.get('/:personaId/telefonos', telefonoControllers.getTelefonosByPersona);
