@@ -12,7 +12,7 @@ const personaSchema = Joi.object({
       'string.empty': 'El nombre no puede estar vacío',
       'string.min': 'El nombre debe tener al menos 1 carácte',
       'string.max': 'El nombre no puede exceder los 100 caracteres',
-      'any.required': 'El nombre es un campo requerido',
+      'any.required': 'El nombre es un campo obligatorio',
     }),
 
   apellido: Joi.string()
@@ -25,7 +25,7 @@ const personaSchema = Joi.object({
       'string.empty': 'El apellido no puede estar vacío',
       'string.min': 'El apellido debe tener al menos 1 carácter',
       'string.max': 'El apellido no puede exceder los 100 caracteres',
-      'any.required': 'El apellido es un campo requerido',
+      'any.required': 'El apellido es un campo obligatorio',
     }),
 
   dni: Joi.string()
@@ -47,7 +47,7 @@ const personaSchema = Joi.object({
     .required()
     .messages({
       'boolean.base': 'esTitular debe ser un valor booleano (true o false)',
-      'any.required': 'esTitular es un campo requerido',
+      'any.required': 'esTitular es un campo obligatorio',
     }),
 
   fechaNacimiento: Joi.date()
@@ -56,7 +56,7 @@ const personaSchema = Joi.object({
     .messages({
       'date.base': 'fechaNacimiento debe ser una fecha válida',
       'date.format': 'fechaNacimiento debe estar en formato ISO (YYYY-MM-DD)',
-      'any.required': 'fechaNacimiento es un campo requerido.',
+      'any.required': 'fechaNacimiento es un campo obligatorio.',
     }),
 
   fechaAlta: Joi.date()
@@ -86,7 +86,7 @@ const personaSchema = Joi.object({
       'string.empty': 'La credencial no puede estar vacía.',
       'string.min': 'La credencial debe tener al menos 1 carácter.',
       'string.max': 'La credencial no puede exceder los 50 caracteres.',
-      'any.required': 'La credencial es un campo requerido.',
+      'any.required': 'La credencial es un campo obligatorio.',
     }),
 });
 
