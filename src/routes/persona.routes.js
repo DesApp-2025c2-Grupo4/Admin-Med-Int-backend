@@ -6,4 +6,6 @@ personaRoutes.get('/', personaControllers.getPersonas);
 
 personaRoutes.post('/', personaControllers.createPersona);
 
+personaRoutes.delete('/', personaControllers.deletePersona);
+
 module.exports = personaRoutes;
