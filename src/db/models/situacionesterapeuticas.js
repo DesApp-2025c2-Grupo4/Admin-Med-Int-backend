@@ -13,7 +13,9 @@ module.exports = (sequelize, DataTypes) => {
       SituacionesTerapeuticas.belongsToMany(models.Persona, {
         through: 'situacion-persona',
         foreignKey: 'situacionId',
-        otherKey:'personaId'
+        otherKey:'personaId',
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
       })
     }
   }
