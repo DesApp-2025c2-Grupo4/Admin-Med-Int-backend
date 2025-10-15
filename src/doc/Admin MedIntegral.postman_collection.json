@@ -1,0 +1,220 @@
+{
+	"info": {
+		"_postman_id": "5c80b077-a296-4f4c-9bb8-066545fbdf37",
+		"name": "Admin MedIntegral",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "44629275",
+		"_collection_link": "https://luana-8734822.postman.co/workspace/Luana's-Workspace~a95c0b36-eba0-4d33-8b91-21463b39db82/collection/44629275-5c80b077-a296-4f4c-9bb8-066545fbdf37?action=share&source=collection_link&creator=44629275"
+	},
+	"item": [
+		{
+			"name": "PlanMedico",
+			"item": [
+				{
+					"name": "Post plan medico",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"descripcion\": \"Plan Oro\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4000/planMedico",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"planMedico"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get plan medico",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"descripcion\": \"Plan Oro\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4000/planMedico/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"planMedico",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Persona",
+			"item": [
+				{
+					"name": "New Request",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"tipoDocId\": 1, \r\n    \"dni\": \"35123456\",\r\n    \"nombre\": \"Sofia\",\r\n    \"apellido\": \"Gomez\",\r\n    \"fechaNacimiento\": \"1995-11-03\",\r\n    \"credencial\": \"SG95123\",\r\n    \"planMedicoId\": 1, \r\n    \"telefonos\": [{\"nroTelefono\": \"1160001000\"}],\r\n    \"emails\": [{\"descripcion\": \"sofia.gomez@mail.com\"}],\r\n    \"direcciones\": [{\"calle\": \"Calle Falsa\", \"nro\": 123}],\r\n    \"situacionesIds\": [] \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4000/persona",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"persona"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Tipo documento",
+			"item": [
+				{
+					"name": "Post tipo documento",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"descripcion\": \"DNI\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4000/tipoDocumento",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"tipoDocumento"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get tipo documento",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:4000/tipoDocumento",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"tipoDocumento"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Situacion terapeutica",
+			"item": [
+				{
+					"name": "Post situacion terapeutica",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"descripcion\": \"Ansiedad\", \r\n    \"esCronica\": true, \r\n    \"fechaInicio\": \"2024-03-01\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4000/situaciones",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"situaciones"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get situacion terapeutica",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"descripcion\": \"Ansiedad\", \r\n    \"esCronica\": true, \r\n    \"fechaInicio\": \"2024-03-01\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:4000/situaciones",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"situaciones"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
