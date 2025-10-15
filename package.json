@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "seed": "npx sequelize-cli db:seed:all --config src/db/config/config.js --seeders-path src/db/seeders",
     "dev": "node --watch src/main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
