@@ -1,18 +1,146 @@
-const { Grupo } = require('../db/models')
+const { 
+  Grupo,
+  Persona,
+  PlanMedico,
+  SituacionesTerapeuticas,
+  Telefono,
+  Email,
+  Direccion
+} = require("../db/models");
+const {formatearSituaciones} = require('../utils/formatearSituaciones')
+const {crearNumeroDeGrupo} = require('../utils/crearNumeroDeGrupo')
 
-//Post
+//----------------------------GETTERS -------------------
+
+//Todos los grupos
+const getGrupos = async (_, res) => {
+  try {
+
+    //Consulta a la base de datos
+    const grupos = await Grupo.findAll({
+      include: [
+        {
+          model: PlanMedico, 
+          as: "planMedico", 
+        },
+        {
+          model: Persona,
+          as:'integrantes',
+          include:[
+            {
+              model: SituacionesTerapeuticas,
+              as: 'situacionesTerapeuticas',
+            },{
+              model:Telefono,
+              as: 'telefonos'
+            },{
+              model:Email,
+              as:'email'
+            },{
+              model:Direccion,
+              as:'direcciones'
+            }
+          ]
+        }
+      ],
+    });
+
+    //Reconstruyo situaciones
+    const gruposFormateado = grupos?.map(g => {
+        return {
+          ... g.toJSON(),
+          integrantes: g.integrantes.map(i => {
+            return {... i.toJSON(),
+              situacionesTerapeuticas:formatearSituaciones(i.situacionesTerapeuticas)
+            }
+          })
+        }
+      }
+    )
+    //Devuelvo todos los grupos
+    res.status(200).json(gruposFormateado);
+  } catch (error) {
+    console.error(`Error al obtener todos los grupos: ${error}`);
+    res.status(500).json({ error: "Error al obtener todos los grupos" });
+  }
+};
+//Un Grupo
+const getGrupoByPk = async(req,res) => {
+  const {id} = req.params
+  try {
+
+    //Consulta a la base de datos
+    const grupoBuscado = await Grupo.findByPk(id,{
+      include:[{
+        model:PlanMedico,
+        as:'planMedico'
+      },
+      {
+        model: Persona,
+        as:'integrantes',
+        include:[
+          {
+            model: SituacionesTerapeuticas,
+            as: 'situacionesTerapeuticas',
+          },{
+            model:Telefono,
+            as: 'telefonos'
+          },{
+            model:Email,
+            as:'email'
+          },{
+            model:Direccion,
+            as:'direcciones'
+          }
+        ]
+      }
+    ]
+    })
+    //Formateo
+    const grupoFormateado = {
+      ... grupoBuscado.toJSON(),
+      integrantes:grupoBuscado.integrantes.map(i => {
+          return {... i.toJSON(),
+            situacionesTerapeuticas:formatearSituaciones(i.situacionesTerapeuticas)
+          }
+        }
+      )
+    }
+
+    //Retorno
+    res.json(grupoFormateado)
+  } catch (error) {
+    console.error(`Error al obtener el grupo: ${error}`);
+    res.status(500).json({ error: "Error al obtener el grupo" });
+  }
+}
+
+
+//----------------------------POST
 
 const createGrupo = async (req, res) => {
   try {
+    //Obtengo datos de nuevo grupo
     const newGrupo = req.body;
+
+    //-----------------Creo el numero de grupo
+    //Obtengo la cantidad de grupos
+    const cantidadGrupos = await Grupo.count()
+    //Creo el numero
+    const nroGrupo = crearNumeroDeGrupo(cantidadGrupos)
+    //Agrego el numero al grupo
+    newGrupo.nroGrupo = nroGrupo
+    
     const grupoCreated = await Grupo.create(newGrupo);
     res.status(200).json(grupoCreated);
   } catch (error) {
     console.error(`Error al crear un grupo: ${error}`);
-    res
-      .status(500)
-      .json({ message: "Error en el servidor al crear un grupo" });
+    res.status(500).json({ message: "Error en el servidor al crear un grupo" });
   }
 };
 
-module.exports = { createGrupo };
+module.exports = { 
+  createGrupo, 
+  getGrupos,
+  getGrupoByPk 
+};

@@ -7,6 +7,7 @@ const validarEmail = require("../middleware/validarEmail.js");
 const personaRoutes = Router();
 
 personaRoutes.get('/', personaControllers.getPersonas);
+personaRoutes.get('/:id', personaControllers.getPersonaByPk);
 personaRoutes.post('/', validarPersona ,personaControllers.createPersona);
 personaRoutes.delete('/:id', personaControllers.deletePersona);
 //Telefono

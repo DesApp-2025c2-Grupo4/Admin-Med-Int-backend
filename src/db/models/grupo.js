@@ -11,9 +11,9 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       //Relacion con integrantes
-      Grupo.hasMany(models.Persona, {foreignKey: 'idGrupo'})
+      Grupo.hasMany(models.Persona, {foreignKey: 'idGrupo',as:'integrantes'})
       //Relacion con Plan Medico
-      Grupo.belongsTo(models.PlanMedico, {foreignKey: 'planId'})
+      Grupo.belongsTo(models.PlanMedico, {foreignKey: 'planId', as:'planMedico'})
     }
   }
   Grupo.init({
