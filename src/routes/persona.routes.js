@@ -4,6 +4,7 @@ const { requireAttribute, ifPersonaExists } = require('../middleware/generic.mid
 const personaRoutes = Router();
 
 personaRoutes.get('/', personaControllers.getPersonas);
+personaRoutes.get('/:id', personaControllers.getPersonaByPk);
 personaRoutes.post('/', personaControllers.createPersona);
 personaRoutes.delete('/:id', personaControllers.deletePersona);
 //Telefono
