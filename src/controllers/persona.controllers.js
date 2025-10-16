@@ -13,13 +13,10 @@ const getPersonas = async (_, res) => {
             },
           ],
         },
-        /*,
-                    {
-                        model: SituacionesTerapeuticas
-                    },
-                    {
-                        model: Email
-                    } */
+        {
+          model: Email,
+          as: 'email'
+        }
       ],
     });
     res.status(200).json(personas);
