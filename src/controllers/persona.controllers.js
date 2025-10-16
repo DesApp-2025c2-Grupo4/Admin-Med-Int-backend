@@ -31,20 +31,6 @@ const getPersonas = async (_, res) => {
 
 // Post
 const createPersona = async (req, res) => {
-<<<<<<< HEAD
-    try {
-        const newPersona = req.body;
-        const personaCreated = await Persona.create(newPersona);
-        res.status(200).json(personaCreated);
-    } catch (error) {
-        console.error(`Error al crear una persona: ${error}`);
-        res.status(500).json({message: 'Error en el servidor al crear una persona'})
-    }
-}
-
-
-// Eliminar
-=======
   try {
     const newPersona = req.body;
     const personaCreated = await Persona.create(newPersona);
@@ -57,7 +43,6 @@ const createPersona = async (req, res) => {
   }
 };
 
->>>>>>> 234bf5e162b4cfff1fc4c379f8e38a5d19edd308
 const deletePersona = async (req, res) => {
   try {
     const { id } = req.params;
