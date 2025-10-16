@@ -16,19 +16,20 @@ module.exports = (sequelize, DataTypes) => {
       //Relacion con telefono
       Persona.hasMany(models.Telefono, {foreignKey:'personaId', as:'telefonos', onDelete: 'CASCADE', hooks: true})
       //Relacion con tipoDoc
-      Persona.belongsTo(models.TipoDocumento, {foreignKey: 'tipoDocId'})
+      Persona.belongsTo(models.TipoDocumento, {foreignKey: 'tipoDocId', as:'tipoDocumento'})
       //Relacion con situaciones
       Persona.belongsToMany(models.SituacionesTerapeuticas, {
         through: models.SituacionPersona,
         foreignKey: 'personaId',
         otherKey:'situacionId',
         as:'situacionesTerapeuticas',
-        hooks: true
+        hooks: true,
+        onDelete:'CASCADE'
       })
-    //Relacion con email
-    Persona.hasMany(models.Email, {foreignKey:'personaId', as:'email', onDelete: 'CASCADE', hooks: true})
-    //Relacion con grupo
-    Persona.belongsTo(models.Grupo, {foreignKey:'idGrupo', onDelete: 'SET NULL'})
+      //Relacion con email
+      Persona.hasMany(models.Email, {foreignKey:'personaId', as:'email', onDelete:'CASCADE', hooks: true})
+      //Relacion con grupo
+      Persona.belongsTo(models.Grupo, {foreignKey:'idGrupo',as:'grupo', onDelete: 'SET NULL'})
     }
   }
   Persona.init({
@@ -40,6 +41,9 @@ module.exports = (sequelize, DataTypes) => {
     nombre: {
       type: DataTypes.STRING,
       allowNull: false,
+    },
+    parentesco: {
+      type: DataTypes.STRING,
     },
     apellido:{
       type: DataTypes.STRING,
