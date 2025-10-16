@@ -12,19 +12,20 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       //Relacion con Direccion
-      Persona.hasMany(models.Direccion, {foreignKey:'personaId'})
+      Persona.hasMany(models.Direccion, {foreignKey:'personaId', as:'direcciones'})
       //Relacion con telefono
-      Persona.hasMany(models.Telefono, {foreignKey:'personaId'})
+      Persona.hasMany(models.Telefono, {foreignKey:'personaId', as:'telefonos'})
       //Relacion con tipoDoc
       Persona.belongsTo(models.TipoDocumento, {foreignKey: 'tipoDocId'})
       //Relacion con situaciones
       Persona.belongsToMany(models.SituacionesTerapeuticas, {
         through: models.SituacionPersona,
         foreignKey: 'personaId',
-        otherKey:'situacionId'
+        otherKey:'situacionId',
+        as:'situacionesTerapeuticas'
       })
       //Relacion con email
-      Persona.hasMany(models.Email, {foreignKey:'personaId'})
+      Persona.hasMany(models.Email, {foreignKey:'personaId', as:'email'})
       //Relacion con grupo
       Persona.belongsTo(models.Grupo, {foreignKey:'idGrupo'})
     }
