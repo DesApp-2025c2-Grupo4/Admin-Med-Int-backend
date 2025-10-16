@@ -91,8 +91,7 @@ const createPersona = async (req, res) => {
 
     //Obtengo datos del body
     const newPersona = req.body;
-    //Controlo que no sea haya o no un titular
-    newPersona.esTitular = cantidadIntegrantes === 0
+
 
     //------------------- Creo la Credencial
     const grupo = await Grupo.findByPk(newPersona.idGrupo, { transaction });
