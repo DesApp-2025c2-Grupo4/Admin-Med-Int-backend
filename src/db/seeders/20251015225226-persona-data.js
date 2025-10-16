@@ -1,10 +1,10 @@
 'use strict';
 
 module.exports = {
-  async up (queryInterface, Sequelize) {
+  async up(queryInterface, Sequelize) {
     // -------------------------------------- REINICIO BD ------------------------
     await queryInterface.bulkDelete('SituacionPersonas', null, {
-    truncate: true, restartIdentity: true, cascade: true
+      truncate: true, restartIdentity: true, cascade: true
     });
     await queryInterface.bulkDelete('SituacionesTerapeuticas', null, {
       truncate: true, restartIdentity: true, cascade: true
@@ -31,10 +31,8 @@ module.exports = {
       truncate: true, restartIdentity: true, cascade: true
     });
 
-
     //-----------------------------INSERTO DATOS -------------------------------
-    
-    
+
     // --- TIPOS DE DOCUMENTOS ---
     await queryInterface.bulkInsert('TipoDocumentos', [
       { descripcion: 'DNI' },
@@ -46,16 +44,16 @@ module.exports = {
       { descripcion: 'Plata' },
       { descripcion: 'Bronce' },
       { descripcion: 'Oro' },
-      { descripcion: 'Diamante'}
+      { descripcion: 'Diamante' }
     ], {});
 
     // --- GRUPOS ---
     await queryInterface.bulkInsert('Grupos', [
       { nroGrupo: '0000001', fechaAlta: new Date(), planId: 1 },
       { nroGrupo: '0000002', fechaAlta: new Date(), planId: 2 },
-      { nroGrupo: '0000002', fechaAlta: new Date(), planId: 3 }
+      { nroGrupo: '0000003', fechaAlta: new Date(), planId: 3 }
     ], {});
-    
+
     // --- SITUACIONES TERAPÉUTICAS ---
     await queryInterface.bulkInsert('SituacionesTerapeuticas', [
       { descripcion: 'Fisioterapia' },
@@ -70,6 +68,7 @@ module.exports = {
         apellido: 'Carrizo',
         dni: '12345678',
         esTitular: true,
+        parentesco: 'Titular',
         fechaNacimiento: '1980-05-10',
         fechaAlta: new Date(),
         fechaBaja: null,
@@ -82,6 +81,7 @@ module.exports = {
         apellido: 'Gómez',
         dni: '87654321',
         esTitular: false,
+        parentesco: 'Familiar',
         fechaNacimiento: '1995-09-12',
         fechaAlta: new Date(),
         fechaBaja: null,
@@ -94,6 +94,7 @@ module.exports = {
         apellido: 'Pérez',
         dni: '22334455',
         esTitular: false,
+        parentesco: 'Familiar',
         fechaNacimiento: '1978-11-20',
         fechaAlta: new Date(),
         fechaBaja: null,
@@ -117,10 +118,10 @@ module.exports = {
     await queryInterface.bulkInsert('Emails', [
       { descripcion: 'pedro.carrizo@example.com', personaId: 1 },
       { descripcion: 'pedro.carrizo2@example.com', personaId: 1 },
-      { descripcion: 'juan.perez@example.com', personaId: 2 },
-      { descripcion: 'juan.perez2@example.com', personaId: 2 },
-      { descripcion: 'lucia.gomez@example.com', personaId: 3 },
-      { descripcion: 'lucia.gomez2@example.com', personaId: 3 }
+      { descripcion: 'lucia.gomez@example.com', personaId: 2 },
+      { descripcion: 'lucia.gomez2@example.com', personaId: 2 },
+      { descripcion: 'juan.perez@example.com', personaId: 3 },
+      { descripcion: 'juan.perez2@example.com', personaId: 3 }
     ], {});
 
     // --- TELÉFONOS ---
@@ -135,29 +136,10 @@ module.exports = {
 
     // --- RELACIÓN MUCHOS A MUCHOS (SituacionPersonas) ---
     await queryInterface.bulkInsert('SituacionPersonas', [
-      {
-        personaId: 1,
-        situacionId: 1,
-        esCronica: false,
-        fechaInicio: '2025-01-10',
-        fechaFin: '2025-02-10'
-      },
-      {
-        personaId: 2,
-        situacionId: 2,
-        esCronica: true,
-        fechaInicio: '2024-03-01',
-        fechaFin: null
-      },
-      {
-        personaId: 3,
-        situacionId: 3,
-        esCronica: false,
-        fechaInicio: '2025-09-01',
-        fechaFin: null
-      }
+      { personaId: 1, situacionId: 1, esCronica: false, fechaInicio: '2025-01-10', fechaFin: '2025-02-10' },
+      { personaId: 2, situacionId: 2, esCronica: true, fechaInicio: '2024-03-01', fechaFin: null },
+      { personaId: 3, situacionId: 3, esCronica: false, fechaInicio: '2025-09-01', fechaFin: null }
     ], {});
-
 
     // ------------------------------ PERSONAS DEL GRUPO 2 ---------------------------------
     await queryInterface.bulkInsert('Personas', [
@@ -166,10 +148,11 @@ module.exports = {
         apellido: 'Carrizo',
         dni: '12345678',
         esTitular: true,
+        parentesco: 'Titular',
         fechaNacimiento: '1980-05-10',
         fechaAlta: new Date(),
         fechaBaja: null,
-        credencial: '0000001-01',
+        credencial: '0000002-01',
         idGrupo: 2,
         tipoDocId: 1
       },
@@ -178,10 +161,11 @@ module.exports = {
         apellido: 'Gómez',
         dni: '87654321',
         esTitular: false,
+        parentesco: 'Familiar',
         fechaNacimiento: '1995-09-12',
         fechaAlta: new Date(),
         fechaBaja: null,
-        credencial: '0000001-02',
+        credencial: '0000002-02',
         idGrupo: 2,
         tipoDocId: 1
       },
@@ -190,10 +174,11 @@ module.exports = {
         apellido: 'Pérez',
         dni: '22334455',
         esTitular: false,
+        parentesco: 'Familiar',
         fechaNacimiento: '1978-11-20',
         fechaAlta: new Date(),
         fechaBaja: null,
-        credencial: '0000001-03',
+        credencial: '0000002-03',
         idGrupo: 2,
         tipoDocId: 2
       }
@@ -213,10 +198,10 @@ module.exports = {
     await queryInterface.bulkInsert('Emails', [
       { descripcion: 'pedro.carrizo@example.com', personaId: 4 },
       { descripcion: 'pedro.carrizo2@example.com', personaId: 4 },
-      { descripcion: 'luciano.perez@example.com', personaId: 5 },
-      { descripcion: 'luciano2.perez2@example.com', personaId: 5 },
-      { descripcion: 'milagros.gomez@example.com', personaId: 6 },
-      { descripcion: 'milagros2.gomez2@example.com', personaId: 6 }
+      { descripcion: 'luciano.gomez@example.com', personaId: 5 },
+      { descripcion: 'luciano2.gomez2@example.com', personaId: 5 },
+      { descripcion: 'milagros.perez@example.com', personaId: 6 },
+      { descripcion: 'milagros2.perez2@example.com', personaId: 6 }
     ], {});
 
     // --- TELÉFONOS ---
@@ -231,27 +216,9 @@ module.exports = {
 
     // --- RELACIÓN MUCHOS A MUCHOS (SituacionPersonas) ---
     await queryInterface.bulkInsert('SituacionPersonas', [
-      {
-        personaId: 4,
-        situacionId: 1,
-        esCronica: false,
-        fechaInicio: '2025-01-10',
-        fechaFin: '2025-02-10'
-      },
-      {
-        personaId: 4,
-        situacionId: 2,
-        esCronica: true,
-        fechaInicio: '2024-03-01',
-        fechaFin: null
-      },
-      {
-        personaId: 5,
-        situacionId: 3,
-        esCronica: false,
-        fechaInicio: '2025-09-01',
-        fechaFin: null
-      }
+      { personaId: 4, situacionId: 1, esCronica: false, fechaInicio: '2025-01-10', fechaFin: '2025-02-10' },
+      { personaId: 4, situacionId: 2, esCronica: true, fechaInicio: '2024-03-01', fechaFin: null },
+      { personaId: 5, situacionId: 3, esCronica: false, fechaInicio: '2025-09-01', fechaFin: null }
     ], {});
 
     // ------------------------------ PERSONAS DEL GRUPO 3 ---------------------------------
@@ -261,10 +228,11 @@ module.exports = {
         apellido: 'Carrizo',
         dni: '12345678',
         esTitular: true,
+        parentesco: 'Titular',
         fechaNacimiento: '1980-05-10',
         fechaAlta: new Date(),
         fechaBaja: null,
-        credencial: '0000001-01',
+        credencial: '0000003-01',
         idGrupo: 3,
         tipoDocId: 1
       },
@@ -273,10 +241,11 @@ module.exports = {
         apellido: 'Gómez',
         dni: '87654321',
         esTitular: false,
+        parentesco: 'Familiar',
         fechaNacimiento: '1995-09-12',
         fechaAlta: new Date(),
         fechaBaja: null,
-        credencial: '0000001-02',
+        credencial: '0000003-02',
         idGrupo: 3,
         tipoDocId: 1
       },
@@ -285,10 +254,11 @@ module.exports = {
         apellido: 'Pérez',
         dni: '22334455',
         esTitular: false,
+        parentesco: 'Familiar',
         fechaNacimiento: '1978-11-20',
         fechaAlta: new Date(),
         fechaBaja: null,
-        credencial: '0000001-03',
+        credencial: '0000003-03',
         idGrupo: 3,
         tipoDocId: 2
       }
@@ -308,10 +278,10 @@ module.exports = {
     await queryInterface.bulkInsert('Emails', [
       { descripcion: 'ernesto.carrizo@example.com', personaId: 7 },
       { descripcion: 'ernesto2.carrizo2@example.com', personaId: 7 },
-      { descripcion: 'feredico.perez@example.com', personaId: 8 },
-      { descripcion: 'feredico2.perez2@example.com', personaId: 8 },
-      { descripcion: 'viviana.gomez@example.com', personaId: 9 },
-      { descripcion: 'viviana2.gomez2@example.com', personaId: 9 }
+      { descripcion: 'federico.gomez@example.com', personaId: 8 },
+      { descripcion: 'federico2.gomez2@example.com', personaId: 8 },
+      { descripcion: 'viviana.perez@example.com', personaId: 9 },
+      { descripcion: 'viviana2.perez2@example.com', personaId: 9 }
     ], {});
 
     // --- TELÉFONOS ---
@@ -326,34 +296,13 @@ module.exports = {
 
     // --- RELACIÓN MUCHOS A MUCHOS (SituacionPersonas) ---
     await queryInterface.bulkInsert('SituacionPersonas', [
-      {
-        personaId: 7,
-        situacionId: 1,
-        esCronica: false,
-        fechaInicio: '2025-01-10',
-        fechaFin: '2025-02-10'
-      },
-      {
-        personaId: 8,
-        situacionId: 2,
-        esCronica: true,
-        fechaInicio: '2024-03-01',
-        fechaFin: null
-      },
-      {
-        personaId: 9,
-        situacionId: 3,
-        esCronica: false,
-        fechaInicio: '2025-09-01',
-        fechaFin: null
-      }
+      { personaId: 7, situacionId: 1, esCronica: false, fechaInicio: '2025-01-10', fechaFin: '2025-02-10' },
+      { personaId: 8, situacionId: 2, esCronica: true, fechaInicio: '2024-03-01', fechaFin: null },
+      { personaId: 9, situacionId: 3, esCronica: false, fechaInicio: '2025-09-01', fechaFin: null }
     ], {});
   },
 
-
-
-
-  async down (queryInterface, Sequelize) {
+  async down(queryInterface, Sequelize) {
     await queryInterface.bulkDelete('SituacionPersonas', null, {});
     await queryInterface.bulkDelete('SituacionesTerapeuticas', null, {});
     await queryInterface.bulkDelete('Telefonos', null, {});
