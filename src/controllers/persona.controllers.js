@@ -1,4 +1,4 @@
-const { Persona, Grupo, PlanMedico, Telefono, Email, Direccion, SituacionesTerapeuticas } = require('../db/models');
+const { Persona, Grupo, PlanMedico, Telefono, Email, Direccion, SituacionesTerapeuticas,TipoDocumento } = require('../db/models');
 const {formatearSituaciones} = require('../utils/formatearSituaciones')
 //----------------------------GETTERS
 const getPersonas = async (_, res) => {
@@ -45,6 +45,17 @@ const getPersonaByPk = async (req,res)=>{
           },{
             model:Direccion,
             as:'direcciones'
+          },{
+            model:TipoDocumento,
+            as:'tipoDocumento'
+          },{
+            model:Grupo,
+            as:'grupo',
+            include:[{
+              model:PlanMedico,
+              as:'planMedico'
+            }
+            ]
           }
         ]
       }
@@ -54,7 +65,14 @@ const getPersonaByPk = async (req,res)=>{
       ... personaBuscada.toJSON(),
       situacionesTerapeuticas: formatearSituaciones(personaBuscada.situacionesTerapeuticas)
     }
-
+    //Formateo el grupo
+    const grupoPeteneciente = personaFormateada.grupo
+    delete personaFormateada.grupo 
+    personaFormateada.nroGrupo = grupoPeteneciente.nroGrupo
+    personaFormateada.planMedico = {
+      planId: grupoPeteneciente.planMedico.planId,
+      descripcion: grupoPeteneciente.planMedico.descripcion
+    }
     //Retorno
     res.json(personaFormateada)
   } catch (error) {

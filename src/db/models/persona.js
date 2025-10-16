@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
       //Relacion con telefono
       Persona.hasMany(models.Telefono, {foreignKey:'personaId', as:'telefonos'})
       //Relacion con tipoDoc
-      Persona.belongsTo(models.TipoDocumento, {foreignKey: 'tipoDocId'})
+      Persona.belongsTo(models.TipoDocumento, {foreignKey: 'tipoDocId', as:'tipoDocumento'})
       //Relacion con situaciones
       Persona.belongsToMany(models.SituacionesTerapeuticas, {
         through: models.SituacionPersona,
@@ -27,7 +27,7 @@ module.exports = (sequelize, DataTypes) => {
       //Relacion con email
       Persona.hasMany(models.Email, {foreignKey:'personaId', as:'email'})
       //Relacion con grupo
-      Persona.belongsTo(models.Grupo, {foreignKey:'idGrupo'})
+      Persona.belongsTo(models.Grupo, {foreignKey:'idGrupo',as:'grupo'})
     }
   }
   Persona.init({
