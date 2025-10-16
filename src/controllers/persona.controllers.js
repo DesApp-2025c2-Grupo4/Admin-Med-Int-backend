@@ -10,9 +10,11 @@ const getPersonas = async (_, res) => {
       include: [
         {
           model: Grupo,
+          as:'grupo',
           include: [
             {
               model: PlanMedico,
+              as:'planMedico'
             },
           ],
         },
