@@ -8,6 +8,7 @@ const {
   Direccion
 } = require("../db/models");
 const {formatearSituaciones} = require('../utils/formatearSituaciones')
+const {crearNumeroDeGrupo} = require('../utils/crearNumeroDeGrupo')
 
 //----------------------------GETTERS -------------------
 
@@ -119,7 +120,17 @@ const getGrupoByPk = async(req,res) => {
 
 const createGrupo = async (req, res) => {
   try {
+    //Obtengo datos de nuevo grupo
     const newGrupo = req.body;
+
+    //-----------------Creo el numero de grupo
+    //Obtengo la cantidad de grupos
+    const cantidadGrupos = await Grupo.count()
+    //Creo el numero
+    const nroGrupo = crearNumeroDeGrupo(cantidadGrupos)
+    //Agrego el numero al grupo
+    newGrupo.nroGrupo = nroGrupo
+    
     const grupoCreated = await Grupo.create(newGrupo);
     res.status(200).json(grupoCreated);
   } catch (error) {
