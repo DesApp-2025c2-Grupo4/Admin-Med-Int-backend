@@ -1,6 +1,6 @@
 const { Persona, Grupo, PlanMedico, Telefono, Email, Direccion, SituacionesTerapeuticas } = require('../db/models');
-
-//Get
+const {formatearSituaciones} = require('../utils/formatearSituaciones')
+//----------------------------GETTERS
 const getPersonas = async (_, res) => {
   try {
     const personas = await Persona.findAll({
@@ -25,8 +25,44 @@ const getPersonas = async (_, res) => {
     res.status(500).json({ error: "Error al obtener todas las personas" });
   }
 };
+//Obtener una persona
+const getPersonaByPk = async (req,res)=>{
+  try {
+    const {id} = req.params
+    //Busco la persona
+    const personaBuscada = await Persona.findByPk(
+      id,{
+        include:[
+          {
+            model: SituacionesTerapeuticas,
+            as: 'situacionesTerapeuticas',
+          },{
+            model:Telefono,
+            as: 'telefonos'
+          },{
+            model:Email,
+            as:'email'
+          },{
+            model:Direccion,
+            as:'direcciones'
+          }
+        ]
+      }
+    )
+    //Formateo las situaciones
+    const personaFormateada = {
+      ... personaBuscada.toJSON(),
+      situacionesTerapeuticas: formatearSituaciones(personaBuscada.situacionesTerapeuticas)
+    }
 
-// Post
+    //Retorno
+    res.json(personaFormateada)
+  } catch (error) {
+    console.error(`Error al obtener la persona: ${error}`);
+    res.status(500).json({ error: "Error al obtener una Persona" });
+  }
+}
+//----------------------------- Post
 const createPersona = async (req, res) => {
   try {
     const newPersona = req.body;
@@ -56,4 +92,9 @@ const deletePersona = async (req, res) => {
     }
 };
 
-module.exports = { getPersonas, createPersona, deletePersona };
+module.exports = { 
+  getPersonas, 
+  createPersona, 
+  deletePersona,
+  getPersonaByPk 
+};
