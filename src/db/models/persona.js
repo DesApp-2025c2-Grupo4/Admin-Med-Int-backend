@@ -12,23 +12,24 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       //Relacion con Direccion
-      Persona.hasMany(models.Direccion, {foreignKey:'personaId', onDelete: 'CASCADE', hooks: true})
+      Persona.hasMany(models.Direccion, {foreignKey:'personaId', as:'direcciones', onDelete: 'CASCADE', hooks: true})
       //Relacion con telefono
-      Persona.hasMany(models.Telefono, {foreignKey:'personaId', onDelete: 'CASCADE', hooks: true})
+      Persona.hasMany(models.Telefono, {foreignKey:'personaId', as:'telefonos', onDelete: 'CASCADE', hooks: true})
       //Relacion con tipoDoc
       Persona.belongsTo(models.TipoDocumento, {foreignKey: 'tipoDocId', onDelete: 'CASCADE', hooks: true})
       //Relacion con situaciones
       Persona.belongsToMany(models.SituacionesTerapeuticas, {
-        through: 'situacion-persona',
+        through: models.SituacionPersona,
         foreignKey: 'personaId',
         otherKey:'situacionId',
+        as:'situacionesTerapeuticas',
         onDelete: 'CASCADE',
-         hooks: true
+        hooks: true
       })
-      //Relacion con email
-      Persona.hasMany(models.Email, {foreignKey:'personaId', onDelete: 'CASCADE', hooks: true})
-      //Relacion con grupo
-      Persona.belongsTo(models.Grupo, {foreignKey:'idGrupo', onDelete: 'SET NULL'})
+    //Relacion con email
+    Persona.hasMany(models.Email, {foreignKey:'personaId', as:'email', onDelete: 'CASCADE', hooks: true})
+    //Relacion con grupo
+    Persona.belongsTo(models.Grupo, {foreignKey:'idGrupo', onDelete: 'SET NULL'})
     }
   }
   Persona.init({

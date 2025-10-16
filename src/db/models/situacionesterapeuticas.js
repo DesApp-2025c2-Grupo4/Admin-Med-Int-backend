@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       SituacionesTerapeuticas.belongsToMany(models.Persona, {
-        through: 'situacion-persona',
+        through: models.SituacionPersona,
         foreignKey: 'situacionId',
         otherKey:'personaId',
         onDelete: 'CASCADE',
@@ -28,18 +28,6 @@ module.exports = (sequelize, DataTypes) => {
     descripcion: {
       type: DataTypes.STRING,
       allowNull: false,
-    },
-    esCronica:{
-      type: DataTypes.BOOLEAN,
-      allowNull: false
-    },
-    fechaInicio:{
-      type: DataTypes.DATEONLY,
-      allowNull: false
-    },
-    fechaFin:{
-      type: DataTypes.DATEONLY,
-      allowNull: true
     }
 
   }, {

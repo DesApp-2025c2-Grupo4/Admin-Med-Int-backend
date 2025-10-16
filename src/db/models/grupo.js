@@ -11,10 +11,9 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       //Relacion con integrantes
-      //SET NULL si se elimina el grupo las personas quedan sin grupo (o hay que eliminarlas?)
-      Grupo.hasMany(models.Persona, {foreignKey: 'idGrupo', onDelete: 'SET NULL', onUpdate: 'CASCADE'})
+      Grupo.hasMany(models.Persona, {foreignKey: 'idGrupo',as:'integrantes', onDelete: 'SET NULL', onUpdate: 'CASCADE'})
       //Relacion con Plan Medico
-      Grupo.belongsTo(models.PlanMedico, {foreignKey: 'planId', onDelete: 'SET NULL', onUpdate: 'CASCADE'})
+      Grupo.belongsTo(models.PlanMedico, {foreignKey: 'planId', as:'planMedico', onDelete: 'SET NULL', onUpdate: 'CASCADE'})
     }
   }
   Grupo.init({
