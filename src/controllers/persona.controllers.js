@@ -1,5 +1,8 @@
-const { Persona, Grupo, PlanMedico, Telefono, Email, Direccion, SituacionesTerapeuticas,TipoDocumento } = require('../db/models');
+const { Persona, Grupo,SituacionPersona, PlanMedico, Telefono, Email, Direccion, SituacionesTerapeuticas,TipoDocumento } = require('../db/models');
+const { crearCredencial } = require('../utils/crearCredencial');
 const {formatearSituaciones} = require('../utils/formatearSituaciones')
+const { sequelize } = require('../db/models');
+
 //----------------------------GETTERS
 const getPersonas = async (_, res) => {
   try {
@@ -82,17 +85,91 @@ const getPersonaByPk = async (req,res)=>{
 }
 //----------------------------- Post
 const createPersona = async (req, res) => {
+  //Creo una transaccion en caso de que alguna consulta falle
+  const transaction = await sequelize.transaction();
   try {
+
+    //Obtengo datos del body
     const newPersona = req.body;
-    const personaCreated = await Persona.create(newPersona);
-    res.status(200).json(personaCreated);
+
+    //------------------- Creo la Credencial
+    const grupo = await Grupo.findByPk(newPersona.idGrupo, { transaction });
+
+    const cantidadIntegrantes = await Persona.count({
+      where: { idGrupo: newPersona.idGrupo },
+      transaction
+    });
+
+    const credencial = crearCredencial(grupo.nroGrupo, cantidadIntegrantes);
+
+    newPersona.credencial = credencial;
+
+    //------------------ Creo la persona
+    const personaCreated = await Persona.create(newPersona, { transaction });
+
+    //------------------ Creo las direcciones
+    const direcciones = newPersona.direcciones.map(d => {
+      return {
+        ...d,
+        personaId: personaCreated.personaId
+      };
+    });
+
+    await Direccion.bulkCreate(direcciones, { transaction });
+
+    //------ Creo los telefonos
+    const telefonos = newPersona.telefonos.map(t => {
+      return {
+        ...t,
+        personaId: personaCreated.personaId
+      };
+    });
+
+    await Telefono.bulkCreate(telefonos, { transaction });
+
+    //------ Creo los emails
+    const emails = newPersona.emails.map(e => {
+      return {
+        ...e,
+        personaId: personaCreated.personaId
+      };
+    });
+
+    await Email.bulkCreate(emails, { transaction });
+
+
+    //------------Creo las situaciones
+    //obtengo situaciones
+    const situaciones = newPersona.situacionesTerapeuticas || []
+    
+    //Asocio a la persona
+    const situacionesAsociadas = situaciones.map(s=>{
+      return {
+        ...s,
+        personaId: personaCreated.personaId
+      }
+    })
+
+    //Creo las situaciones
+    await SituacionPersona.bulkCreate(situacionesAsociadas,{transaction})
+
+
+    // Si todo salió bien, confirmo la transacción
+    await transaction.commit();
+
+    //Retorno
+    res.status(201).json(personaCreated);
+
   } catch (error) {
+    // Si algo falla, hago rollback
+    await transaction.rollback();
     console.error(`Error al crear una persona: ${error}`);
     res
       .status(500)
       .json({ message: "Error en el servidor al crear una persona" });
   }
 };
+
 
 const deletePersona = async (req, res) => {
     try {
@@ -103,7 +180,7 @@ const deletePersona = async (req, res) => {
 
         //que pasa con la persona si no la encuentra? AGREGAR
 
-        res.status(200).json({ message: 'Persona eliminada correctamente' });
+        res.status(200).json(deleted);
     } catch (error) {
         console.error(`Error al eliminar la persona: ${error}`);
         res.status(500).json({ message: 'Error al eliminar la persona' });

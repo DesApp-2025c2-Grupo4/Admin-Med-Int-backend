@@ -12,9 +12,9 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       //Relacion con Direccion
-      Persona.hasMany(models.Direccion, {foreignKey:'personaId', as:'direcciones'})
+      Persona.hasMany(models.Direccion, {foreignKey:'personaId', as:'direcciones', onDelete:'CASCADE'})
       //Relacion con telefono
-      Persona.hasMany(models.Telefono, {foreignKey:'personaId', as:'telefonos'})
+      Persona.hasMany(models.Telefono, {foreignKey:'personaId', as:'telefonos', onDelete:'CASCADE'})
       //Relacion con tipoDoc
       Persona.belongsTo(models.TipoDocumento, {foreignKey: 'tipoDocId', as:'tipoDocumento'})
       //Relacion con situaciones
@@ -22,10 +22,11 @@ module.exports = (sequelize, DataTypes) => {
         through: models.SituacionPersona,
         foreignKey: 'personaId',
         otherKey:'situacionId',
-        as:'situacionesTerapeuticas'
+        as:'situacionesTerapeuticas',
+        onDelete:'CASCADE'
       })
       //Relacion con email
-      Persona.hasMany(models.Email, {foreignKey:'personaId', as:'email'})
+      Persona.hasMany(models.Email, {foreignKey:'personaId', as:'email', onDelete:'CASCADE'})
       //Relacion con grupo
       Persona.belongsTo(models.Grupo, {foreignKey:'idGrupo',as:'grupo'})
     }
