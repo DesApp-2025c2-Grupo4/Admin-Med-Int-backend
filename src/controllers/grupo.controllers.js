@@ -8,8 +8,10 @@ const {
   Direccion
 } = require("../db/models");
 const {formatearSituaciones} = require('../utils/formatearSituaciones')
-//Getters
 
+//----------------------------GETTERS -------------------
+
+//Todos los grupos
 const getGrupos = async (_, res) => {
   try {
 
@@ -61,8 +63,59 @@ const getGrupos = async (_, res) => {
     res.status(500).json({ error: "Error al obtener todos los grupos" });
   }
 };
+//Un Grupo
+const getGrupoByPk = async(req,res) => {
+  const {id} = req.params
+  try {
 
-//Post
+    //Consulta a la base de datos
+    const grupoBuscado = await Grupo.findByPk(id,{
+      include:[{
+        model:PlanMedico,
+        as:'planMedico'
+      },
+      {
+        model: Persona,
+        as:'integrantes',
+        include:[
+          {
+            model: SituacionesTerapeuticas,
+            as: 'situacionesTerapeuticas',
+          },{
+            model:Telefono,
+            as: 'telefonos'
+          },{
+            model:Email,
+            as:'email'
+          },{
+            model:Direccion,
+            as:'direcciones'
+          }
+        ]
+      }
+    ]
+    })
+    //Formateo
+    const grupoFormateado = {
+      ... grupoBuscado.toJSON(),
+      integrantes:grupoBuscado.integrantes.map(i => {
+          return {... i.toJSON(),
+            situacionesTerapeuticas:formatearSituaciones(i.situacionesTerapeuticas)
+          }
+        }
+      )
+    }
+
+    //Retorno
+    res.json(grupoFormateado)
+  } catch (error) {
+    console.error(`Error al obtener el grupo: ${error}`);
+    res.status(500).json({ error: "Error al obtener el grupo" });
+  }
+}
+
+
+//----------------------------POST
 
 const createGrupo = async (req, res) => {
   try {
@@ -75,4 +128,8 @@ const createGrupo = async (req, res) => {
   }
 };
 
-module.exports = { createGrupo, getGrupos };
+module.exports = { 
+  createGrupo, 
+  getGrupos,
+  getGrupoByPk 
+};

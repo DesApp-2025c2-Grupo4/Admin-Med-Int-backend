@@ -1,5 +1,4 @@
 const formatearSituaciones = (situaciones) => {
-  console.log(situaciones)
   if (!situaciones) return [];
 
   return situaciones.map(situacion => {
