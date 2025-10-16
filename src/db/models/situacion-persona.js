@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // Cada registro pertenece a una persona
       SituacionPersona.belongsTo(models.Persona, {
-        foreignKey: 'personaId'
+        foreignKey: 'personaId', onDelete: 'CASCADE'
       });
 
       // Cada registro pertenece a una situación terapéutica

@@ -16,14 +16,13 @@ module.exports = (sequelize, DataTypes) => {
       //Relacion con telefono
       Persona.hasMany(models.Telefono, {foreignKey:'personaId', as:'telefonos', onDelete: 'CASCADE', hooks: true})
       //Relacion con tipoDoc
-      Persona.belongsTo(models.TipoDocumento, {foreignKey: 'tipoDocId', onDelete: 'CASCADE', hooks: true})
+      Persona.belongsTo(models.TipoDocumento, {foreignKey: 'tipoDocId'})
       //Relacion con situaciones
       Persona.belongsToMany(models.SituacionesTerapeuticas, {
         through: models.SituacionPersona,
         foreignKey: 'personaId',
         otherKey:'situacionId',
         as:'situacionesTerapeuticas',
-        onDelete: 'CASCADE',
         hooks: true
       })
     //Relacion con email

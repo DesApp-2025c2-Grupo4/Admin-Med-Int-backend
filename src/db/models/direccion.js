@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Direccion.belongsTo(models.Persona, {foreignKey: 'personaId', onDelete: 'CASCADE', onUpdate: 'CASCADE', hooks: true})
+      Direccion.belongsTo(models.Persona, {foreignKey: 'personaId', onUpdate: 'CASCADE'})
     }
   }
   Direccion.init({
