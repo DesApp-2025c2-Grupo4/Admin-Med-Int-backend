@@ -3,6 +3,7 @@ const { personaControllers, telefonoControllers, emailControllers, direccionCont
 const { requireAttribute, ifPersonaExists } = require('../middleware/generic.middleware');
 const validarPersona = require("../middleware/validarPersona.js");
 const validarTelefono = require("../middleware/validarTelefono.js");
+const validarEmail = require("../middleware/validarEmail.js");
 const personaRoutes = Router();
 
 personaRoutes.get('/', personaControllers.getPersonas);
@@ -14,7 +15,7 @@ personaRoutes.post('/:personaId/telefonos', validarTelefono, requireAttribute('n
 
 //Email
 personaRoutes.get('./:personaId/emails', emailControllers.getEmailsByPersona);
-personaRoutes.post('/:personaId/emails', requireAttribute('descripcion', 'Email'), ifPersonaExists, emailControllers.addEmailToPersona);
+personaRoutes.post('/:personaId/emails', validarEmail ,requireAttribute('descripcion', 'Email'), ifPersonaExists, emailControllers.addEmailToPersona);
 
 //Direccion
 personaRoutes.get('./:personaId/direcciones', direccionControllers.getDireccionesByPersona);
