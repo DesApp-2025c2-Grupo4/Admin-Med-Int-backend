@@ -10,21 +10,21 @@ const personaSchema = Joi.object({
     .messages({
       'string.base': 'El nombre debe ser una cadena de texto',
       'string.empty': 'El nombre no puede estar vacío',
-      'string.min': 'El nombre debe tener al menos 1 carácte',
-      'string.max': 'El nombre no puede exceder los 100 caracteres',
+      'string.min': 'El nombre debe tener al menos 3 carácte',
+      'string.max': 'El nombre no puede exceder los 15 caracteres',
       'any.required': 'El nombre es un campo obligatorio',
     }),
 
   apellido: Joi.string()
     .trim()
-    .min(1)
-    .max(100)
+    .min(3)
+    .max(20)
     .required()
     .messages({
       'string.base': 'El apellido debe ser una cadena de texto',
       'string.empty': 'El apellido no puede estar vacío',
-      'string.min': 'El apellido debe tener al menos 1 carácter',
-      'string.max': 'El apellido no puede exceder los 100 caracteres',
+      'string.min': 'El apellido debe tener al menos 3 carácter',
+      'string.max': 'El apellido no puede exceder los 20 caracteres',
       'any.required': 'El apellido es un campo obligatorio',
     }),
 
