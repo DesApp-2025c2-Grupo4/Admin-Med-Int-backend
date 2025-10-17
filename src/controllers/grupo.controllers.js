@@ -8,7 +8,8 @@ const {
   Direccion
 } = require("../db/models");
 const {formatearSituaciones} = require('../utils/formatearSituaciones')
-const {crearNumeroDeGrupo} = require('../utils/crearNumeroDeGrupo')
+const {crearNumeroDeGrupo} = require('../utils/crearNumeroDeGrupo');
+const { where } = require("sequelize");
 
 //----------------------------GETTERS -------------------
 
@@ -139,8 +140,28 @@ const createGrupo = async (req, res) => {
   }
 };
 
+//----------------------------DELETE
+const deleteGrupo = async(req,res)=>{
+  const {id} = req.params
+  try {
+    const grupoEliminado = await Grupo.destroy({
+      where: {
+        idGrupo:id
+      }
+    }) 
+    if(grupoEliminado ===1){
+      res.status(200).json(grupoEliminado)
+    }else{
+      res.status(404).json({error:'No se encontró el Grupo'})
+    }
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({error:'Error al eliminar el grupo'})
+  }
+}
 module.exports = { 
   createGrupo, 
   getGrupos,
-  getGrupoByPk 
+  getGrupoByPk,
+  deleteGrupo
 };
