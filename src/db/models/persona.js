@@ -72,7 +72,16 @@ module.exports = (sequelize, DataTypes) => {
     credencial:{
       type: DataTypes.STRING,
       allowNull: false, 
-    }
+    },
+    idGrupo: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: 'Grupos',
+        key: 'idGrupo'
+      },
+      onDelete: 'CASCADE', // 👈 esta línea es la clave
+      allowNull: false
+    },
   }, {
     sequelize,
     modelName: 'Persona',
