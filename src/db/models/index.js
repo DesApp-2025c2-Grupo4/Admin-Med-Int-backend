@@ -16,21 +16,31 @@ if (config.use_env_variable) {
   sequelize = new Sequelize(config.database, config.username, config.password, config);
 }
 
-fs
-  .readdirSync(__dirname)
-  .filter(file => {
-    return (
+// 🔹 Función recursiva para leer modelos dentro de subcarpetas
+function readModelsRecursively(dir) {
+  fs.readdirSync(dir).forEach(file => {
+    const fullPath = path.join(dir, file);
+
+    if (fs.statSync(fullPath).isDirectory()) {
+      // Si es una carpeta, entra y busca modelos dentro
+      readModelsRecursively(fullPath);
+    } else if (
       file.indexOf('.') !== 0 &&
       file !== basename &&
       file.slice(-3) === '.js' &&
       file.indexOf('.test.js') === -1
-    );
-  })
-  .forEach(file => {
-    const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
-    db[model.name] = model;
+    ) {
+      // Si es un archivo .js (modelo), lo carga normalmente
+      const model = require(fullPath)(sequelize, Sequelize.DataTypes);
+      db[model.name] = model;
+    }
   });
+}
 
+// 🔹 Cargar todos los modelos (en subcarpetas también)
+readModelsRecursively(__dirname);
+
+// 🔹 Configurar asociaciones
 Object.keys(db).forEach(modelName => {
   if (db[modelName].associate) {
     db[modelName].associate(db);

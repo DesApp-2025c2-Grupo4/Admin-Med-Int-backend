@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: 'CASCADE',
       });
 
-      Prestador.hasMany(models.EmailPrestador, {foreignKey:'prestadorId', as:'email', onDelete:'CASCADE'})
+      Prestador.hasMany(models.EmailPrestador, {foreignKey:'prestadorId', as:'emails', onDelete:'CASCADE'})
     }
   }
 
