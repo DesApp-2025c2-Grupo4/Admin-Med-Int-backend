@@ -2,41 +2,42 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-  class TelefonoPrestador extends Model {
+  class PrestadorEspecialidad extends Model {
     static associate(models) {
-      TelefonoPrestador.belongsTo(models.Prestador, {
-        foreignKey: 'prestadorId',
-      });
     }
+    //PREGUNTAR SI ESTO ESTA BIEN ASI
   }
 
-  TelefonoPrestador.init(
+  PrestadorEspecialidad.init(
     {
-      telefonoId: {
+      id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
       },
-      nroTelefono: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
       prestadorId: {
         type: DataTypes.INTEGER,
         references: {
-          model: 'Prestadores',
+          model: 'Prestadors',
           key: 'prestadorId',
         },
         onDelete: 'CASCADE',
-        allowNull: false,
+      },
+      especialidadId: {
+        type: DataTypes.INTEGER,
+        references: {
+          model: 'Especialidads',
+          key: 'especialidadId',
+        },
+        onDelete: 'CASCADE',
       },
     },
     {
       sequelize,
-      modelName: 'TelefonoPrestador',
+      modelName: 'PrestadorEspecialidad',
       timestamps: false,
     }
   );
 
-  return TelefonoPrestador;
+  return PrestadorEspecialidad;
 };

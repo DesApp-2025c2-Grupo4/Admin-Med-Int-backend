@@ -76,18 +76,18 @@ const personaSchema = Joi.object({
       'date.format': 'fechaBaja debe estar en formato ISO (YYYY-MM-DD)',
     }),
 
-  credencial: Joi.string()
-    .trim()
-    .min(1)
-    .max(50) //después modificar
-    .required()
-    .messages({
-      'string.base': 'La credencial debe ser una cadena de texto.',
-      'string.empty': 'La credencial no puede estar vacía.',
-      'string.min': 'La credencial debe tener al menos 1 carácter.',
-      'string.max': 'La credencial no puede exceder los 50 caracteres.',
-      'any.required': 'La credencial es un campo obligatorio.',
-    }),
+  // credencial: Joi.string()
+  //   .trim()
+  //   .min(1)
+  //   .max(50) //después modificar
+  //   .required()
+  //   .messages({
+  //     'string.base': 'La credencial debe ser una cadena de texto.',
+  //     'string.empty': 'La credencial no puede estar vacía.',
+  //     'string.min': 'La credencial debe tener al menos 1 carácter.',
+  //     'string.max': 'La credencial no puede exceder los 50 caracteres.',
+  //     'any.required': 'La credencial es un campo obligatorio.',
+  //   }),
 });
 
 module.exports = personaSchema;
