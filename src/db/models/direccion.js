@@ -27,7 +27,16 @@ module.exports = (sequelize, DataTypes) => {
     nro:{
       type: DataTypes.INTEGER,
       allowNull: false
-    }
+    },
+    personaId: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: 'Personas',
+        key: 'personaId'
+      },
+      onDelete: 'CASCADE', // 👈 esta línea es la clave
+      allowNull: false
+    },
   }, {
     sequelize,
     modelName: 'Direccion',

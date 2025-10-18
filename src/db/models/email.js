@@ -22,7 +22,16 @@ module.exports = (sequelize, DataTypes) => {
     descripcion:{
       type: DataTypes.STRING,
       allowNull: false
-    }
+    },
+    personaId: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: 'Personas',
+        key: 'personaId'
+      },
+      onDelete: 'CASCADE', // 👈 esta línea es la clave
+      allowNull: false
+    },
   }, {
     sequelize,
     modelName: 'Email',
