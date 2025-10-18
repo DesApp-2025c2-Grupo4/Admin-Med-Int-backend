@@ -23,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
         model: 'Prestadores',
         key: 'prestadorId'
       },
-      onDelete: 'CASCADE', // 👈 esta línea es la clave
+      onDelete: 'CASCADE', 
       allowNull: false
     },
   }, {
