@@ -1,6 +1,6 @@
 const { app } = require('./app.js');
 //Importaciones de rutas
-const { personaRoutes, grupoRoutes, tipoDocRoutes, planMedicoRoutes, telefonoRoutes, emailRoutes, direccionRoutes, situacionRoutes } = require('./routes') 
+const {dataFormRoutes, personaRoutes, grupoRoutes, tipoDocRoutes, planMedicoRoutes, telefonoRoutes, emailRoutes, direccionRoutes, situacionRoutes } = require('./routes') 
 
 //Uso de las rutas
 app.use('/persona', personaRoutes);
@@ -11,3 +11,4 @@ app.use('/telefonos', telefonoRoutes)
 app.use('/emails', emailRoutes)
 app.use('/direcciones', direccionRoutes)
 app.use('/situaciones', situacionRoutes)
+app.use('/data-form', dataFormRoutes)
