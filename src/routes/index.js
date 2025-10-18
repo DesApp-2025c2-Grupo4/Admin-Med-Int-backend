@@ -6,7 +6,7 @@ const telefonoRoutes = require('./telefono.routes')
 const emailRoutes = require('./email.routes')
 const direccionRoutes = require('./direccion.routes')
 const situacionRoutes = require('./situacion.routes')
-
+const dataFormRoutes = require('./dataForm.routes')
 module.exports = {
     personaRoutes,
     grupoRoutes,
@@ -15,5 +15,6 @@ module.exports = {
     telefonoRoutes,
     emailRoutes,
     direccionRoutes,
-    situacionRoutes
+    situacionRoutes,
+    dataFormRoutes
 };
