@@ -5,6 +5,7 @@ module.exports = (sequelize, DataTypes) => {
   class PrestadorEspecialidad extends Model {
     static associate(models) {
     }
+    //PREGUNTAR SI ESTO ESTA BIEN ASI
   }
 
   PrestadorEspecialidad.init(

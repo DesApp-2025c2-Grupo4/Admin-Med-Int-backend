@@ -1,6 +1,8 @@
 'use strict';
 const { Model } = require('sequelize');
 
+//PREGUNTAR: TABLA PARA CUIT CUIL? 
+
 module.exports = (sequelize, DataTypes) => {
   class Prestador extends Model {
     static associate(models) {
