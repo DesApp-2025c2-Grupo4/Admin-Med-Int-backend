@@ -8,7 +8,7 @@ const personaRoutes = Router();
 
 personaRoutes.get('/', personaControllers.getPersonas);
 personaRoutes.get('/:id', personaControllers.getPersonaByPk);
-personaRoutes.post('/', validarPersona ,personaControllers.createPersona);
+personaRoutes.post('/',personaControllers.createPersona);
 personaRoutes.delete('/:id', personaControllers.deletePersona);
 //Telefono
 personaRoutes.get('/:personaId/telefonos', telefonoControllers.getTelefonosByPersona);

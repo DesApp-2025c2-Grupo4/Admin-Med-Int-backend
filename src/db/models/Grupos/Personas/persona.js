@@ -79,9 +79,31 @@ module.exports = (sequelize, DataTypes) => {
         model: 'Grupos',
         key: 'idGrupo'
       },
-      onDelete: 'CASCADE', // 👈 esta línea es la clave
+      onDelete: 'CASCADE',
       allowNull: false
     },
+    esActivo:{
+      type: DataTypes.VIRTUAL,
+      get() {
+        //Este atributo controla que fecha en la que estoy
+        /* 
+          Retornos Posibles: 
+            0 -> Proximamente de alta
+            -1-> Dado de baja
+            1 -> Estado activo
+        */
+        const hoy = new Date();
+        const alta = this.fechaAlta ? new Date(this.fechaAlta) : null;
+        const baja = this.fechaBaja ? new Date(this.fechaBaja) : null;
+
+        if (!alta) return 'Sin fecha de alta';
+
+        // Comparaciones
+        if (hoy < alta) return 0;
+        if (baja && hoy > baja) return -1;
+        return 1;
+      }
+    }
   }, {
     sequelize,
     modelName: 'Persona',

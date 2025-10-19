@@ -28,7 +28,34 @@ module.exports = (sequelize, DataTypes) => {
     },
     fechaAlta:{
       type: DataTypes.DATEONLY,
+      defaultValue: DataTypes.NOW,
       allowNull: false
+    },
+    fechaBaja:{
+      type: DataTypes.DATEONLY,
+      allowNull: true
+    },
+    esActivo:{
+      type: DataTypes.VIRTUAL,
+      get() {
+        //Este atributo controla que fecha en la que estoy
+        /* 
+          Retornos Posibles: 
+            0 -> Proximamente de alta
+            -1-> Dado de baja
+            1 -> Estado activo
+        */
+        const hoy = new Date();
+        const alta = this.fechaAlta ? new Date(this.fechaAlta) : null;
+        const baja = this.fechaBaja ? new Date(this.fechaBaja) : null;
+
+        if (!alta) return 'Sin fecha de alta';
+
+        // Comparaciones
+        if (hoy < alta) return 0;
+        if (baja && hoy > baja) return -1;
+        return 1;
+      }
     }
   }, {
     sequelize,

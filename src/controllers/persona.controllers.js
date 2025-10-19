@@ -93,7 +93,7 @@ const createPersona = async (req, res) => {
 
     //Obtengo datos del body
     const newPersona = req.body;
-
+    console.log(newPersona)
 
     //------------------- Creo la Credencial
     const grupo = await Grupo.findByPk(newPersona.idGrupo, { transaction });
