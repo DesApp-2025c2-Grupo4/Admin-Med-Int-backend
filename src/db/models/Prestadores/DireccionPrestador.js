@@ -25,6 +25,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: true,
       },
+      codigoPostal: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
       prestadorId: {
         type: DataTypes.INTEGER,
         references: {
