@@ -32,28 +32,12 @@ app.listen(PORT, async () => {
   try {
     console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
 
-    // Solo en producción
+    // En producción, crear las tablas si no existen
     if (process.env.NODE_ENV === 'production') {
-      const { sequelize } = db;
-      const { QueryTypes } = require('sequelize');
-
-      // 👇 Verifico si hay registros en una tabla base, por ejemplo "TipoDocumentos"
-      const result = await sequelize.query('SELECT COUNT(*) FROM "TipoDocumentos"', {
-        type: QueryTypes.SELECT
-      });
-
-      if (parseInt(result[0].count) === 0) {
-        console.log("🌱 Base vacía, corriendo seeders automáticamente...");
-
-        // 👇 Importá y ejecutá tu seeder
-        await require('./db/seeders/20251015225226-persona-data.js')
-          .up(db.sequelize.getQueryInterface(), db.Sequelize);
-
-        console.log("✅ Seeders ejecutados correctamente");
-      } else {
-        console.log("ℹ️ La base ya contiene datos, no se ejecutan seeders.");
-      }
+      await db.sequelize.sync(); // 👈 Esto crea todas las tablas si no existen
+      console.log("🗂️ Tablas sincronizadas con la base de datos");
     }
+
   } catch (error) {
     console.error("❌ Error al iniciar servidor:", error);
   }
