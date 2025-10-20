@@ -10,12 +10,12 @@ prestadorRoutes.delete('/:id', prestadorControllers.deletePrestador);
 
 
 //Telefono
-prestadorRoutes.get('/:prestadorId/telefonos', telefonoPrestadorControllers.getTelefonosByPrestador);
-prestadorRoutes.post('/:prestadorId/telefonos', validarTelefono, requireAttribute('nroTelefono', 'Telefono'), ifPrestadorExists, telefonoPrestadorControllers.addTelefonoToPrestador);
+//prestadorRoutes.get('/:prestadorId/telefonos', telefonoPrestadorControllers.getTelefonosByPrestador);
+//prestadorRoutes.post('/:prestadorId/telefonos', validarTelefono, requireAttribute('nroTelefono', 'Telefono'), ifPrestadorExists, telefonoPrestadorControllers.addTelefonoToPrestador);
 
 //Email
-prestadorRoutes.get('./:prestadorId/emails', emailPrestadorControllers.getEmailsByPrestador);
-prestadorRoutes.post('/:prestadorId/emails', validarEmail ,requireAttribute('descripcion', 'Email'), ifPrestadorExists, emailPrestadorControllers.addEmailToPrestador);
+//prestadorRoutes.get('./:prestadorId/emails', emailPrestadorControllers.getEmailsByPrestador);
+//prestadorRoutes.post('/:prestadorId/emails', validarEmail ,requireAttribute('descripcion', 'Email'), ifPrestadorExists, emailPrestadorControllers.addEmailToPrestador);
 
 
 module.exports = prestadorRoutes;
