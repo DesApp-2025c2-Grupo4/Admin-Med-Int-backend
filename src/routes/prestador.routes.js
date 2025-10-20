@@ -17,7 +17,7 @@ prestadorRoutes.get('/:prestadorId/telefonos', telefonoPrestadorControllers.getT
 prestadorRoutes.post('/:prestadorId/telefonos', validarTelefono, requireAttribute('nroTelefono', 'TelefonoPrestador'), telefonoPrestadorControllers.addTelefonoToPrestador);
 
 //Email
-prestadorRoutes.get('./:prestadorId/emails', emailPrestadorControllers.getEmailsByPrestador);
+prestadorRoutes.get('/:prestadorId/emails', emailPrestadorControllers.getEmailsByPrestador);
 prestadorRoutes.post('/:prestadorId/emails', validarEmail ,requireAttribute('descripcion', 'EmailPrestador'), emailPrestadorControllers.addEmailToPrestador);
 
 
