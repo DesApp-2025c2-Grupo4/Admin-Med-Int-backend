@@ -37,17 +37,28 @@ app.listen(PORT, async () => {
       const { sequelize } = db;
       const { QueryTypes } = require('sequelize');
 
+      // 👇 Verifico si hay registros en una tabla base, por ejemplo "TipoDocumentos"
+      const result = await sequelize.query('SELECT COUNT(*) FROM "TipoDocumentos"', {
+        type: QueryTypes.SELECT
+      });
 
       if (parseInt(result[0].count) === 0) {
         console.log("🌱 Base vacía, corriendo seeders automáticamente...");
-        await require('./db/seeders/20250101-mi-seed.js').up(db.sequelize.getQueryInterface(), db.Sequelize);
+
+        // 👇 Importá y ejecutá tu seeder
+        await require('./db/seeders/20250101-mi-seed.js')
+          .up(db.sequelize.getQueryInterface(), db.Sequelize);
+
         console.log("✅ Seeders ejecutados correctamente");
+      } else {
+        console.log("ℹ️ La base ya contiene datos, no se ejecutan seeders.");
       }
     }
   } catch (error) {
     console.error("❌ Error al iniciar servidor:", error);
   }
 });
+
 // ------------ Exporto
 module.exports = {
   app
