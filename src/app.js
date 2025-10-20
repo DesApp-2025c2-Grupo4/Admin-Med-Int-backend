@@ -36,14 +36,9 @@ app.listen(PORT, async () => {
       await db.sequelize.sync(); // crea tablas
       console.log("🗂️ Tablas listas");
 
-      const { sequelize } = db;
-      const [result] = await sequelize.query(`SELECT COUNT(*) FROM "PlanMedicos"`);
-      if (parseInt(result[0].count) === 0) {
-        console.log("🌱 Base vacía, ejecutando seeders...");
-        await require('./db/seeders/20251015225226-persona-data.js')
-          .up(db.sequelize.getQueryInterface(), db.Sequelize);
-        console.log("✅ Seeders ejecutados correctamente");
-      }
+      await require('./db/seeders/20251015225226-persona-data.js')
+      .up(db.sequelize.getQueryInterface(), db.Sequelize);
+      console.log("✅ Seeders ejecutados correctamente");
     }
 
   } catch (error) {
