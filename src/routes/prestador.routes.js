@@ -1,6 +1,8 @@
 const { Router } = require("express");
 const { prestadorControllers, telefonoPrestadorControllers, emailPrestadorControllers } = require("../controllers");
+const { requireAttribute } = require('../middleware/generic.middleware');
 const validarTelefono = require("../middleware/validarTelefono.js");
+const validarEmail = require("../middleware/validarEmail.js");
 const prestadorRoutes = Router();
 
 prestadorRoutes.get('/', prestadorControllers.getPrestadores);
@@ -8,14 +10,15 @@ prestadorRoutes.get('/:id', prestadorControllers.getPrestadorByPk);
 prestadorRoutes.post('/', prestadorControllers.createPrestador);
 prestadorRoutes.delete('/:id', prestadorControllers.deletePrestador);
 
+//agregar middleware de validacion genericos
 
 //Telefono
-//prestadorRoutes.get('/:prestadorId/telefonos', telefonoPrestadorControllers.getTelefonosByPrestador);
-//prestadorRoutes.post('/:prestadorId/telefonos', validarTelefono, requireAttribute('nroTelefono', 'Telefono'), ifPrestadorExists, telefonoPrestadorControllers.addTelefonoToPrestador);
+prestadorRoutes.get('/:prestadorId/telefonos', telefonoPrestadorControllers.getTelefonosByPrestador);
+prestadorRoutes.post('/:prestadorId/telefonos', validarTelefono, requireAttribute('nroTelefono', 'TelefonoPrestador'), telefonoPrestadorControllers.addTelefonoToPrestador);
 
 //Email
-//prestadorRoutes.get('./:prestadorId/emails', emailPrestadorControllers.getEmailsByPrestador);
-//prestadorRoutes.post('/:prestadorId/emails', validarEmail ,requireAttribute('descripcion', 'Email'), ifPrestadorExists, emailPrestadorControllers.addEmailToPrestador);
+prestadorRoutes.get('./:prestadorId/emails', emailPrestadorControllers.getEmailsByPrestador);
+prestadorRoutes.post('/:prestadorId/emails', validarEmail ,requireAttribute('descripcion', 'EmailPrestador'), emailPrestadorControllers.addEmailToPrestador);
 
 
 module.exports = prestadorRoutes;
