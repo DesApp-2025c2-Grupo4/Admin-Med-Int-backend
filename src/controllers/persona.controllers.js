@@ -98,15 +98,20 @@ const createPersona = async (req, res) => {
     //------------------- Creo la Credencial
     const grupo = await Grupo.findByPk(newPersona.idGrupo, { transaction });
 
+    const ultimoIntegrante = await Persona.max('credencial',{
+      where: { idGrupo: newPersona.idGrupo },
+      transaction
+    });
+  
+    const credencial = crearCredencial(grupo.nroGrupo, ultimoIntegrante.split('-')[1]);
+
+    newPersona.credencial = credencial;
+    //Controlo que no sea haya o no un titular
+
     const cantidadIntegrantes = await Persona.count({
       where: { idGrupo: newPersona.idGrupo },
       transaction
     });
-
-    const credencial = crearCredencial(grupo.nroGrupo, cantidadIntegrantes);
-    
-    newPersona.credencial = credencial;
-    //Controlo que no sea haya o no un titular
     newPersona.esTitular = cantidadIntegrantes === 0
 
     
