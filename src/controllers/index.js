@@ -9,6 +9,8 @@ const situacionControllers = require('./situacion.controllers')
 const situacionPersonaControllers = require('./situacion.persona.controllers')
 const dataFormController = require('./formData.controller')
 const prestadorControllers = require('./prestador.controller');
+const telefonoPrestadorControllers = require('./telefonoPrestador.controllers');
+const emailPrestadorControllers = require('./emailPrestador.controllers');
 
 module.exports = {
     personaControllers,
@@ -21,5 +23,7 @@ module.exports = {
     situacionControllers,
     situacionPersonaControllers,
     dataFormController,
-    prestadorControllers
+    prestadorControllers,
+    telefonoPrestadorControllers,
+    emailPrestadorControllers
 };
