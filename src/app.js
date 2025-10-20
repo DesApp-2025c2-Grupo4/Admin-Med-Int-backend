@@ -37,10 +37,6 @@ app.listen(PORT, async () => {
       const { sequelize } = db;
       const { QueryTypes } = require('sequelize');
 
-      // Verifico si hay datos
-      const result = await sequelize.query('SELECT COUNT(*) FROM "Usuarios"', {
-        type: QueryTypes.SELECT
-      });
 
       if (parseInt(result[0].count) === 0) {
         console.log("🌱 Base vacía, corriendo seeders automáticamente...");
