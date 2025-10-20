@@ -46,7 +46,7 @@ app.listen(PORT, async () => {
         console.log("🌱 Base vacía, corriendo seeders automáticamente...");
 
         // 👇 Importá y ejecutá tu seeder
-        await require('./db/seeders/20250101-mi-seed.js')
+        await require('./db/seeders/20251015225226-persona-data.js')
           .up(db.sequelize.getQueryInterface(), db.Sequelize);
 
         console.log("✅ Seeders ejecutados correctamente");
