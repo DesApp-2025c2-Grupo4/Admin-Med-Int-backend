@@ -36,12 +36,12 @@ const getPrestadores = async (_, res) => {
   try {
     const prestadores = await Prestador.findAll({
       include: [
-        { model: DireccionPrestador, as: 'direcciones' },
+        { model: DireccionPrestador, as: 'direccion' },
         { model: TelefonoPrestador, as: 'telefonos' },
-        { model: EmailPrestador, as: 'emails' },
+        { model: EmailPrestador, as: 'email' },
         {
           model: Especialidad,
-          as: 'especialidades',
+          as: 'especialidad',
           through: { attributes: [] } 
         }
       ]
@@ -61,12 +61,12 @@ const getPrestadorByPk = async (req, res) => {
 
     const prestador = await Prestador.findByPk(id, {
       include: [
-        { model: DireccionPrestador, as: 'direcciones' },
+        { model: DireccionPrestador, as: 'direccion' },
         { model: TelefonoPrestador, as: 'telefonos' },
-        { model: EmailPrestador, as: 'emails' },
+        { model: EmailPrestador, as: 'email' },
         {
           model: Especialidad,
-          as: 'especialidades',
+          as: 'especialidad',
           through: { attributes: [] }
         }
       ]
