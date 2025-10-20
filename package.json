@@ -5,7 +5,9 @@
   "scripts": {
     "seed": "npx sequelize-cli db:seed:all --config src/db/config/config.js --seeders-path src/db/seeders",
     "dev": "node --watch src/main.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/main.js",
+    "build": "echo 'Nothing to build'"
   },
   "repository": {
     "type": "git",
