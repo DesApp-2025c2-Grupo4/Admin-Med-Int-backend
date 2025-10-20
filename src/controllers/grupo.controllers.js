@@ -72,30 +72,34 @@ const getGrupoByPk = async(req,res) => {
 
     //Consulta a la base de datos
     const grupoBuscado = await Grupo.findByPk(id,{
-      include:[{
-        model:PlanMedico,
-        as:'planMedico'
-      },
-      {
-        model: Persona,
-        as:'integrantes',
-        include:[
-          {
-            model: SituacionesTerapeuticas,
-            as: 'situacionesTerapeuticas',
-          },{
-            model:Telefono,
-            as: 'telefonos'
-          },{
-            model:Email,
-            as:'email'
-          },{
-            model:Direccion,
-            as:'direcciones'
+      include:[
+        {
+          model:PlanMedico,
+          as:'planMedico'
+        },
+        {
+            model: Persona,
+            as:'integrantes',
+            include:[
+              {
+                model: SituacionesTerapeuticas,
+                as: 'situacionesTerapeuticas',
+              },{
+                model:Telefono,
+                as: 'telefonos'
+              },{
+                model:Email,
+                as:'email'
+              },{
+                model:Direccion,
+                as:'direcciones'
+              }
+            ]
           }
-        ]
-      }
-    ]
+      ],
+      order: [
+        [{ model: Persona, as: 'integrantes' }, 'credencial', 'DESC']
+      ]
     })
     //Formateo
     const grupoFormateado = {
@@ -126,9 +130,9 @@ const createGrupo = async (req, res) => {
 
     //-----------------Creo el numero de grupo
     //Obtengo la cantidad de grupos
-    const cantidadGrupos = await Grupo.count()
+    const nroGrupoMasGrande = await Grupo.max('nroGrupo')
     //Creo el numero
-    const nroGrupo = crearNumeroDeGrupo(cantidadGrupos)
+    const nroGrupo = crearNumeroDeGrupo(nroGrupoMasGrande)
     //Agrego el numero al grupo
     newGrupo.nroGrupo = nroGrupo
     

@@ -1,4 +1,5 @@
 const crearCredencial = (nroGrupo, cantIntegrantes) =>{
+  cantIntegrantes = Number(cantIntegrantes)
   //Creo mi nro de integrante
   const miNro = cantIntegrantes <9 ?
     `0${cantIntegrantes+1}`:
