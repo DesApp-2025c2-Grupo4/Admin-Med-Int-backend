@@ -30,13 +30,28 @@ app.use(
 //-------------- Listo
 app.listen(PORT, async () => {
   try {
-    //await db.sequelize.sync({force:true})
-    console.log(`Servidor Corriendo en http://localhost:${PORT}`)
-  } catch (error) {
-    console.log(error)
-  }
-})
+    console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
 
+    // Solo en producción
+    if (process.env.NODE_ENV === 'production') {
+      const { sequelize } = db;
+      const { QueryTypes } = require('sequelize');
+
+      // Verifico si hay datos
+      const result = await sequelize.query('SELECT COUNT(*) FROM "Usuarios"', {
+        type: QueryTypes.SELECT
+      });
+
+      if (parseInt(result[0].count) === 0) {
+        console.log("🌱 Base vacía, corriendo seeders automáticamente...");
+        await require('./db/seeders/20250101-mi-seed.js').up(db.sequelize.getQueryInterface(), db.Sequelize);
+        console.log("✅ Seeders ejecutados correctamente");
+      }
+    }
+  } catch (error) {
+    console.error("❌ Error al iniciar servidor:", error);
+  }
+});
 // ------------ Exporto
 module.exports = {
   app
