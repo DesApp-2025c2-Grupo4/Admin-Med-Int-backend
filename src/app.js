@@ -32,10 +32,19 @@ app.listen(PORT, async () => {
   try {
     console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
 
-    // En producción, crear las tablas si no existen
     if (process.env.NODE_ENV === 'production') {
-      await db.sequelize.sync(); // 👈 Esto crea todas las tablas si no existen
-      console.log("🗂️ Tablas sincronizadas con la base de datos");
+      await db.sequelize.sync(); // crea tablas
+      console.log("🗂️ Tablas listas");
+
+      const { sequelize } = db;
+      const [result] = await sequelize.query(`SELECT COUNT(*) FROM "PlanesMedicos"`);
+      
+      if (parseInt(result[0].count) === 0) {
+        console.log("🌱 Base vacía, ejecutando seeders...");
+        await require('./db/seeders/20251015225226-persona-data.js')
+          .up(db.sequelize.getQueryInterface(), db.Sequelize);
+        console.log("✅ Seeders ejecutados correctamente");
+      }
     }
 
   } catch (error) {
