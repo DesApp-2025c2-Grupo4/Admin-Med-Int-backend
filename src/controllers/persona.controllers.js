@@ -2,6 +2,7 @@ const { Persona, Grupo,SituacionPersona, PlanMedico, Telefono, Email, Direccion,
 const { crearCredencial } = require('../utils/crearCredencial');
 const {formatearSituaciones} = require('../utils/formatearSituaciones')
 const { sequelize } = require('../db/models');
+const { where } = require('sequelize');
 
 //----------------------------GETTERS
 const getPersonas = async (_, res) => {
@@ -83,6 +84,37 @@ const getPersonaByPk = async (req,res)=>{
   } catch (error) {
     console.error(`Error al obtener la persona: ${error}`);
     res.status(500).json({ error: "Error al obtener una Persona" });
+  }
+}
+//Obtener los afiliados
+const getAfiliados = async(_,res)=>{
+  try {
+    const afiliados = await Persona.findAll(
+      {
+        where:{
+          esTitular:true
+        },
+        include: [
+        {
+          model: Grupo,
+          as:'grupo',
+          include: [
+            {
+              model: PlanMedico,
+              as:'planMedico'
+            },
+          ],
+        },
+        {
+          model: Email,
+          as: 'email'
+        }]
+      },
+    )
+    res.json(afiliados)
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({message:'Error al obtener los afiliados'})
   }
 }
 //----------------------------- Post
@@ -197,5 +229,6 @@ module.exports = {
   getPersonas, 
   createPersona, 
   deletePersona,
-  getPersonaByPk 
+  getPersonaByPk,
+  getAfiliados
 };
