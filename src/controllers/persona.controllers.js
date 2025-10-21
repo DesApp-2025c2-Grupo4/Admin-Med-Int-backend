@@ -125,7 +125,7 @@ const createPersona = async (req, res) => {
 
     //Obtengo datos del body
     const newPersona = req.body;
-    console.log(newPersona)
+    console.log('Nueva Persona: ' + newPersona)
 
     //------------------- Creo la Credencial
     const grupo = await Grupo.findByPk(newPersona.idGrupo, { transaction });
@@ -134,8 +134,10 @@ const createPersona = async (req, res) => {
       where: { idGrupo: newPersona.idGrupo },
       transaction
     });
-  
-    const credencial = crearCredencial(grupo.nroGrupo, ultimoIntegrante.split('-')[1]);
+    // Si no hay integrantes, usamos 0 como base
+    const ultimoNumero = ultimoIntegrante ? Number(ultimoIntegrante.split('-')[1]) : 0;
+
+    const credencial = crearCredencial(grupo.nroGrupo, ultimoNumero);
 
     newPersona.credencial = credencial;
     //Controlo que no sea haya o no un titular
