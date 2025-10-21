@@ -9,7 +9,6 @@ const {
 } = require("../db/models");
 const {formatearSituaciones} = require('../utils/formatearSituaciones')
 const {crearNumeroDeGrupo} = require('../utils/crearNumeroDeGrupo');
-const { where } = require("sequelize");
 
 //----------------------------GETTERS -------------------
 
@@ -163,9 +162,38 @@ const deleteGrupo = async(req,res)=>{
     res.status(500).json({error:'Error al eliminar el grupo'})
   }
 }
+
+//----------------------------PUT
+const actualizarGrupo = async(req,res)=>{
+  const {id} = req.params
+  const body = req.body
+  try {
+    //Busco el grupo
+    const grupoParaActualizar = await Grupo.findByPk(id)
+    //Actualizo
+    grupoParaActualizar.planId = body.planId
+    grupoParaActualizar.fechaAlta = body.fechaAlta
+    grupoParaActualizar.fechaBaja = body.fechaBaja === '' ? null : body.fechaBaja
+    
+    //Guardo los cabios
+    await grupoParaActualizar.save()
+
+    //Recargo
+    await grupoParaActualizar.reload({
+      include: [
+        { model: PlanMedico, as: "planMedico" }
+      ]
+    });
+    res.json(grupoParaActualizar)
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({message:'Error En el servidor'})
+  }
+}
 module.exports = { 
   createGrupo, 
   getGrupos,
   getGrupoByPk,
-  deleteGrupo
+  deleteGrupo,
+  actualizarGrupo
 };
