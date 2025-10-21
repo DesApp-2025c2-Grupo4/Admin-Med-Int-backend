@@ -11,6 +11,7 @@ personaRoutes.get('/afiliados', personaControllers.getAfiliados)
 personaRoutes.get('/:id', personaControllers.getPersonaByPk);
 personaRoutes.post('/',personaControllers.createPersona);
 personaRoutes.delete('/:id', personaControllers.deletePersona);
+personaRoutes.put('/:id', personaControllers.actualizarPersona)
 //Telefono
 personaRoutes.get('/:personaId/telefonos', telefonoControllers.getTelefonosByPersona);
 personaRoutes.post('/:personaId/telefonos', validarTelefono, requireAttribute('nroTelefono', 'Telefono'), ifPersonaExists, telefonoControllers.addTelefonoToPersona);
