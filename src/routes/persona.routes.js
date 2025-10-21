@@ -7,6 +7,7 @@ const validarEmail = require("../middleware/validarEmail.js");
 const personaRoutes = Router();
 
 personaRoutes.get('/', personaControllers.getPersonas);
+personaRoutes.get('/afiliados', personaControllers.getAfiliados)
 personaRoutes.get('/:id', personaControllers.getPersonaByPk);
 personaRoutes.post('/',personaControllers.createPersona);
 personaRoutes.delete('/:id', personaControllers.deletePersona);
