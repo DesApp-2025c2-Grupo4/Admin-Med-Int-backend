@@ -26,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     nro:{
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: true
     },
     personaId: {
       type: DataTypes.INTEGER,
