@@ -50,6 +50,14 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.ENUM('Independiente', 'Centro Médico'),
         allowNull: false,
       },
+      lugarIndependiente: { 
+        type: DataTypes.STRING,
+        allowNull: true, 
+      },
+      lugarCentro: {
+        type: DataTypes.STRING,
+        allowNull: true, 
+      },
       cuilCuit: {
         type: DataTypes.STRING,
         allowNull: false,

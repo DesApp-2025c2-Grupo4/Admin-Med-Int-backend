@@ -4,8 +4,18 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class PrestadorEspecialidad extends Model {
     static associate(models) {
+      // Asociación a Prestador
+      PrestadorEspecialidad.belongsTo(models.Prestador, {
+        foreignKey: 'prestadorId',
+        onDelete: 'CASCADE',
+      });
+
+      // Asociación a Especialidad
+      PrestadorEspecialidad.belongsTo(models.Especialidad, {
+        foreignKey: 'especialidadId',
+        onDelete: 'CASCADE',
+      });
     }
-    //PREGUNTAR SI ESTO ESTA BIEN ASI
   }
 
   PrestadorEspecialidad.init(

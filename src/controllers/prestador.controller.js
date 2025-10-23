@@ -7,6 +7,8 @@ const createPrestador = async (req, res) => {
       nombre,
       apellido,
       tipoPrestador,
+      lugarIndependiente,
+      lugarCentro,
       cuilCuit,
       fechaAlta,
       telefonos = [],
@@ -23,7 +25,8 @@ const createPrestador = async (req, res) => {
 
     // Crear prestador
     const prestador = await Prestador.create(
-      { nombre, apellido, tipoPrestador: tipoPrestadorDB, cuilCuit, fechaAlta: fechaAlta ? new Date(fechaAlta) : new Date() },
+      { nombre, apellido, tipoPrestador: tipoPrestadorDB, lugarIndependiente,
+      lugarCentro, cuilCuit, fechaAlta: fechaAlta ? new Date(fechaAlta) : new Date() },
       { transaction }
     );
 
@@ -141,6 +144,7 @@ const getPrestadorByPk = async (req, res) => {
         }
       ]
     });
+    const prestadorData = prestador.toJSON();
 
     //eliminar cuando se implemente el middleware
 
@@ -148,7 +152,7 @@ const getPrestadorByPk = async (req, res) => {
       return res.status(404).json({ error: 'Prestador no encontrado' });
     }
 
-    res.status(200).json(prestador);
+    res.status(200).json(prestadorData);
   } catch (error) {
     console.error(`Error al obtener el prestador: ${error}`);
     res.status(500).json({ error: 'Error al obtener el prestador' });
@@ -176,9 +180,121 @@ const deletePrestador = async (req, res) => {
   }
 };
 
+const updatePrestador = async (req, res) => {
+  const prestadorId = req.params.id;
+
+  const {
+    nombre,
+    apellido,
+    cuilCuit,
+    tipoPrestador,
+    lugarIndependiente,
+    lugarCentro,
+    emails,
+    telefonos,
+    direcciones,
+    especialidad
+  } = req.body;
+
+  if (!prestadorId) {
+    return res.status(400).send({
+      message: "El ID del prestador es requerido"
+    });
+  }
+
+  const t = await sequelize.transaction();
+
+  try {
+    // normalizar tipoPrestador
+    const tipoPrestadorDB = tipoPrestador?.toLowerCase() === "independiente" 
+      ? "Independiente" 
+      : "Centro Médico";
+
+    // normalizar nombre y apellido
+    const nombreCompleto = req.body.nombreCompleto?.trim?.() || "";
+    const parts = nombreCompleto.split(/\s+/).filter(p => p.length > 0);
+    const nombreValido = parts[0] || nombre?.trim?.() || "";
+    const apellidoValido = parts.slice(1).join(" ") || apellido?.trim?.() || ".";
+
+    await Prestador.update(
+      { nombre: nombreValido, apellido: apellidoValido, cuilCuit, tipoPrestador: tipoPrestadorDB, lugarIndependiente, lugarCentro },
+      { where: { prestadorId }, transaction: t }
+    );
+
+    // emails
+    await EmailPrestador.destroy({ where: { prestadorId }, transaction: t });
+    if (emails?.length) {
+      const nuevosEmails = emails
+        .map(e => (typeof e === "string" ? e.trim() : e?.descripcion?.trim?.()))
+        .filter(e => e)
+        .map(descripcion => ({ descripcion, prestadorId }));
+      if (nuevosEmails.length) await EmailPrestador.bulkCreate(nuevosEmails, { transaction: t });
+    }
+
+    // telefonos
+    await TelefonoPrestador.destroy({ where: { prestadorId }, transaction: t });
+    if (telefonos?.length) {
+      const nuevosTelefonos = telefonos
+        .map(t => (typeof t === "string" ? t.trim() : t?.nroTelefono?.trim?.()))
+        .filter(t => t)
+        .map(nroTelefono => ({ nroTelefono, prestadorId }));
+      if (nuevosTelefonos.length) await TelefonoPrestador.bulkCreate(nuevosTelefonos, { transaction: t });
+    }
+
+    // direcciones
+    await DireccionPrestador.destroy({ where: { prestadorId }, transaction: t });
+    if (direcciones?.length) {
+      const nuevasDirecciones = direcciones
+        .map(d => (typeof d === "string" ? d.trim() : d?.descripcion?.trim?.()))
+        .filter(d => d)
+        .map(d => {
+          const parts = d.split(" ");
+          return {
+            calle: parts.slice(0, -1).join(" ") || d,
+            nro: parts[parts.length - 1] || "S/N",
+            codigoPostal: "0000",
+            prestadorId
+          };
+        });
+      if (nuevasDirecciones.length) await DireccionPrestador.bulkCreate(nuevasDirecciones, { transaction: t });
+    }
+
+    // especialidades
+    if (especialidad?.length) {
+      const descripciones = especialidad.map(e => e.descripcion?.trim()).filter(Boolean);
+
+      const especialidadRecords = [];
+      for (const desc of descripciones) {
+        const [esp] = await Especialidad.findOrCreate({
+          where: { descripcion: desc },
+          defaults: { descripcion: desc },
+          transaction: t
+        });
+        especialidadRecords.push(esp);
+      }
+
+      const prestadorObj = await Prestador.findByPk(prestadorId, { transaction: t });
+      // solo agregamos las nuevas relaciones
+      await prestadorObj.addEspecialidad(especialidadRecords, { transaction: t });
+    }
+
+    await t.commit();
+    res.status(200).send({ message: "Prestador actualizado correctamente.", prestadorId });
+  } catch (error) {
+    await t.rollback();
+    console.error("Error al actualizar el prestador:", error);
+    res.status(500).send({
+      message: "Error al guardar los cambios del prestador.",
+      details: error.message
+    });
+  }
+};
+
+
 module.exports = {
   getPrestadores,
   getPrestadorByPk,
   createPrestador,
-  deletePrestador
+  deletePrestador,
+  updatePrestador
 };

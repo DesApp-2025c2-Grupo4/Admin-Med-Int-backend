@@ -9,6 +9,7 @@ prestadorRoutes.get('/', prestadorControllers.getPrestadores);
 prestadorRoutes.get('/:id', prestadorControllers.getPrestadorByPk);
 prestadorRoutes.post('/', prestadorControllers.createPrestador);
 prestadorRoutes.delete('/:id', prestadorControllers.deletePrestador);
+prestadorRoutes.put('/:id', prestadorControllers.updatePrestador);
 
 //agregar middleware de validacion genericos
 
