@@ -47,13 +47,6 @@ const personaSchema = Joi.object({
       'any.required': 'El DNI es un campo requerid',
     }),
 
-  esTitular: Joi.boolean()
-    .required()
-    .messages({
-      'boolean.base': 'esTitular debe ser un valor booleano (true o false)',
-      'any.required': 'esTitular es un campo obligatorio',
-    }),
-
   fechaNacimiento: Joi.date()
     .iso() // formato ISO ('1990-01-01')
     .required()

@@ -15,6 +15,7 @@ const grupoSchema = Joi.object({
       "any.required": "fechaAlta es un campo obligatorio",
     }),
     fechaBaja: Joi.date()
+    .allow(null)
     .iso() // Formato ISO (2023-10-01)
     .optional()
     .messages({

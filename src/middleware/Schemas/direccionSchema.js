@@ -16,7 +16,8 @@ const direccionSchema = Joi.object({
     }),
 
   nro: Joi.number()
-    .integer()  
+    .integer()
+    .allow(null)  
     .min(1)  
     .required()  
     .messages({
