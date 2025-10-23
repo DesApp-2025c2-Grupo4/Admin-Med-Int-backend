@@ -19,7 +19,6 @@ const direccionSchema = Joi.object({
     .integer()
     .allow(null)  
     .min(1)  
-    .required()  
     .messages({
       'number.base': 'El nro debe ser un número',
       'number.integer': 'El nro debe ser un número entero',
