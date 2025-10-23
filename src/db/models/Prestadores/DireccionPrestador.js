@@ -7,6 +7,10 @@ module.exports = (sequelize, DataTypes) => {
       DireccionPrestador.belongsTo(models.Prestador, {
         foreignKey: 'prestadorId',
       });
+
+      DireccionPrestador.hasMany(models.Agenda, {
+        foreignKey: 'agendaId'
+      })
     }
   }
 
