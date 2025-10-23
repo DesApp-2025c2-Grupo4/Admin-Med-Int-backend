@@ -4,4 +4,6 @@ const agendaRoutes = Router()
 
 agendaRoutes.get('/', agendaControllers.getAgendas)
 
+agendaRoutes.post('/', agendaControllers.createAgenda )
+
 module.exports = agendaRoutes

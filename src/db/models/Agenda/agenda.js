@@ -12,12 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       //Relacion con Prestador
       Agenda.belongsTo(models.Prestador, { foreignKey: 'prestadorId', onDelete: 'CASCADE' })
-      //Relacion con DiaDeSemana
-      Agenda.hasMany(models.DiaDeSemana, {
-        foreignKey: "agendaId",
-        as: "diasDeSemana",
-        onDelete: 'CASCADE'
-      });    
+   
       //Relacion con Especialidad
       Agenda.belongsTo(models.Especialidad, {
         foreignKey: 'especialidadId',
@@ -27,6 +22,11 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'direccionId',
         onDelete: 'CASCADE'
       })
+
+      Agenda.hasMany(models.AgendaDia, {
+        foreignKey: 'agendaId',
+        as: 'agendas'
+      })
     }
   }
   Agenda.init(
@@ -35,7 +35,30 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
+      }, prestadorId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: "Prestadors", 
+          key: "prestadorId",
+        },
       },
+      especialidadId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: "Especialidads", 
+          key: "especialidadId",
+        },
+      },
+      direccionId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: "DireccionPrestadors", 
+          key: "direccionId",
+        }
+      }
     },
     {
       sequelize,
