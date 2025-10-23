@@ -33,7 +33,7 @@ app.listen(PORT, async () => {
     console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
 
     if (process.env.NODE_ENV === 'production') {
-      await db.sequelize.sync(); // crea tablas
+      await db.sequelize.sync({sync:true}); // crea tablas
       console.log("🗂️ Tablas listas");
 
       await require('./db/seeders/20251015225226-persona-data.js')
