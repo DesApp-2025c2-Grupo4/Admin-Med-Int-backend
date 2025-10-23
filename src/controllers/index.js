@@ -11,7 +11,7 @@ const dataFormController = require('./formData.controller')
 const prestadorControllers = require('./prestador.controller');
 const telefonoPrestadorControllers = require('./telefonoPrestador.controllers');
 const emailPrestadorControllers = require('./emailPrestador.controllers');
-
+const agendaControllers = require('./agenda.controllers')
 module.exports = {
     personaControllers,
     grupoControllers,
@@ -25,5 +25,6 @@ module.exports = {
     dataFormController,
     prestadorControllers,
     telefonoPrestadorControllers,
-    emailPrestadorControllers
+    emailPrestadorControllers,
+    agendaControllers
 };

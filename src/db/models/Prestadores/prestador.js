@@ -28,6 +28,8 @@ module.exports = (sequelize, DataTypes) => {
       });
 
       Prestador.hasMany(models.EmailPrestador, {foreignKey:'prestadorId', as:'email', onDelete:'CASCADE'})
+    
+      Prestador.hasMany(models.Agenda, { foreignKey:'prestadorId', as:'agendas', onDelete:'CASCADE' })
     }
   }
 

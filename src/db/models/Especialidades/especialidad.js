@@ -11,6 +11,12 @@ module.exports = (sequelize, DataTypes) => {
         as: 'prestadores',
         onDelete: 'CASCADE',
       });
+
+      Especialidad.hasMany(models.Agenda,
+        {
+          foreignKey: 'agendaId',
+        }
+      )
     }
   }
 

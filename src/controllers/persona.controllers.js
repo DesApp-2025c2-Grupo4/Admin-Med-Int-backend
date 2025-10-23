@@ -231,11 +231,54 @@ const deletePersona = async (req, res) => {
         res.status(500).json({ message: 'Error al eliminar la persona' });
     }
 };
+const actualizarPersona = async (req,res) => {
+  const {id} = req.params
+  const nuevosDatos = req.body
+  try {
+    //Busco la persona
+    const personaActualizar = await Persona.findByPk(id)
+    //Actualizo la persona
+    personaActualizar.nombre = nuevosDatos.nombre
+    personaActualizar.apellido = nuevosDatos.apellido
+    personaActualizar.parentesco = personaActualizar.esTitular ? null : nuevosDatos.parentesco
+    personaActualizar.dni = nuevosDatos.dni
+    personaActualizar.fechaNacimiento = nuevosDatos.fechaNacimiento
+    personaActualizar.fechaBaja = nuevosDatos.fechaBaja
+    personaActualizar.tipoDocId = nuevosDatos.tipoDocId
 
+    //Guardo los datos
+    await personaActualizar.save()
+
+    //Recargo y obtengo los datos
+    await personaActualizar.reload({
+      include: [
+        {
+          model: Grupo,
+          as:'grupo',
+          include: [
+            {
+              model: PlanMedico,
+              as:'planMedico'
+            },
+          ],
+        },
+        {
+          model: Email,
+          as: 'email'
+        }
+      ],
+    })
+    //Retorno
+    res.json(personaActualizar)
+  } catch (error) {
+    res.status(500).json({message:'Error al actualizar'})
+  }
+}
 module.exports = { 
   getPersonas, 
   createPersona, 
   deletePersona,
   getPersonaByPk,
-  getAfiliados
+  getAfiliados,
+  actualizarPersona
 };
