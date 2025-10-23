@@ -7,6 +7,10 @@ module.exports = (sequelize, DataTypes) => {
       DireccionPrestador.belongsTo(models.Prestador, {
         foreignKey: 'prestadorId',
       });
+
+      DireccionPrestador.hasMany(models.Agenda, {
+        foreignKey: 'agendaId'
+      })
     }
   }
 
@@ -24,6 +28,10 @@ module.exports = (sequelize, DataTypes) => {
       nro: {
         type: DataTypes.INTEGER,
         allowNull: true,
+      },
+      codigoPostal: {
+        type: DataTypes.STRING,
+        allowNull: false,
       },
       prestadorId: {
         type: DataTypes.INTEGER,

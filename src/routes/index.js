@@ -7,6 +7,9 @@ const emailRoutes = require('./email.routes')
 const direccionRoutes = require('./direccion.routes')
 const situacionRoutes = require('./situacion.routes')
 const dataFormRoutes = require('./dataForm.routes')
+const prestadorRoutes = require('./prestador.routes.js');
+const agendaRoutes = require('./agenda.routes.js')
+
 module.exports = {
     personaRoutes,
     grupoRoutes,
@@ -16,5 +19,7 @@ module.exports = {
     emailRoutes,
     direccionRoutes,
     situacionRoutes,
-    dataFormRoutes
+    dataFormRoutes,
+    prestadorRoutes,
+    agendaRoutes
 };

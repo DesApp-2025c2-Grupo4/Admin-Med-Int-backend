@@ -1,6 +1,6 @@
-const crearNumeroDeGrupo = (cantidadDeGrupos)=>{
-  cantidadDeGrupos +=1
-  let nroToString = cantidadDeGrupos.toString()
+const crearNumeroDeGrupo = (nroGrupoMasGrande)=>{
+  nroGrupoMasGrande = Number(nroGrupoMasGrande) + 1
+  let nroToString = nroGrupoMasGrande.toString()
   while(nroToString.length <= 6){
     nroToString = '0' + nroToString
   }

@@ -2,6 +2,7 @@ const { Persona, Grupo,SituacionPersona, PlanMedico, Telefono, Email, Direccion,
 const { crearCredencial } = require('../utils/crearCredencial');
 const {formatearSituaciones} = require('../utils/formatearSituaciones')
 const { sequelize } = require('../db/models');
+const { where } = require('sequelize');
 
 //----------------------------GETTERS
 const getPersonas = async (_, res) => {
@@ -85,6 +86,37 @@ const getPersonaByPk = async (req,res)=>{
     res.status(500).json({ error: "Error al obtener una Persona" });
   }
 }
+//Obtener los afiliados
+const getAfiliados = async(_,res)=>{
+  try {
+    const afiliados = await Persona.findAll(
+      {
+        where:{
+          esTitular:true
+        },
+        include: [
+        {
+          model: Grupo,
+          as:'grupo',
+          include: [
+            {
+              model: PlanMedico,
+              as:'planMedico'
+            },
+          ],
+        },
+        {
+          model: Email,
+          as: 'email'
+        }]
+      },
+    )
+    res.json(afiliados)
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({message:'Error al obtener los afiliados'})
+  }
+}
 //----------------------------- Post
 const createPersona = async (req, res) => {
   //Creo una transaccion en caso de que alguna consulta falle
@@ -93,20 +125,27 @@ const createPersona = async (req, res) => {
 
     //Obtengo datos del body
     const newPersona = req.body;
-    console.log(newPersona)
+    console.log('Nueva Persona: ' + newPersona)
 
     //------------------- Creo la Credencial
     const grupo = await Grupo.findByPk(newPersona.idGrupo, { transaction });
+
+    const ultimoIntegrante = await Persona.max('credencial',{
+      where: { idGrupo: newPersona.idGrupo },
+      transaction
+    });
+    // Si no hay integrantes, usamos 0 como base
+    const ultimoNumero = ultimoIntegrante ? Number(ultimoIntegrante.split('-')[1]) : 0;
+
+    const credencial = crearCredencial(grupo.nroGrupo, ultimoNumero);
+
+    newPersona.credencial = credencial;
+    //Controlo que no sea haya o no un titular
 
     const cantidadIntegrantes = await Persona.count({
       where: { idGrupo: newPersona.idGrupo },
       transaction
     });
-
-    const credencial = crearCredencial(grupo.nroGrupo, cantidadIntegrantes);
-    
-    newPersona.credencial = credencial;
-    //Controlo que no sea haya o no un titular
     newPersona.esTitular = cantidadIntegrantes === 0
 
     
@@ -192,10 +231,54 @@ const deletePersona = async (req, res) => {
         res.status(500).json({ message: 'Error al eliminar la persona' });
     }
 };
+const actualizarPersona = async (req,res) => {
+  const {id} = req.params
+  const nuevosDatos = req.body
+  try {
+    //Busco la persona
+    const personaActualizar = await Persona.findByPk(id)
+    //Actualizo la persona
+    personaActualizar.nombre = nuevosDatos.nombre
+    personaActualizar.apellido = nuevosDatos.apellido
+    personaActualizar.parentesco = personaActualizar.esTitular ? null : nuevosDatos.parentesco
+    personaActualizar.dni = nuevosDatos.dni
+    personaActualizar.fechaNacimiento = nuevosDatos.fechaNacimiento
+    personaActualizar.fechaBaja = nuevosDatos.fechaBaja
+    personaActualizar.tipoDocId = nuevosDatos.tipoDocId
 
+    //Guardo los datos
+    await personaActualizar.save()
+
+    //Recargo y obtengo los datos
+    await personaActualizar.reload({
+      include: [
+        {
+          model: Grupo,
+          as:'grupo',
+          include: [
+            {
+              model: PlanMedico,
+              as:'planMedico'
+            },
+          ],
+        },
+        {
+          model: Email,
+          as: 'email'
+        }
+      ],
+    })
+    //Retorno
+    res.json(personaActualizar)
+  } catch (error) {
+    res.status(500).json({message:'Error al actualizar'})
+  }
+}
 module.exports = { 
   getPersonas, 
   createPersona, 
   deletePersona,
-  getPersonaByPk 
+  getPersonaByPk,
+  getAfiliados,
+  actualizarPersona
 };

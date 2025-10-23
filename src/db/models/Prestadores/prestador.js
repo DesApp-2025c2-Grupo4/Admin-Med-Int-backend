@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
 
       Prestador.hasMany(models.DireccionPrestador, {
         foreignKey: 'prestadorId',
-        as: 'direcciones',
+        as: 'direccion',
         onDelete: 'CASCADE',
       });
 
@@ -23,11 +23,13 @@ module.exports = (sequelize, DataTypes) => {
         through: models.PrestadorEspecialidad,
         foreignKey: 'prestadorId',
         otherKey: 'especialidadId',
-        as: 'especialidades',
+        as: 'especialidad',
         onDelete: 'CASCADE',
       });
 
-      Prestador.hasMany(models.EmailPrestador, {foreignKey:'prestadorId', as:'emails', onDelete:'CASCADE'})
+      Prestador.hasMany(models.EmailPrestador, {foreignKey:'prestadorId', as:'email', onDelete:'CASCADE'})
+    
+      Prestador.hasMany(models.Agenda, { foreignKey:'prestadorId', as:'agendas', onDelete:'CASCADE' })
     }
   }
 
@@ -48,10 +50,6 @@ module.exports = (sequelize, DataTypes) => {
       },
       tipoPrestador: {
         type: DataTypes.ENUM('Independiente', 'Centro Médico'),
-        allowNull: false,
-      },
-      codigoPostal: {
-        type: DataTypes.STRING,
         allowNull: false,
       },
       cuilCuit: {
