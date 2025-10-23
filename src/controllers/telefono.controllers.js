@@ -45,17 +45,37 @@ const getTelefonosByPersona = async (req, res) => {
     }
 };
 
+const updateTelefono = async (req, res) => {
+    const {id} = req.params; 
+    const body = req.body
+    try {
+        const telefonoAEditar = await Telefono.findByPk(id)
+        telefonoAEditar.nroTelefono = body.nroTelefono
+        //Guardo
+        await telefonoAEditar.save()
+        //Recargo
+        await telefonoAEditar.reload()
+        res.status(200).json(telefonoAEditar); 
+    } catch (error) {
+        console.error('Error al editar el teléfono:', error);
+        res.status(500).json({ 
+            message: "Error en el servidor al editar el teléfono.",
+            details: error.message
+        });
+    }
+};
 
 const deleteTelefono = async (req, res) => {
     const telefonoId = req.params.telefonoId; 
     try {
+        const telefonoEliminado = await Telefono.findByPk(telefonoId)
         const deletedRows = await Telefono.destroy({
             where: { telefonoId: telefonoId }
         });
         if (deletedRows === 0) {
             return res.status(404).json({ message: `Teléfono con ID ${telefonoId} no encontrado.` });
         }
-        res.status(204).send(); 
+        res.status(200).json(telefonoEliminado); 
     } catch (error) {
         console.error('Error al eliminar el teléfono:', error);
         res.status(500).json({ 
@@ -68,5 +88,6 @@ const deleteTelefono = async (req, res) => {
 module.exports = {
     addTelefonoToPersona,
     getTelefonosByPersona,
-    deleteTelefono
+    deleteTelefono,
+    updateTelefono
 };

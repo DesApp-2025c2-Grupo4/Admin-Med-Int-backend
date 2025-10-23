@@ -45,13 +45,14 @@ const deleteEmail = async (req, res) => {
     const emailId = req.params.emailId; 
 
     try {
+        const emailAEliminar = await Email.findByPk(emailId)
         const deletedRows = await Email.destroy({
             where: { emailId: emailId }
         });
         if (deletedRows === 0) {
             return res.status(404).json({ message: `Email con ID ${emailId} no encontrado.` });
         }
-        res.status(204).send(); 
+        res.status(200).json(emailAEliminar); 
     } catch (error) {
         console.error('Error al eliminar el email:', error);
         res.status(500).json({ 
@@ -60,9 +61,28 @@ const deleteEmail = async (req, res) => {
         });
     }
 };
-
+const updateEmail = async (req, res)=>{
+    const {id} = req.params; 
+    const body = req.body
+    try {
+        const emailAEditar = await Email.findByPk(id)
+        emailAEditar.descripcion = body.descripcion
+        //Guardo
+        await emailAEditar.save()
+        //Recargo
+        await emailAEditar.reload()
+        res.status(200).json(emailAEditar); 
+    } catch (error) {
+        console.error('Error al editar el Email:', error);
+        res.status(500).json({ 
+            message: "Error en el servidor al editar el Email.",
+            details: error.message
+        });
+    }
+}
 module.exports = {
     addEmailToPersona,
     getEmailsByPersona,
-    deleteEmail
+    deleteEmail,
+    updateEmail
 };
