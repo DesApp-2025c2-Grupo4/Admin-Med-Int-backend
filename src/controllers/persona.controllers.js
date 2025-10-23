@@ -2,7 +2,7 @@ const { Persona, Grupo,SituacionPersona, PlanMedico, Telefono, Email, Direccion,
 const { crearCredencial } = require('../utils/crearCredencial');
 const {formatearSituaciones} = require('../utils/formatearSituaciones')
 const { sequelize } = require('../db/models');
-const { where } = require('sequelize');
+
 
 //----------------------------GETTERS
 const getPersonas = async (_, res) => {

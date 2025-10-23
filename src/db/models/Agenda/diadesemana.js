@@ -10,10 +10,7 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      //Relacion con Agenda
-      DiaDeSemana.belongsTo(models.Agenda, { foreignKey: "agendaId", as: "agenda"})
-      //Relacion con Horario
-      DiaDeSemana.hasMany(models.Horario, { foreignKey: "idDia", as: "horarios" });
+      DiaDeSemana.hasMany(models.AgendaDia, { foreignKey: 'idDia', as:'diaDeSemana'})
     }
   }
   DiaDeSemana.init(
