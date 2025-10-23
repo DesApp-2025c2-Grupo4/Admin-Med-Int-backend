@@ -4,12 +4,14 @@ const { requireAttribute, ifPersonaExists } = require('../middleware/generic.mid
 const validarPersona = require("../middleware/validarPersona.js");
 const validarTelefono = require("../middleware/validarTelefono.js");
 const validarEmail = require("../middleware/validarEmail.js");
+const validarDireccion = require("../middleware/validarDireccion.js");
+const validarSituacion = require("../middleware/validarSituacion.js");
 const personaRoutes = Router();
 
-personaRoutes.get('/', personaControllers.getPersonas);
+personaRoutes.get('/',personaControllers.getPersonas);
 personaRoutes.get('/afiliados', personaControllers.getAfiliados)
 personaRoutes.get('/:id', personaControllers.getPersonaByPk);
-personaRoutes.post('/',personaControllers.createPersona);
+personaRoutes.post('/', validarPersona, personaControllers.createPersona);
 personaRoutes.delete('/:id', personaControllers.deletePersona);
 personaRoutes.put('/:id', personaControllers.actualizarPersona)
 //Telefono
@@ -22,11 +24,11 @@ personaRoutes.post('/:personaId/emails', validarEmail ,requireAttribute('descrip
 
 //Direccion
 personaRoutes.get('./:personaId/direcciones', direccionControllers.getDireccionesByPersona);
-personaRoutes.post('/:personaId/direcciones', requireAttribute('calle', 'Dirección'), requireAttribute('nro', 'Dirección'), ifPersonaExists, direccionControllers.addDireccionToPersona);
+personaRoutes.post('/:personaId/direcciones', validarDireccion ,requireAttribute('calle', 'Dirección'), requireAttribute('nro', 'Dirección'), ifPersonaExists, direccionControllers.addDireccionToPersona);
 
 //Situacion
 personaRoutes.get("/:personaId/situaciones", ifPersonaExists, situacionPersonaControllers.getSituacionesByPersona);
-personaRoutes.post("/:personaId/situaciones/:situacionId", ifPersonaExists, situacionPersonaControllers.addSituacionToPersona);
+personaRoutes.post("/:personaId/situaciones/:situacionId", validarSituacion ,ifPersonaExists, situacionPersonaControllers.addSituacionToPersona);
 personaRoutes.delete("/:personaId/situaciones/:situacionId", ifPersonaExists, situacionPersonaControllers.deleteSituacionFromPersona);
 
 module.exports = personaRoutes;

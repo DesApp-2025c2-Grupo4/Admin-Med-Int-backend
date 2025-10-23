@@ -1,4 +1,8 @@
 const Joi = require('joi');
+const direccionSchema = require('./direccionSchema')
+const telefonoSchema = require('./telefonoSchema')
+const emailSchema = require('./emailSchema');
+const situacionSchema = require('./situacionSchema');
 
 // Esquema de validación para el modelo de Persona
 const personaSchema = Joi.object({
@@ -76,18 +80,50 @@ const personaSchema = Joi.object({
       'date.format': 'fechaBaja debe estar en formato ISO (YYYY-MM-DD)',
     }),
 
-  // credencial: Joi.string()
-  //   .trim()
-  //   .min(1)
-  //   .max(50) //después modificar
-  //   .required()
-  //   .messages({
-  //     'string.base': 'La credencial debe ser una cadena de texto.',
-  //     'string.empty': 'La credencial no puede estar vacía.',
-  //     'string.min': 'La credencial debe tener al menos 1 carácter.',
-  //     'string.max': 'La credencial no puede exceder los 50 caracteres.',
-  //     'any.required': 'La credencial es un campo obligatorio.',
-  //   }),
+    parentesco: Joi.string()
+    .trim() 
+    .min(3)
+    .max(15) 
+    .required()
+    .messages({
+      'string.base': 'El parentesco debe ser una cadena de texto',
+      'string.empty': 'El parentesco no puede estar vacío',
+      'string.min': 'El parentesco debe tener al menos 3 caracteres',
+      'string.max': 'El parentesco no puede exceder los 15 caracteres',
+      'any.required': 'El parentesco es un campo obligatorio',
+    }),
+
+    // Para la asociación con Grupo
+    idGrupo: Joi.number().integer().required().messages({  
+      'number.base': 'idGrupo debe ser un número entero',
+      'any.required': 'idGrupo es un campo obligatorio.',
+    }),
+
+    // Para la asociación con TipoDocumento
+    tipoDocId: Joi.number().integer().required().messages({  
+      'number.base': 'tipoDocId debe ser un número entero',
+      'any.required': 'tipoDocId es un campo obligatorio.',
+    }),
+
+    //Para las otras asociaciones, usando los schemas
+    direcciones: Joi.array().items(direccionSchema).required().messages({
+      'array.base': 'direcciones debe ser un array',
+      'any.required': 'Se debe ingresar al menos una dirección.',
+    }),
+
+    telefonos: Joi.array().items(telefonoSchema).required().messages({
+      'array.base': 'telefonos debe ser un array',
+      'any.required': 'Se debe ingresar al menos un teléfono.',
+    }),
+
+    emails: Joi.array().items(emailSchema).required().messages({
+      'array.base': 'emails debe ser un array',
+      'any.required': 'Se debe ingresar al menos un email.',
+    }),
+
+    situacionesTerapeuticas: Joi.array().items(situacionSchema).optional().messages({
+      'array.base': 'situacionesTerapeuticas debe ser un array',
+    })
 });
 
 module.exports = personaSchema;
