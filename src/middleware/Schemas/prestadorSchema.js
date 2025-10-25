@@ -74,7 +74,7 @@ const prestadorSchema = Joi.object({
       'any.required': 'Se debe ingresar al menos una dirección.',
     }),
 
-  especialidad: Joi.array(),
+  especialidad: Joi.array(), // no funciona porque no entiendo lo de las especialidades en el controller
 });
 
 module.exports = prestadorSchema;
