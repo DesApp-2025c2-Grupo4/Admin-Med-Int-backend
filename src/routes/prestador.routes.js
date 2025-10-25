@@ -3,11 +3,12 @@ const { prestadorControllers, telefonoPrestadorControllers, emailPrestadorContro
 const { requireAttribute } = require('../middleware/generic.middleware');
 const validarTelefono = require("../middleware/validarTelefono.js");
 const validarEmail = require("../middleware/validarEmail.js");
+const validarPrestador = require("../middleware/validarPrestador.js")
 const prestadorRoutes = Router();
 
 prestadorRoutes.get('/', prestadorControllers.getPrestadores);
 prestadorRoutes.get('/:id', prestadorControllers.getPrestadorByPk);
-prestadorRoutes.post('/', prestadorControllers.createPrestador);
+prestadorRoutes.post('/', validarPrestador ,prestadorControllers.createPrestador);
 prestadorRoutes.delete('/:id', prestadorControllers.deletePrestador);
 prestadorRoutes.put('/:id', prestadorControllers.updatePrestador);
 
