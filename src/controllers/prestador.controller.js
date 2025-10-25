@@ -5,7 +5,7 @@ const createPrestador = async (req, res) => {
   try {
     const {
       nombre,
-      apellido,
+      apellido="", //si es centro no se pasa apellido
       tipoPrestador,
       lugarIndependiente,
       lugarCentro,
@@ -17,8 +17,8 @@ const createPrestador = async (req, res) => {
       especialidades = []
     } = req.body;
 
-    if (!nombre || !apellido || !tipoPrestador || !cuilCuit) {
-      return res.status(400).json({ error: 'Faltan campos obligatorios: nombre, apellido, tipoPrestador o cuilCuit' });
+    if (!nombre || !tipoPrestador || !cuilCuit) {
+      return res.status(400).json({ error: 'Faltan campos obligatorios: nombre, tipoPrestador o cuilCuit' });
     }
 
     const tipoPrestadorDB = tipoPrestador.toLowerCase() === 'independiente' ? 'Independiente' : 'Centro Médico';
@@ -32,23 +32,32 @@ const createPrestador = async (req, res) => {
 
     // Crear teléfonos
     await Promise.all(
-      telefonos.map(nro => TelefonoPrestador.create({ prestadorId: prestador.prestadorId, nroTelefono: nro }, { transaction }))
+      telefonos.map(nro => TelefonoPrestador.create({ prestadorId: prestador.prestadorId, nroTelefono: nro.nroTelefono }, { transaction }))
     );
 
     // Crear emails
     await Promise.all(
-      emails.map(mail => EmailPrestador.create({ prestadorId: prestador.prestadorId, descripcion: mail }, { transaction }))
+      emails.map(mail => EmailPrestador.create({ prestadorId: prestador.prestadorId, descripcion: mail.descripcion }, { transaction }))
     );
 
-    // Crear direcciones
+    // Crear direcciones ANTERIOR
+    // await Promise.all(
+    //   direcciones.map(direccionCompleta => {
+    //     const parts = direccionCompleta.trim().split(' ');
+    //     const nro = parts.length > 1 ? parts.pop() : '';
+    //     const calle = parts.join(' ');
+    //     return DireccionPrestador.create({ prestadorId: prestador.prestadorId, calle, nro, codigoPostal: '0000' }, { transaction });
+    //   })
+    // );
+
+    // Crear direcciones NUEVO para que funcione con el schema
     await Promise.all(
-      direcciones.map(direccionCompleta => {
-        const parts = direccionCompleta.trim().split(' ');
-        const nro = parts.length > 1 ? parts.pop() : '';
-        const calle = parts.join(' ');
-        return DireccionPrestador.create({ prestadorId: prestador.prestadorId, calle, nro, codigoPostal: '0000' }, { transaction });
-      })
-    );
+      direcciones.map(dir => {
+        const calle = dir.calle.trim();  // Extrae y trimea la calle
+        const nro = dir.nro ? parseInt(dir.nro) : null;  // Convierte nro a número si existe, sino null
+      return DireccionPrestador.create({ prestadorId: prestador.prestadorId, calle, nro, codigoPostal: '0000' }, { transaction });
+    })
+);
 
     // Manejar especialidades
     if (especialidades.length > 0) {
