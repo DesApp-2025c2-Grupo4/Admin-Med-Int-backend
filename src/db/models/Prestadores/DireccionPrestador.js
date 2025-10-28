@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
       });
 
       DireccionPrestador.hasMany(models.Agenda, {
-        foreignKey: 'agendaId'
+        foreignKey: 'direccionId'
       })
     }
   }

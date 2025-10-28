@@ -30,7 +30,7 @@ app.use(
 //-------------- Listo
 app.listen(PORT, async () => {
   try {
-    //await db.sequelize.sync({force:true})
+    //await db.sequelize.sync({ force: true })
     console.log(`Servidor Corriendo en http://localhost:${PORT}`)
   } catch (error) {
     console.log(error)
