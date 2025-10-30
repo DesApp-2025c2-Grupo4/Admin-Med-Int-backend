@@ -2,7 +2,7 @@
 
 module.exports = {
   async up(queryInterface, Sequelize) {
-    // -------------------------------------- REINICIO BD ------------------------
+    // -------------------------------------- REINICI BD ------------------------
     await queryInterface.bulkDelete('SituacionPersonas', null, {
       truncate: true, restartIdentity: true, cascade: true
     });
@@ -136,9 +136,9 @@ module.exports = {
 
     // --- RELACIÓN MUCHOS A MUCHOS (SituacionPersonas) ---
     await queryInterface.bulkInsert('SituacionPersonas', [
-      { personaId: 1, situacionId: 1, esCronica: false, fechaInicio: '2025-01-10', fechaFin: '2025-02-10' },
-      { personaId: 2, situacionId: 2, esCronica: true, fechaInicio: '2024-03-01', fechaFin: null },
-      { personaId: 3, situacionId: 3, esCronica: false, fechaInicio: '2025-09-01', fechaFin: null }
+      { personaId: 1, situacionId: 1, esCronica: false, fechaInici: '2025-01-10', fechaFin: '2025-02-10' },
+      { personaId: 2, situacionId: 2, esCronica: true, fechaInici: '2024-03-01', fechaFin: null },
+      { personaId: 3, situacionId: 3, esCronica: false, fechaInici: '2025-09-01', fechaFin: null }
     ], {});
 
     // ------------------------------ PERSONAS DEL GRUPO 2 ---------------------------------
@@ -216,9 +216,9 @@ module.exports = {
 
     // --- RELACIÓN MUCHOS A MUCHOS (SituacionPersonas) ---
     await queryInterface.bulkInsert('SituacionPersonas', [
-      { personaId: 4, situacionId: 1, esCronica: false, fechaInicio: '2025-01-10', fechaFin: '2025-02-10' },
-      { personaId: 4, situacionId: 2, esCronica: true, fechaInicio: '2024-03-01', fechaFin: null },
-      { personaId: 5, situacionId: 3, esCronica: false, fechaInicio: '2025-09-01', fechaFin: null }
+      { personaId: 4, situacionId: 1, esCronica: false, fechaInici: '2025-01-10', fechaFin: '2025-02-10' },
+      { personaId: 4, situacionId: 2, esCronica: true, fechaInici: '2024-03-01', fechaFin: null },
+      { personaId: 5, situacionId: 3, esCronica: false, fechaInici: '2025-09-01', fechaFin: null }
     ], {});
 
     // ------------------------------ PERSONAS DEL GRUPO 3 ---------------------------------
@@ -296,9 +296,9 @@ module.exports = {
 
     // --- RELACIÓN MUCHOS A MUCHOS (SituacionPersonas) ---
     await queryInterface.bulkInsert('SituacionPersonas', [
-      { personaId: 7, situacionId: 1, esCronica: false, fechaInicio: '2025-01-10', fechaFin: '2025-02-10' },
-      { personaId: 8, situacionId: 2, esCronica: true, fechaInicio: '2024-03-01', fechaFin: null },
-      { personaId: 9, situacionId: 3, esCronica: false, fechaInicio: '2025-09-01', fechaFin: null }
+      { personaId: 7, situacionId: 1, esCronica: false, fechaInici: '2025-01-10', fechaFin: '2025-02-10' },
+      { personaId: 8, situacionId: 2, esCronica: true, fechaInici: '2024-03-01', fechaFin: null },
+      { personaId: 9, situacionId: 3, esCronica: false, fechaInici: '2025-09-01', fechaFin: null }
     ], {});
   },
 
