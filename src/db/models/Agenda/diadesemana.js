@@ -21,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
         autoIncrement: true,
       },
       descripcion: {
-        type: DataTypes.ENUM("Lunes", "Martes",'Miércoles','Jueves','Sábado','Domingo'),
+        type: DataTypes.ENUM("Lunes", "Martes",'Miércoles','Jueves','Viernes','Sábado','Domingo'),
         allowNull: false,
       },
     },
