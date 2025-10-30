@@ -2,6 +2,7 @@ const Joi = require("joi");
 const direccionSchema = require("./direccionSchema");
 const telefonoSchema = require("./telefonoSchema");
 const emailSchema = require("./emailSchema");
+const especialidadSchema = require("./especialidadSchema");
 
 //Esquema de validación para el modelo de persona
 const prestadorSchema = Joi.object({
@@ -74,7 +75,9 @@ const prestadorSchema = Joi.object({
       'any.required': 'Se debe ingresar al menos una dirección.',
     }),
 
-  especialidad: Joi.array(), // no funciona porque no entiendo lo de las especialidades en el controller
+  especialidades: Joi.array().items(especialidadSchema).optional().messages({
+      'array.base': 'situacionesTerapeuticas debe ser un array',
+  }),
 });
 
 module.exports = prestadorSchema;

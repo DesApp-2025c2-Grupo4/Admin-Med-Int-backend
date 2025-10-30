@@ -59,28 +59,44 @@ const createPrestador = async (req, res) => {
     })
 );
 
-    // Manejar especialidades
+    // Manejar especialidades anterior
+    // if (especialidades.length > 0) {
+    //   const especialidadesMap = {
+    //     medicinaGeneral: "Medicina General",
+    //     psicologia: "Psicología",
+    //     cardiologia: "Cardiología",
+    //     nutricion: "Nutrición",
+    //     psiquiatria: "Psiquiatría",
+    //     neurologia: "Neurología",
+    //     oftalmologia: "Oftalmología",
+    //     urologia: "Urología",
+    //     ginecologia: "Ginecología",
+    //     kinesiologia: "Kinesiología",
+    //     pediatria: "Pediatría",
+    //     traumatologia: "Traumatología",
+    //     oncologia: "Oncología"
+    //   };
+
+    //   const especialidadesDB = especialidades.map(e => especialidadesMap[e]).filter(Boolean);
+
+    //   const especialidadRecords = [];
+    //   for (const descripcion of especialidadesDB) {
+    //     const [especialidad] = await Especialidad.findOrCreate({
+    //       where: { descripcion },
+    //       defaults: { descripcion },
+    //       transaction
+    //     });
+    //     especialidadRecords.push(especialidad);
+    //   }
+
+    //   await prestador.addEspecialidad(especialidadRecords, { transaction });
+    // }
+
+    // Manejar especialidades nuevo(cambiado para usar descripciones directamente)
     if (especialidades.length > 0) {
-      const especialidadesMap = {
-        medicinaGeneral: "Medicina General",
-        psicologia: "Psicología",
-        cardiologia: "Cardiología",
-        nutricion: "Nutrición",
-        psiquiatria: "Psiquiatría",
-        neurologia: "Neurología",
-        oftalmologia: "Oftalmología",
-        urologia: "Urología",
-        ginecologia: "Ginecología",
-        kinesiologia: "Kinesiología",
-        pediatria: "Pediatría",
-        traumatologia: "Traumatología",
-        oncologia: "Oncología"
-      };
-
-      const especialidadesDB = especialidades.map(e => especialidadesMap[e]).filter(Boolean);
-
+      const descripciones = especialidades.map(e => e.descripcion?.trim()).filter(Boolean);
       const especialidadRecords = [];
-      for (const descripcion of especialidadesDB) {
+      for (const descripcion of descripciones) {
         const [especialidad] = await Especialidad.findOrCreate({
           where: { descripcion },
           defaults: { descripcion },
@@ -88,7 +104,6 @@ const createPrestador = async (req, res) => {
         });
         especialidadRecords.push(especialidad);
       }
-
       await prestador.addEspecialidad(especialidadRecords, { transaction });
     }
 
