@@ -27,6 +27,22 @@ const prestadorSchema = Joi.object({
       "string.pattern.base":
         "El CUIL/CUIT debe tener el formato XX-XXXXXXXX-X (11 dígitos con guiones).",
     }),
+  fechaAlta: Joi.date()
+    .iso()
+    .optional()
+    .messages({
+      "date.base": "fechaAlta debe ser una fecha válida.",
+      "date.format": "fechaAlta debe estar en formato ISO (YYYY-MM-DD)",
+    }),
+
+  fechaBaja: Joi.date()
+    .iso()
+    .allow(null)
+    .optional()
+    .messages({
+      "date.base": "fechaBaja debe ser una fecha válida",
+      "date.format": "fechaBaja debe estar en formato ISO (YYYY-MM-DD)",
+    }),
 
   tipoPrestador: Joi.string()
     .lowercase()
@@ -40,8 +56,10 @@ const prestadorSchema = Joi.object({
   lugarIndependiente: Joi.when("tipoPrestador", {
     is: "independiente",
     then: Joi.string().required().messages({
-      "string.base": 'lugarIndependiente debe ser un string cuando tipoPrestador es "independiente".',
-      "any.required": 'lugarIndependiente es obligatorio cuando tipoPrestador es "independiente".',
+      "string.base":
+        'lugarIndependiente debe ser un string cuando tipoPrestador es "independiente".',
+      "any.required":
+        'lugarIndependiente es obligatorio cuando tipoPrestador es "independiente".',
     }),
     otherwise: Joi.valid(null).default(null).messages({
       "any.only":
@@ -52,31 +70,34 @@ const prestadorSchema = Joi.object({
   lugarCentro: Joi.when("tipoPrestador", {
     is: "centromedico",
     then: Joi.string().required().messages({
-      "string.base": 'lugarCentro debe ser un string cuando tipoPrestador es "centromedico".',
-      "any.required": 'lugarCentro es obligatorio cuando tipoPrestador es "centromedico".',
+      "string.base":
+        'lugarCentro debe ser un string cuando tipoPrestador es "centromedico".',
+      "any.required":
+        'lugarCentro es obligatorio cuando tipoPrestador es "centromedico".',
     }),
     otherwise: Joi.valid(null).default(null).messages({
-      "any.only": 'lugarCentro debe ser null cuando tipoPrestador no es "centromedico".',
+      "any.only":
+        'lugarCentro debe ser null cuando tipoPrestador no es "centromedico".',
     }),
   }),
 
   emails: Joi.array().items(emailSchema).required().messages({
-      'array.base': 'emails debe ser un array',
-      'any.required': 'Se debe ingresar al menos un email.',
-    }),
+    "array.base": "emails debe ser un array",
+    "any.required": "Se debe ingresar al menos un email.",
+  }),
 
   telefonos: Joi.array().items(telefonoSchema).required().messages({
-      'array.base': 'telefonos debe ser un array',
-      'any.required': 'Se debe ingresar al menos un teléfono.',
-    }),
+    "array.base": "telefonos debe ser un array",
+    "any.required": "Se debe ingresar al menos un teléfono.",
+  }),
 
   direcciones: Joi.array().items(direccionSchema).required().messages({
-      'array.base': 'direcciones debe ser un array',
-      'any.required': 'Se debe ingresar al menos una dirección.',
-    }),
+    "array.base": "direcciones debe ser un array",
+    "any.required": "Se debe ingresar al menos una dirección.",
+  }),
 
   especialidades: Joi.array().items(especialidadSchema).optional().messages({
-      'array.base': 'situacionesTerapeuticas debe ser un array',
+    "array.base": "situacionesTerapeuticas debe ser un array",
   }),
 });
 
