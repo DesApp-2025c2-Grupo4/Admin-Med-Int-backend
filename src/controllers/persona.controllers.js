@@ -2,7 +2,7 @@ const { Persona, Grupo,SituacionPersona, PlanMedico, Telefono, Email, Direccion,
 const { crearCredencial } = require('../utils/crearCredencial');
 const {formatearSituaciones} = require('../utils/formatearSituaciones')
 const { sequelize } = require('../db/models');
-
+const { Op } = require('sequelize')
 
 //----------------------------GETTERS
 const getPersonas = async (_, res) => {
@@ -274,11 +274,62 @@ const actualizarPersona = async (req,res) => {
     res.status(500).json({message:'Error al actualizar'})
   }
 }
+
+// obtener afiliados por período
+const getAfiliadosPorPeriodo = async (req, res) => {
+  try {
+    const { fechaDesde, fechaHasta } = req.query;
+
+    // Validación de fechas
+    if (!fechaDesde || !fechaHasta) {
+      return res.status(400).json({ error: 'fechaDesde y fechaHasta son requeridos' });
+    }
+
+    const desde = new Date(fechaDesde);
+    const hasta = new Date(fechaHasta);
+
+    if (isNaN(desde.getTime()) || isNaN(hasta.getTime()) || desde > hasta) {
+      return res.status(400).json({ error: 'Fechas inválidas' });
+    }
+
+    //filtra por esTitular y fechaAlta
+    const afiliadosFiltrados = await Persona.findAll({
+      where: {
+        esTitular: true,
+        fechaAlta: {
+          [Op.between]: [fechaDesde, fechaHasta]
+        }
+      },
+      include: [
+        {
+          model: Grupo,
+          as: 'grupo',
+          include: [
+            {
+              model: PlanMedico,
+              as: 'planMedico'
+            },
+          ],
+        },
+        {
+          model: Email,
+          as: 'email'
+        }
+      ],
+    });
+
+    res.json(afiliadosFiltrados);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: 'Error al obtener los afiliados por período' });
+  }
+};
 module.exports = { 
   getPersonas, 
   createPersona, 
   deletePersona,
   getPersonaByPk,
   getAfiliados,
-  actualizarPersona
+  actualizarPersona,
+  getAfiliadosPorPeriodo
 };
