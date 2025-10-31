@@ -5,7 +5,7 @@ const formatearSituaciones = (situaciones) => {
     return {
       descripcion: situacion.descripcion,
       situacionId: situacion.situacionId,
-      fechaInicio: situacion.SituacionPersona.fechaInicio,
+      fechaInicio: situacion.SituacionPersona.fechaInici,
       fechaFin: situacion.SituacionPersona.fechaFin,
       esCronica: situacion.SituacionPersona.esCronica
     };

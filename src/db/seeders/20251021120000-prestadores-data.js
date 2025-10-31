@@ -20,9 +20,8 @@ module.exports = {
     const prestadores = await queryInterface.bulkInsert('Prestadors', [
       {
         nombre: 'Laura',
+        tipoPrestador:'Independiente',
         apellido: 'Soria',
-        tipoPrestador: 'Independiente',
-        lugarIndependiente: 'Consultorio Propio',
         cuilCuit: '27-12345678-9',
         fechaAlta: new Date(),
       },
@@ -30,15 +29,13 @@ module.exports = {
         nombre: 'Clínica del Sur',
         apellido: '',
         tipoPrestador: 'Centro Médico',
-        lugarCentro: 'Clinica',
         cuilCuit: '30-98765432-1',
         fechaAlta: new Date(),
       },
       {
         nombre: 'Mauro',
-        apellido: 'Pérez',
         tipoPrestador: 'Independiente',
-        lugarIndependiente: 'Consultorio Propio',
+        apellido: 'Pérez',
         cuilCuit: '20-11223344-5',
         fechaAlta: new Date(),
       }

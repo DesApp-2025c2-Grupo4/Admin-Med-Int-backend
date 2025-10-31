@@ -10,6 +10,7 @@ const personaRoutes = Router();
 
 personaRoutes.get('/',personaControllers.getPersonas);
 personaRoutes.get('/afiliados', personaControllers.getAfiliados)
+personaRoutes.get('/afiliados/por-periodo', personaControllers.getAfiliadosPorPeriodo);
 personaRoutes.get('/:id', personaControllers.getPersonaByPk);
 personaRoutes.post('/', validarPersona, personaControllers.createPersona);
 personaRoutes.delete('/:id', personaControllers.deletePersona);

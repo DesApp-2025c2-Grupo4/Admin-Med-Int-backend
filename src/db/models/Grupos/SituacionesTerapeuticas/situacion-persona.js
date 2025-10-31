@@ -26,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       allowNull: false
     },
-    fechaInicio:{
+    fechaInici:{
       type: DataTypes.DATEONLY,
       allowNull: false
     },
