@@ -42,46 +42,37 @@ const createPrestador = async (req, res) => {
 
     // Crear direcciones
     await Promise.all(
-      direcciones.map(direccionCompleta => {
-        const parts = direccionCompleta.trim().split(' ');
-        const nro = parts.length > 1 ? parts.pop() : '';
-        const calle = parts.join(' ');
-        return DireccionPrestador.create({ prestadorId: prestador.prestadorId, calle, nro, codigoPostal: '0000' }, { transaction });
-      })
-    );
+      direcciones.map(dirObjeto => {
+    const partesCalle = dirObjeto.calle.trim().split(/\s+/).filter(p => p.length > 0);
+    let nroExtraido = null;
+    let calleFinal = dirObjeto.calle;
+    const ultimoFragmento = partesCalle[partesCalle.length - 1];
 
+    if (ultimoFragmento && /^\d+$/.test(ultimoFragmento)) {
+        nroExtraido = partesCalle.pop(); 
+        calleFinal = partesCalle.join(' '); 
+    } else {
+        nroExtraido = null;
+        calleFinal = dirObjeto.calle;
+    }
+
+    return DireccionPrestador.create({ 
+        prestadorId: prestador.prestadorId, 
+        calle: calleFinal, 
+        nro: nroExtraido,
+        codigoPostal: dirObjeto.codigoPostal 
+    }, { transaction });
+}))
     // Manejar especialidades
     if (especialidades.length > 0) {
-      const especialidadesMap = {
-        medicinaGeneral: "Medicina General",
-        psicologia: "Psicología",
-        cardiologia: "Cardiología",
-        nutricion: "Nutrición",
-        psiquiatria: "Psiquiatría",
-        neurologia: "Neurología",
-        oftalmologia: "Oftalmología",
-        urologia: "Urología",
-        ginecologia: "Ginecología",
-        kinesiologia: "Kinesiología",
-        pediatria: "Pediatría",
-        traumatologia: "Traumatología",
-        oncologia: "Oncología"
-      };
+      // Mapeamos los IDs a objetos para bulkCreate en la tabla intermedia PrestadorEspecialidad
+      const especialidadesParaCrear = especialidades.map(id => ({
+        prestadorId: prestador.prestadorId,
+        especialidadId: Number(id) // Aseguramos que sea numérico
+      }));
 
-      const especialidadesDB = especialidades.map(e => especialidadesMap[e]).filter(Boolean);
-
-      const especialidadRecords = [];
-      for (const descripcion of especialidadesDB) {
-        const [especialidad] = await Especialidad.findOrCreate({
-          where: { descripcion },
-          defaults: { descripcion },
-          transaction
-        });
-        especialidadRecords.push(especialidad);
-      }
-
-      await prestador.addEspecialidad(especialidadRecords, { transaction });
-    }
+      await PrestadorEspecialidad.bulkCreate(especialidadesParaCrear, { transaction });
+    }
 
     // Traer prestador con relaciones
     const prestadorConRelaciones = await Prestador.findByPk(prestador.prestadorId, {
@@ -193,7 +184,7 @@ const updatePrestador = async (req, res) => {
     emails,
     telefonos,
     direcciones,
-    especialidad
+    especialidades
   } = req.body;
 
   if (!prestadorId) {
@@ -245,39 +236,73 @@ const updatePrestador = async (req, res) => {
     await DireccionPrestador.destroy({ where: { prestadorId }, transaction: t });
     if (direcciones?.length) {
       const nuevasDirecciones = direcciones
-        .map(d => (typeof d === "string" ? d.trim() : d?.descripcion?.trim?.()))
-        .filter(d => d)
-        .map(d => {
-          const parts = d.split(" ");
-          return {
-            calle: parts.slice(0, -1).join(" ") || d,
-            nro: parts[parts.length - 1] || "S/N",
-            codigoPostal: "0000",
-            prestadorId
-          };
-        });
-      if (nuevasDirecciones.length) await DireccionPrestador.bulkCreate(nuevasDirecciones, { transaction: t });
+        .map(dirObjeto => { 
+            const partesCalle = dirObjeto.calle.trim().split(/\s+/).filter(p => p.length > 0);
+            const nro = partesCalle.length > 0 ? partesCalle.pop() : null;
+            const calle = partesCalle.join(' ');
+            return {
+                calle: calle,
+                nro: nro, 
+                codigoPostal: dirObjeto.codigoPostal, 
+                prestadorId
+            };
+        })
+        .filter(dir => dir.calle && dir.codigoPostal); 
+        
+    if (nuevasDirecciones.length) {
+        await DireccionPrestador.bulkCreate(nuevasDirecciones, { transaction: t });
     }
+}
 
     // especialidades
-    if (especialidad?.length) {
-      const descripciones = especialidad.map(e => e.descripcion?.trim()).filter(Boolean);
+    if (especialidades !== undefined) {
+    const especialidadIdsNuevas = especialidades
+        ?.map(id => Number(id))
+        .filter(id => !isNaN(id) && id > 0) || []; 
+    
+    // Obtener el Prestador y sus especialidades actuales
+    const prestador = await Prestador.findByPk(prestadorId, {
+        // Alias corregido
+        include: [{ model: Especialidad, as: 'especialidad' }], 
+        transaction: t
+    });
+    
+    if (prestador) {
+        // Obtener IDs de especialidades actuales
+        const especialidadesActuales = prestador.especialidad || [];
+        const especialidadIdsActuales = especialidadesActuales.map(e => e.especialidadId); // [1, 3]
 
-      const especialidadRecords = [];
-      for (const desc of descripciones) {
-        const [esp] = await Especialidad.findOrCreate({
-          where: { descripcion: desc },
-          defaults: { descripcion: desc },
-          transaction: t
-        });
-        especialidadRecords.push(esp);
-      }
+        // Identificar cuáles agregar
+        const idsParaAgregar = especialidadIdsNuevas.filter(
+            id => !especialidadIdsActuales.includes(id)
+        );
 
-      const prestadorObj = await Prestador.findByPk(prestadorId, { transaction: t });
-      // solo agregamos las nuevas relaciones
-      await prestadorObj.addEspecialidad(especialidadRecords, { transaction: t });
+        // Identificar cuáles eliminar (LAS DESMARCADAS)
+        const idsParaEliminar = especialidadIdsActuales.filter(
+            id => !especialidadIdsNuevas.includes(id)
+        );
+
+        // Ejecutar cambios en la tabla de unión 
+        if (idsParaEliminar.length > 0) {
+            await PrestadorEspecialidad.destroy({
+                where: {
+                    prestadorId: prestadorId,
+                    especialidadId: idsParaEliminar
+                },
+                transaction: t
+            });
+        }
+
+        // Agregar nuevas relaciones
+        if (idsParaAgregar.length > 0) {
+            const nuevasRelaciones = idsParaAgregar.map(especialidadId => ({
+                prestadorId: prestadorId,
+                especialidadId: especialidadId
+            }));
+            await PrestadorEspecialidad.bulkCreate(nuevasRelaciones, { transaction: t });
+        }
     }
-
+}
     await t.commit();
     res.status(200).send({ message: "Prestador actualizado correctamente.", prestadorId });
   } catch (error) {

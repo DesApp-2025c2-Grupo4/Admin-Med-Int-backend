@@ -16,6 +16,12 @@ const db = require('./db/models')
 //-------------- Instancio
 const app = express()
 
+
+const swaggerUi = require('swagger-ui-express');
+const YAML = require('yamljs');
+const swaggerDocument = YAML.load('src/doc/swagger.yaml');
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 //Configuración
 app.use(express.json())
 
