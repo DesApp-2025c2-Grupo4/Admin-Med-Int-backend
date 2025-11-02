@@ -68,7 +68,27 @@ const createAgenda = async (req, res) => {
   }
 };
 
+const eliminarUnaAgenda = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const agendaDelete = await Agenda.destroy({
+      where: {
+        agendaId: id,
+      },
+    });
+    if (agendaDelete === 1) {
+      res.status(200).json(agendaDelete);
+    } else {
+      res.status(404).json({ error: "No se encontró la agenda a eliminar" });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Error al eliminar la agenda" });
+  }
+};
+
 module.exports = {
   getAgendas,
-  createAgenda
+  createAgenda,
+  eliminarUnaAgenda
 };
