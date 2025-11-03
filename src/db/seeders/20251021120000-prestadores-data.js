@@ -13,7 +13,11 @@ module.exports = {
     const especialidades = await queryInterface.bulkInsert('Especialidads', [
       { descripcion: 'Medicina General' },
       { descripcion: 'Cardiología' },
-      { descripcion: 'Traumatología' }
+      { descripcion: 'Traumatología' },
+      { descripcion: 'Psicología' },
+      { descripcion: 'Psiquiatría' },
+      { descripcion: 'Ginecología' },
+      { descripcion: 'Pediatría' },
     ], { returning: true });
 
     //prestadores

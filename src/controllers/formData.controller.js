@@ -1,4 +1,4 @@
-const { SituacionesTerapeuticas,PlanMedico,TipoDocumento } = require('../db/models') 
+const { SituacionesTerapeuticas,PlanMedico,TipoDocumento, Especialidad, Prestador } = require('../db/models') 
 const getDatosParaFormulario = async (_,res)=>{
   try {
     //TIPOSD DE DOCUMENTS
@@ -41,6 +41,19 @@ const getDatosParaFormulario = async (_,res)=>{
   }
 }
 
+
+const getDatosParaPrestadores = async (_, res) => {
+  try {
+    const especialidades = await Especialidad.findAll()
+    const centrosMedicos = await Prestador.findAll({ where: {tipoPrestador: 'Centro Médico'}})
+    res.json({especialidades, centrosMedicos})
+  } catch (error) {
+    console.log('Error al obtener datos para el formulario')
+    res.status(500).json('Error en el servidor')
+  }
+}
+
 module.exports = {
-  getDatosParaFormulario
+  getDatosParaFormulario,
+  getDatosParaPrestadores
 }

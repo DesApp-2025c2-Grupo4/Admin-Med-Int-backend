@@ -1,0 +1,505 @@
+openapi: 3.0.0
+info:
+  title: Medicina Integral - Administración
+  version: 1.0.0
+  description: API para gestionar afiliados, grupo familiar y prestadores con sus agendas.
+
+servers:
+  - url: http://localhost:4000
+
+# ==== DEFINICIONES DE TAGS ====
+tags:
+  - name: Afiliado
+    description: Operaciones relacionadas con afiliados
+  - name: Grupo familiar
+    description: Operaciones relacionadas con grupos familiares
+  - name: Prestador
+    description: Operaciones relacionadas con prestadores
+  - name: Agenda
+    description: Operaciones relacionadas con agendas
+
+paths:
+  # ==== Afiliado ====
+  /user/getUser/{id}:
+    get:
+      tags:
+        - Afiliado
+      summary: Obtener afiliado por ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Afiliado obtenido con éxito
+
+  /user/getAllUsers:
+    get:
+      tags:
+        - Afiliado
+      summary: Obtener todos los afiliado
+      description: Retorna una lista de todos los afiliados registrados.
+      tags:
+        - filiado
+      responses:
+        '200':
+          description: Lista de afiliados obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '500':
+          description: Error del servidor
+
+  /user/createUser:
+    post:
+      tags:
+        - Afiliado
+      summary: Crear un nuevo afiliado
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+            example:
+              nickName: usuario1
+              email: usuario@ejemplo.com
+      responses:
+        '201':
+          description: Afiliado creado
+  /user/updateNickName/{id}:
+    put:
+      tags:
+        - Afiliado
+      summary: Actualizar el afiliado
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nickName:
+                  type: 
+            example:
+              nickName: otroNickName
+      responses:
+        '200':
+          description: Afiliado actualizado
+  
+  /user/deleteUser/{id}:
+    delete:
+      tags:
+        - Afiliado
+      summary: Eliminar un afiliado
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '204':
+          description: Afiliado eliminado
+
+  # ==== Prestador ====
+  /post/getPost/{id}:
+    get:
+      tags:
+        - Prestador
+      summary: Obtener prestador por ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Prestador obtenido
+  /post/getAllPost:
+    get:
+      tags:
+        - Prestador
+      summary: Obtener todos los prestadores
+      description: Retorna una lista de todos los posts registrados.
+      tags:
+        - Prestador
+      responses:
+        '200':
+          description: Lista de posts obtenida
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '500':
+          description: Error del servidor
+
+  /post/getAllUserPost/{id}:
+    get:
+      tags:
+        - Prestador
+      summary: Obtener todos los posts de un usuario
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Todos los prestadores
+
+  /post/createPost:
+    post:
+      tags:
+        - Prestador
+      summary: Crear un nuevo post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - nickName
+                - contenido
+              properties:
+                nickName:
+                  type: string
+                  example: usuario1
+                  description: Nickname del usuario que crea el post
+                contenido:
+                  type: string
+                  example: nuevo post prueba
+                  description: Contenido del post
+      responses:
+        '201':
+         description: Post creado exitosamente
+        '400':
+          description: Solicitud inválida, falta nickName o contenido
+
+  /post/updatePost/{id}:
+    put:
+      tags:
+        - Prestador
+      summary: Actualizar un post
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                contenido:
+                  type: string
+            example:
+              contenido: Contenido actualizado del post.
+      responses:
+        '200':
+          description: Post actualizado
+  /post/deletePost/{id}:
+    delete:
+      tags:
+        - Prestador
+      summary: Eliminar post
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '204':
+          description: Post eliminado
+
+  # ==== Agenda ====
+  /image/getImage/{id}:
+    get:
+      tags:
+        - Agenda
+      summary: Obtener imagen por ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Imagen obtenida
+  /image/getAllImages:
+    get:
+      tags:
+        - Agenda
+      summary: Obtener todas las imágenes
+      description: Retorna una lista de todas las imágenes registradas.
+      tags:
+        - Agenda
+      responses:
+        '200':
+          description: Lista de imágenes obtenida
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Image'
+        '500':
+          description: Error del servidor
+
+  /image/addImage/{id}:
+    post:
+      tags:
+        - Agenda
+      summary: Agregar una imagen a un post
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                url:
+                  type: string
+                  format: uri
+            example:
+              url: https://www.ejemplo.com/imagen.jpg
+      responses:
+        '201':
+          description: Imagen agregada
+  
+  /image/addAllImages/{id}:
+    post:
+      tags:
+        - Agenda
+      summary: Agregar múltiples imágenes a un post
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID del post al que se le agregarán las imágenes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  url:
+                    type: string
+                    format: uri
+            example: 
+              - url: https://www.ejemplo.com/imagen1.jpg
+              - url: https://www.ejemplo.com/imagen2.jpg
+      responses:
+        '201':
+          description: Imágenes agregadas correctamente
+        '400':
+          description: Error en la solicitud
+
+  /image/updateImage/{id}:
+    put:
+      tags:
+        - Agenda
+      summary: Actualizar imagen
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                url:
+                  type: string
+                  format: uri
+            example:
+              url: https://www.ejemplo.com/imagen_actualizada.jpg
+      responses:
+        '200':
+          description: Imagen actualizada
+  /image/deleteImage/{id}:
+    delete:
+      tags:
+        - Agenda
+      summary: Eliminar imagen
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '204':
+          description: Imagen eliminada
+  /image/getAllPostIMage/{id}:
+    get:
+      tags:
+        - Agenda
+      summary: Obtener todas las imágenes de un post
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Imágenes del post
+
+  # ==== Grupo familiar ====
+  /comment/getComment/{id}:
+    get:
+      tags:
+        - Grupo familiar
+      summary: Obtener un comentario
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Comentario obtenido
+
+  /comment/getAllComments:
+    get:
+      tags:
+        - Grupo familiar
+      summary: Obtener todos los comentarios
+      description: Retorna una lista de todos los comentarios registrados.
+      tags:
+        - Grupo familiar
+      responses:
+        '200':
+          description: Lista de comentarios obtenida
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Comment'
+        '500':
+          description: Error del servidor
+
+  /comment/getAllComments/{id}:
+    get:
+      tags:
+        - Grupo familiar
+      summary: Obtener todos los comentarios de un post
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Comentarios obtenidos
+  /comment/createComment/{id}:
+    post:
+      tags: 
+        - Grupo familiar
+      summary: Crear un comentario ingresando el id del post
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                comentario:
+                  type: string
+            example:
+              comentario: Este es un comentario de ejemplo.
+      responses:
+        '201':
+          description: Comentario creado
+
+  /comment/updateComment/{id}:
+    put:
+      tags:
+        - Grupo familiar
+      summary: Actualizar un comentario ingresando su id
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                comentario:
+                  type: string
+            example:
+              comentario: Comentario actualizado.
+      responses:
+        '200':
+          description: Comentario actualizado
+  /comment/deleteComment/{id}:
+    delete:
+      tags:
+        - Grupo familiar
+      summary: Eliminar un comentario ingresando su id
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '204':
+          description: Comentario eliminado
+
+components:
+  schemas:
+    Afiliado:
+      type: object
+      properties:
+        contenido:
+          type: string
+          example: Este es un post de ejemplo
+    Prestador:
+      type: object
+      properties:
+        url:
+          type: string
+          format: uri
+          example: https://www.ejemplo.com/imagen.jpg
+    Agenda:
+      type: object
+      properties:
+        comentario:
+          type: string 
+          example: Este es un comentario de ejemplo
+    Grupo familiar: 
+      type: object
+      properties:
+        descripcion:
+          type: string
+          example: etiqueta_ejemplo
