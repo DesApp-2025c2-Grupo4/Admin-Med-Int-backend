@@ -189,8 +189,13 @@ const createPersona = async (req, res) => {
     
     //Asocio a la persona
     const situacionesAsociadas = situaciones.map(s=>{
+      console.log(s)
+      const fechaInici = s.fechaInicio
+      console.log('Fecha inicio: ', fechaInici)
+      delete s.fechaInicio
       return {
         ...s,
+        fechaInici:fechaInici,
         personaId: personaCreated.personaId
       }
     })
