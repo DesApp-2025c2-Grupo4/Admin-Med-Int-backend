@@ -23,6 +23,7 @@ const situacionSchema = Joi.object({
         }),
 
     fechaFin: Joi.date()
+        .allow(null)
         .iso() // formato ISO ('1990-01-01')
         .optional()
         .messages({
