@@ -30,6 +30,8 @@ const situacionSchema = Joi.object({
           'date.base': 'fechaFin debe ser una fecha válida',
           'date.format': 'fechaFin debe estar en formato ISO (YYYY-MM-DD)',
         }),
+    
+    descripcion: Joi.string()
 })
 
 module.exports = situacionSchema;
