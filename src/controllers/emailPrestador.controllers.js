@@ -1,4 +1,5 @@
 const { EmailPrestador, Prestador } = require('../db/models');
+const redis = require('../db/config/redis.js')
 
 const addEmailToPrestador = async (req, res) => {
     const { descripcion } = req.body; 
@@ -8,6 +9,8 @@ const addEmailToPrestador = async (req, res) => {
             descripcion: descripcion,
             prestadorId: prestadorId 
         }); 
+        const keyIndividual = `prestador:${prestadorId}`;
+        await redis.del(keyIndividual);
         res.status(201).json(nuevoEmail);
     } catch (error) {
         console.error('Error al agregar el email al prestador:', error);
@@ -20,6 +23,7 @@ const addEmailToPrestador = async (req, res) => {
 
 const getEmailsByPrestador = async (req, res) => {
     const prestadorId = req.params.prestadorId; 
+    const key = `prestadorEmails:list:${prestadorId}`;
     try {
         const emails = await EmailPrestador.findAll({
             where: { prestadorId: prestadorId },
@@ -30,6 +34,7 @@ const getEmailsByPrestador = async (req, res) => {
                  return res.status(404).json({ message: `Prestador con ID ${prestadorId} no encontrada.` });
              }
         }
+        redis.set(key, JSON.stringify(emails), { EX: 900 });
         res.status(200).json(emails);
 
     } catch (error) {

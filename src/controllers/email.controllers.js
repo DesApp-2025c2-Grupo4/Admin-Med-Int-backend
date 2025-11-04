@@ -1,4 +1,5 @@
 const { Email, Persona } = require('../db/models');
+const redis = require("../db/config/redis.js")
 
 const addEmailToPersona = async (req, res) => {
     const { descripcion } = req.body; 
@@ -8,6 +9,8 @@ const addEmailToPersona = async (req, res) => {
             descripcion: descripcion,
             personaId: personaId 
         }); 
+        await redis.del(`persona:${personaId}`);
+        await redis.del(`personaEmails:list:${personaId}`);
         res.status(201).json(nuevoEmail);
     } catch (error) {
         console.error('Error al agregar el email a la persona:', error);
@@ -20,6 +23,7 @@ const addEmailToPersona = async (req, res) => {
 
 const getEmailsByPersona = async (req, res) => {
     const personaId = req.params.personaId; 
+    const key = `personaEmails:list:${personaId}`;
     try {
         const emails = await Email.findAll({
             where: { personaId: personaId },
@@ -29,6 +33,9 @@ const getEmailsByPersona = async (req, res) => {
              if (!personaExiste) {
                  return res.status(404).json({ message: `Persona con ID ${personaId} no encontrada.` });
              }
+        }
+        if (emails.length > 0) {
+            await redis.set(key, JSON.stringify(emails), { EX: 900 });
         }
         res.status(200).json(emails);
 
@@ -52,6 +59,11 @@ const deleteEmail = async (req, res) => {
         if (deletedRows === 0) {
             return res.status(404).json({ message: `Email con ID ${emailId} no encontrado.` });
         }
+        const personaId = emailAEliminar.personaId;
+        // Borrar caché de la persona individual
+        await redis.del(`persona:${personaId}`);
+        // Borrar caché de la lista de emails de esa persona
+        await redis.del(`personaEmails:list:${personaId}`);
         res.status(200).json(emailAEliminar); 
     } catch (error) {
         console.error('Error al eliminar el email:', error);
@@ -71,6 +83,11 @@ const updateEmail = async (req, res)=>{
         await emailAEditar.save()
         //Recargo
         await emailAEditar.reload()
+        const personaId = emailAEditar.personaId;
+        // Borrar caché de la persona individual
+        await redis.del(`persona:${personaId}`);
+        // Borrar caché de la lista de emails de esa persona
+        await redis.del(`personaEmails:list:${personaId}`);
         res.status(200).json(emailAEditar); 
     } catch (error) {
         console.error('Error al editar el Email:', error);

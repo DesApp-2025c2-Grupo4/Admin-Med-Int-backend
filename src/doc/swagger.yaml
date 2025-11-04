@@ -7,75 +7,107 @@ info:
 servers:
   - url: http://localhost:4000
 
-# ==== DEFINICIONES DE TAGS ====
+# Tags
 tags:
-  - name: Afiliado
-    description: Operaciones relacionadas con afiliados
+  - name: Persona
+    description: Operaciones relacionadas con personas (afiliados/titulares) y sus datos de contacto.
   - name: Grupo familiar
-    description: Operaciones relacionadas con grupos familiares
+    description: Operaciones relacionadas con grupos familiares.
   - name: Prestador
-    description: Operaciones relacionadas con prestadores
+    description: Operaciones relacionadas con prestadores y sus datos de contacto.
   - name: Agenda
-    description: Operaciones relacionadas con agendas
+    description: Operaciones relacionadas con la gestión de agendas.
 
 paths:
-  # ==== Afiliado ====
-  /user/getUser/{id}:
+  # Persona
+  /persona:
     get:
       tags:
-        - Afiliado
-      summary: Obtener afiliado por ID
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema: { type: integer }
+        - Persona
+      summary: Obtener todas las personas/usuarios
+      description: Retorna una lista de todas las personas registradas.
       responses:
         '200':
-          description: Afiliado obtenido con éxito
-
-  /user/getAllUsers:
-    get:
-      tags:
-        - Afiliado
-      summary: Obtener todos los afiliado
-      description: Retorna una lista de todos los afiliados registrados.
-      tags:
-        - filiado
-      responses:
-        '200':
-          description: Lista de afiliados obtenida exitosamente
+          description: Lista de personas obtenida exitosamente
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/User'
+                  $ref: '#/components/schemas/Persona'
         '500':
           description: Error del servidor
-
-  /user/createUser:
     post:
       tags:
-        - Afiliado
-      summary: Crear un nuevo afiliado
+        - Persona
+      summary: Crear una nueva persona
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
-            example:
-              nickName: usuario1
-              email: usuario@ejemplo.com
+              $ref: '#/components/schemas/PersonaRequest' 
       responses:
         '201':
-          description: Afiliado creado
-  /user/updateNickName/{id}:
+          description: Persona creada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Persona'
+  /persona/afiliados:
+    get:
+      tags:
+        - Persona
+      summary: Obtener todos los afiliados
+      responses:
+        '200':
+          description: Lista de afiliados obtenida con éxito
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Persona'
+  /persona/afiliados/por-periodo:
+    get:
+      tags:
+        - Persona
+      summary: Obtener afiliados por período
+      parameters:
+        - in: query
+          name: fechaDesde
+          schema: { type: string, format: date }
+          required: true
+          description: Fecha de inicio del período (YYYY-MM-DD).
+        - in: query
+          name: fechaHasta
+          schema: { type: string, format: date }
+          required: true
+          description: Fecha de fin del período (YYYY-MM-DD).
+      responses:
+        '200':
+          description: Lista de afiliados por período
+  /persona/{id}:
+    get:
+      tags:
+        - Persona
+      summary: Obtener persona por ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Persona obtenida con éxito
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Persona'
     put:
       tags:
-        - Afiliado
-      summary: Actualizar el afiliado
+        - Persona
+      summary: Actualizar datos de la persona
       parameters:
         - in: path
           name: id
@@ -86,21 +118,18 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                nickName:
-                  type: 
-            example:
-              nickName: otroNickName
+              $ref: '#/components/schemas/PersonaUpdateRequest' 
       responses:
         '200':
-          description: Afiliado actualizado
-  
-  /user/deleteUser/{id}:
+          description: Persona actualizada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Persona'
     delete:
       tags:
-        - Afiliado
-      summary: Eliminar un afiliado
+        - Persona
+      summary: Eliminar una persona
       parameters:
         - in: path
           name: id
@@ -108,10 +137,198 @@ paths:
           schema: { type: integer }
       responses:
         '204':
-          description: Afiliado eliminado
+          description: Persona eliminada
+  
+  # Contactos de personas
+  /persona/{personaId}/telefonos:
+    get:
+      tags:
+        - Persona
+      summary: Obtener teléfonos de una persona
+      parameters:
+        - in: path
+          name: personaId
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Lista de teléfonos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Telefono'
+    post:
+      tags:
+        - Persona
+      summary: Agregar teléfono a una persona
+      parameters:
+        - in: path
+          name: personaId
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Telefono'
+      responses:
+        '201':
+          description: Teléfono agregado
+  /persona/{personaId}/emails:
+    get:
+      tags:
+        - Persona
+      summary: Obtener emails de una persona
+      parameters:
+        - in: path
+          name: personaId
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Lista de emails
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Email'
+    post:
+      tags:
+        - Persona
+      summary: Agregar email a una persona
+      parameters:
+        - in: path
+          name: personaId
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Email'
+      responses:
+        '201':
+          description: Email agregado
+  /persona/{personaId}/direcciones:
+    get:
+      tags:
+        - Persona
+      summary: Obtener direcciones de una persona
+      parameters:
+        - in: path
+          name: personaId
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Lista de direcciones
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Direccion'
+    post:
+      tags:
+        - Persona
+      summary: Agregar dirección a una persona
+      parameters:
+        - in: path
+          name: personaId
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Direccion'
+      responses:
+        '201':
+          description: Dirección agregada
+  /persona/{personaId}/situaciones:
+    get:
+      tags:
+        - Persona
+      summary: Obtener situaciones de una persona
+      parameters:
+        - in: path
+          name: personaId
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Lista de situaciones
+    post:
+      tags:
+        - Persona
+      summary: Agregar situación a una persona
+      parameters:
+        - in: path
+          name: personaId
+          required: true
+          schema: { type: integer }
+        - in: path
+          name: situacionId
+          required: true
+          schema: { type: integer }
+      responses:
+        '201':
+          description: Situación agregada
+    delete:
+      tags:
+        - Persona
+      summary: Eliminar situación de una persona
+      parameters:
+        - in: path
+          name: personaId
+          required: true
+          schema: { type: integer }
+        - in: path
+          name: situacionId
+          required: true
+          schema: { type: integer }
+      responses:
+        '204':
+          description: Situación eliminada
 
-  # ==== Prestador ====
-  /post/getPost/{id}:
+  # Prestador
+  /prestador:
+    get:
+      tags:
+        - Prestador
+      summary: Obtener todos los prestadores
+      description: Retorna una lista de todos los prestadores registrados.
+      responses:
+        '200':
+          description: Lista de prestadores obtenida
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Prestador'
+        '500':
+          description: Error del servidor
+    post:
+      tags:
+        - Prestador
+      summary: Crear un nuevo prestador
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Prestador'
+      responses:
+        '201':
+          description: Prestador creado
+  /prestador/{id}:
     get:
       tags:
         - Prestador
@@ -124,74 +341,10 @@ paths:
       responses:
         '200':
           description: Prestador obtenido
-  /post/getAllPost:
-    get:
-      tags:
-        - Prestador
-      summary: Obtener todos los prestadores
-      description: Retorna una lista de todos los posts registrados.
-      tags:
-        - Prestador
-      responses:
-        '200':
-          description: Lista de posts obtenida
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/User'
-        '500':
-          description: Error del servidor
-
-  /post/getAllUserPost/{id}:
-    get:
-      tags:
-        - Prestador
-      summary: Obtener todos los posts de un usuario
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema: { type: integer }
-      responses:
-        '200':
-          description: Todos los prestadores
-
-  /post/createPost:
-    post:
-      tags:
-        - Prestador
-      summary: Crear un nuevo post
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - nickName
-                - contenido
-              properties:
-                nickName:
-                  type: string
-                  example: usuario1
-                  description: Nickname del usuario que crea el post
-                contenido:
-                  type: string
-                  example: nuevo post prueba
-                  description: Contenido del post
-      responses:
-        '201':
-         description: Post creado exitosamente
-        '400':
-          description: Solicitud inválida, falta nickName o contenido
-
-  /post/updatePost/{id}:
     put:
       tags:
         - Prestador
-      summary: Actualizar un post
+      summary: Actualizar prestador
       parameters:
         - in: path
           name: id
@@ -202,19 +355,14 @@ paths:
         content:
           application/json:
             schema:
-              properties:
-                contenido:
-                  type: string
-            example:
-              contenido: Contenido actualizado del post.
+              $ref: '#/components/schemas/PrestadorUpdate'
       responses:
         '200':
-          description: Post actualizado
-  /post/deletePost/{id}:
+          description: Prestador actualizado
     delete:
       tags:
         - Prestador
-      summary: Eliminar post
+      summary: Eliminar prestador
       parameters:
         - in: path
           name: id
@@ -222,191 +370,150 @@ paths:
           schema: { type: integer }
       responses:
         '204':
-          description: Post eliminado
-
-  # ==== Agenda ====
-  /image/getImage/{id}:
-    get:
-      tags:
-        - Agenda
-      summary: Obtener imagen por ID
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema: { type: integer }
-      responses:
-        '200':
-          description: Imagen obtenida
-  /image/getAllImages:
-    get:
-      tags:
-        - Agenda
-      summary: Obtener todas las imágenes
-      description: Retorna una lista de todas las imágenes registradas.
-      tags:
-        - Agenda
-      responses:
-        '200':
-          description: Lista de imágenes obtenida
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Image'
-        '500':
-          description: Error del servidor
-
-  /image/addImage/{id}:
-    post:
-      tags:
-        - Agenda
-      summary: Agregar una imagen a un post
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema: { type: integer }
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              properties:
-                url:
-                  type: string
-                  format: uri
-            example:
-              url: https://www.ejemplo.com/imagen.jpg
-      responses:
-        '201':
-          description: Imagen agregada
+          description: Prestador eliminado
   
-  /image/addAllImages/{id}:
-    post:
-      tags:
-        - Agenda
-      summary: Agregar múltiples imágenes a un post
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: integer
-          description: ID del post al que se le agregarán las imágenes
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                type: object
-                properties:
-                  url:
-                    type: string
-                    format: uri
-            example: 
-              - url: https://www.ejemplo.com/imagen1.jpg
-              - url: https://www.ejemplo.com/imagen2.jpg
-      responses:
-        '201':
-          description: Imágenes agregadas correctamente
-        '400':
-          description: Error en la solicitud
-
-  /image/updateImage/{id}:
-    put:
-      tags:
-        - Agenda
-      summary: Actualizar imagen
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema: { type: integer }
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              properties:
-                url:
-                  type: string
-                  format: uri
-            example:
-              url: https://www.ejemplo.com/imagen_actualizada.jpg
-      responses:
-        '200':
-          description: Imagen actualizada
-  /image/deleteImage/{id}:
-    delete:
-      tags:
-        - Agenda
-      summary: Eliminar imagen
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema: { type: integer }
-      responses:
-        '204':
-          description: Imagen eliminada
-  /image/getAllPostIMage/{id}:
+  # Contactos de prestador
+  /prestador/{prestadorId}/telefonos:
     get:
       tags:
-        - Agenda
-      summary: Obtener todas las imágenes de un post
+        - Prestador
+      summary: Obtener teléfonos de un prestador
       parameters:
         - in: path
-          name: id
+          name: prestadorId
           required: true
           schema: { type: integer }
       responses:
         '200':
-          description: Imágenes del post
-
-  # ==== Grupo familiar ====
-  /comment/getComment/{id}:
-    get:
-      tags:
-        - Grupo familiar
-      summary: Obtener un comentario
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema: { type: integer }
-      responses:
-        '200':
-          description: Comentario obtenido
-
-  /comment/getAllComments:
-    get:
-      tags:
-        - Grupo familiar
-      summary: Obtener todos los comentarios
-      description: Retorna una lista de todos los comentarios registrados.
-      tags:
-        - Grupo familiar
-      responses:
-        '200':
-          description: Lista de comentarios obtenida
+          description: Lista de teléfonos
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Comment'
+                  $ref: '#/components/schemas/Telefono'
+    post:
+      tags:
+        - Prestador
+      summary: Agregar teléfono a un prestador
+      parameters:
+        - in: path
+          name: prestadorId
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Telefono'
+      responses:
+        '201':
+          description: Teléfono agregado
+  /prestador/{prestadorId}/emails:
+    get:
+      tags:
+        - Prestador
+      summary: Obtener emails de un prestador
+      parameters:
+        - in: path
+          name: prestadorId
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Lista de emails
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Email'
+    post:
+      tags:
+        - Prestador
+      summary: Agregar email a un prestador
+      parameters:
+        - in: path
+          name: prestadorId
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Email'
+      responses:
+        '201':
+          description: Email agregado
+  
+  # Agendo
+  /agenda:
+    get:
+      tags:
+        - Agenda
+      summary: Obtener todas las agendas
+      responses:
+        '200':
+          description: Lista de agendas obtenida
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Agenda'
         '500':
           description: Error del servidor
+    post:
+      tags:
+        - Agenda
+      summary: Crear una nueva agenda
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Agenda'
+      responses:
+        '201':
+          description: Agenda creada
 
-  /comment/getAllComments/{id}:
+  # Grupo familiar
+  /grupo:
     get:
       tags:
         - Grupo familiar
-      summary: Obtener todos los comentarios de un post
+      summary: Obtener todos los grupos familiares
+      responses:
+        '200':
+          description: Lista de grupos familiares obtenida
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GrupoFamiliar'
+        '500':
+          description: Error del servidor
+    post:
+      tags:
+        - Grupo familiar
+      summary: Crear un nuevo grupo familiar
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GrupoFamiliar'
+      responses:
+        '201':
+          description: Grupo familiar creado
+  /grupo/{id}:
+    get:
+      tags:
+        - Grupo familiar
+      summary: Obtener grupo familiar por ID
       parameters:
         - in: path
           name: id
@@ -414,36 +521,11 @@ paths:
           schema: { type: integer }
       responses:
         '200':
-          description: Comentarios obtenidos
-  /comment/createComment/{id}:
-    post:
-      tags: 
-        - Grupo familiar
-      summary: Crear un comentario ingresando el id del post
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema: { type: integer }
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              properties:
-                comentario:
-                  type: string
-            example:
-              comentario: Este es un comentario de ejemplo.
-      responses:
-        '201':
-          description: Comentario creado
-
-  /comment/updateComment/{id}:
+          description: Grupo familiar obtenido
     put:
       tags:
         - Grupo familiar
-      summary: Actualizar un comentario ingresando su id
+      summary: Actualizar grupo familiar
       parameters:
         - in: path
           name: id
@@ -454,19 +536,14 @@ paths:
         content:
           application/json:
             schema:
-              properties:
-                comentario:
-                  type: string
-            example:
-              comentario: Comentario actualizado.
+              $ref: '#/components/schemas/GrupoFamiliarUpdate'
       responses:
         '200':
-          description: Comentario actualizado
-  /comment/deleteComment/{id}:
+          description: Grupo familiar actualizado
     delete:
       tags:
         - Grupo familiar
-      summary: Eliminar un comentario ingresando su id
+      summary: Eliminar grupo familiar
       parameters:
         - in: path
           name: id
@@ -474,32 +551,208 @@ paths:
           schema: { type: integer }
       responses:
         '204':
-          description: Comentario eliminado
+          description: Grupo familiar eliminado
 
+# Schemas
 components:
   schemas:
-    Afiliado:
+    Persona:
       type: object
       properties:
-        contenido:
+        personaId:
+          type: integer
+          readOnly: true
+          example: 101
+          description: Clave primaria de la persona.
+        nombre:
           type: string
-          example: Este es un post de ejemplo
+          example: Juan
+        parentesco:
+          type: string
+          nullable: true
+          example: Titular
+        apellido:
+          type: string
+          example: Pérez
+        dni:
+          type: string
+          example: '12345678'
+        esTitular:
+          type: boolean
+          example: true
+        fechaNacimiento:
+          type: string
+          format: date
+          example: '1980-05-15'
+        fechaAlta:
+          type: string
+          format: date
+          readOnly: true
+          example: '2025-11-03'
+        fechaBaja:
+          type: string
+          format: date
+          nullable: true
+          example: null
+        credencial:
+          type: string
+          example: '000001-01'
+        idGrupo:
+          type: integer
+          example: 1
+        tipoDocId:
+          type: integer
+          example: 1
+        esActivo:
+          type: integer
+          readOnly: true
+          example: 1
+      required:
+        - nombre
+        - apellido
+        - dni
+        - esTitular
+        - fechaNacimiento
+        - credencial
+        - idGrupo
+        - tipoDocId
+
     Prestador:
       type: object
       properties:
-        url:
-          type: string
-          format: uri
-          example: https://www.ejemplo.com/imagen.jpg
+        nombre: { type: string, example: "Dr. Gómez" }
+        especialidad: { type: string, example: "Cardiología" }
+    PrestadorUpdate:
+      type: object
+      properties:
+        nombre: { type: string, example: "Dra. Gómez" }
+
     Agenda:
       type: object
       properties:
-        comentario:
-          type: string 
-          example: Este es un comentario de ejemplo
-    Grupo familiar: 
+        prestadorId: { type: integer, example: 10 }
+        fecha: { type: string, format: date, example: "2025-12-31" }
+        horaInicio: { type: string, format: time, example: "09:00:00" }
+      required: 
+        - prestadorId
+        - fecha
+        - horaInicio
+
+    GrupoFamiliar: 
       type: object
       properties:
-        descripcion:
+        titularId: { type: integer, example: 1 }
+        descripcion: { type: string, example: "Grupo Titular Juan Pérez" }
+      required:
+        - titularId
+        - descripcion
+    GrupoFamiliarUpdate:
+      type: object
+      properties:
+        descripcion: { type: string, example: "Nuevo nombre del Grupo" }
+
+
+    Telefono:
+      type: object
+      description: Telefono.
+      properties:
+        nroTelefono: { type: string, example: "1155551234" }
+      required:
+        - nroTelefono
+    
+    Email:
+      type: object
+      properties:
+        descripcion: { type: string, example: "personal@ejemplo.com" }
+      required:
+        - descripcion
+        
+    Direccion:
+      type: object
+      description: Direccion.
+      properties:
+        calle: 
           type: string
-          example: etiqueta_ejemplo
+          example: "Av. Falsa"
+          description: Nombre de la calle (Requerido).
+        nro: 
+          type: integer
+          example: 123
+          description: Número de la dirección.
+      required:
+        - calle
+
+    SituacionTerapeuticaAsociada:
+      type: object
+      description: Datos necesarios para crear la relación en la tabla SituacionPersona.
+      properties:
+        situacionId: 
+          type: integer
+          example: 5
+          description: ID de la situación terapéutica.
+        esCronica:
+          type: boolean
+          example: false
+          description: Indica si la situación es crónica.
+        fechaInicio:
+          type: string
+          format: date
+          example: '2025-11-04'
+          description: Fecha de inicio de la situación terapéutica.
+      required:
+        - situacionId
+        - esCronica
+
+    PersonaRequest:
+      type: object
+      description: Schema para la creación de una nueva Persona.
+      properties:
+        nombre: { type: string, example: Sofia }
+        apellido: { type: string, example: Gomez }
+        dni: { type: string, example: '45123789' }
+        fechaNacimiento: { type: string, format: date, example: '2005-08-20' }
+        idGrupo: { type: integer, example: 1 }
+        tipoDocId: { type: integer, example: 1 }
+        parentesco: { type: string, nullable: true, example: Hijo/a }
+        esTitular: { type: boolean, readOnly: true, description: "Generado por el servidor." }
+        credencial: { type: string, readOnly: true, description: "Generado por el servidor." }
+        direcciones:
+          type: array
+          minItems: 1
+          items: { $ref: '#/components/schemas/Direccion' }
+        telefonos:
+          type: array
+          minItems: 1
+          items: { $ref: '#/components/schemas/Telefono' }
+        emails:
+          type: array
+          minItems: 1
+          items: { $ref: '#/components/schemas/Email' }
+        situacionesTerapeuticas:
+          type: array
+          description: Lista opcional de situaciones terapéuticas a asociar.
+          items: { $ref: '#/components/schemas/SituacionTerapeuticaAsociada' }
+
+      required:
+        - nombre
+        - apellido
+        - dni
+        - fechaNacimiento
+        - idGrupo
+        - tipoDocId
+        - direcciones
+        - telefonos
+        - emails
+
+    PersonaUpdateRequest:
+      type: object
+      description: Schema para el update de una Persona. 
+      properties:
+        nombre: { type: string, example: "Juan Carlos" }
+        apellido: { type: string, example: "Pérez García" }
+        dni: { type: string, example: '12345678' }
+        fechaNacimiento: { type: string, format: date, example: '1980-05-15' }
+        parentesco: { type: string, nullable: true, example: "Cónyuge" }
+        fechaBaja: { type: string, format: date, nullable: true, example: '2026-01-01' }
+        idGrupo: { type: integer, example: 1 }
+        tipoDocId: { type: integer, example: 1 }

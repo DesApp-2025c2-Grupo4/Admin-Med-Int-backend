@@ -1,4 +1,5 @@
 const { PlanMedico } = require('../db/models'); 
+const redis = require('../db/config/redis.js')
 
 const createPlanMedico = async (req, res) => {
     try {
@@ -18,9 +19,13 @@ const createPlanMedico = async (req, res) => {
 
 const getPlanesMedicos = async (req, res) => {
     try {
+        const key = 'planMedico:list';
         const planesMedicos = await PlanMedico.findAll({
             attributes: ['planId', 'descripcion'] 
         });
+        if (planesMedicos.length > 0) {
+            await redis.set(key, JSON.stringify(planesMedicos), { EX: 900 }); 
+        }
         res.status(200).json(planesMedicos);
         
     } catch (error) {

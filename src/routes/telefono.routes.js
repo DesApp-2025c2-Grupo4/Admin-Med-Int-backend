@@ -1,8 +1,10 @@
 const { Router } = require("express");
 const { telefonoControllers } = require("../controllers");
 const telefonoRoutes = Router();
-telefonoRoutes.post('/:personaId', telefonoControllers.addTelefonoToPersona);
-telefonoRoutes.delete('/:telefonoId', telefonoControllers.deleteTelefono);
-telefonoRoutes.put('/:id', telefonoControllers.updateTelefono)
+const cacheMiddleware  = require('../middleware/redisMiddleware.js')
+
+telefonoRoutes.post('/:personaId', cacheMiddleware.deleteCache('persona:'), telefonoControllers.addTelefonoToPersona);
+telefonoRoutes.delete('/:telefonoId', cacheMiddleware.deleteCache('persona:'), telefonoControllers.deleteTelefono);
+telefonoRoutes.put('/:id', cacheMiddleware.deleteCache('persona:'), telefonoControllers.updateTelefono)
 
 module.exports = telefonoRoutes;

@@ -2,6 +2,9 @@
 //Express
 const express = require('express')
 
+//Redis
+const redisClient = require('./db/config/redis.js')
+
 //Cors
 const cors = require('cors')
 
@@ -38,6 +41,7 @@ app.listen(PORT, async () => {
   try {
     //await db.sequelize.sync({ force: true })
     console.log(`Servidor Corriendo en http://localhost:${PORT}`)
+    await redisClient.connect();
   } catch (error) {
     console.log(error)
   }

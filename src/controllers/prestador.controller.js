@@ -1,4 +1,5 @@
 const { Prestador, DireccionPrestador, TelefonoPrestador, EmailPrestador, Especialidad, PrestadorEspecialidad, sequelize} = require('../db/models');
+const redis = require('../db/config/redis.js')
 
 const createPrestador = async (req, res) => {
   const transaction = await sequelize.transaction();
@@ -105,6 +106,7 @@ const createPrestador = async (req, res) => {
 
 const getPrestadores = async (_, res) => {
   try {
+    const key = 'prestador:list:';
     const prestadores = await Prestador.findAll({
       include: [
         { model: DireccionPrestador, as: 'direccion' },
@@ -114,7 +116,7 @@ const getPrestadores = async (_, res) => {
         { model: Prestador, as: 'centro', attributes: ['prestadorId', 'nombre'] } 
       ]
     });
-
+    redis.set(key, JSON.stringify(prestadores), { EX: 900 })
     res.status(200).json(prestadores);
   } catch (error) {
     console.error(`Error al obtener los prestadores: ${error}`);
@@ -125,6 +127,7 @@ const getPrestadores = async (_, res) => {
 const getPrestadorByPk = async (req, res) => {
   try {
     const { id } = req.params;
+    const key = `prestador:${id}`;
 
     const prestador = await Prestador.findByPk(id, {
       include: [
@@ -139,7 +142,7 @@ const getPrestadorByPk = async (req, res) => {
     if (!prestador) {
       return res.status(404).json({ error: 'Prestador no encontrado' });
     }
-
+    redis.set(key, JSON.stringify(prestador.toJSON()), { EX: 900 })
     res.status(200).json(prestador.toJSON());
   } catch (error) {
     console.error(`Error al obtener el prestador: ${error}`);
