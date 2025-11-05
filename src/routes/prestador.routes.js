@@ -4,22 +4,23 @@ const { requireAttribute } = require('../middleware/generic.middleware');
 const validarTelefono = require("../middleware/validarTelefono.js");
 const validarEmail = require("../middleware/validarEmail.js");
 const prestadorRoutes = Router();
+const cacheMiddleware  = require('../middleware/redisMiddleware.js')
 
-prestadorRoutes.get('/', prestadorControllers.getPrestadores);
-prestadorRoutes.get('/:id', prestadorControllers.getPrestadorByPk);
-prestadorRoutes.post('/', prestadorControllers.createPrestador);
-prestadorRoutes.delete('/:id', prestadorControllers.deletePrestador);
-prestadorRoutes.put('/:id', prestadorControllers.updatePrestador);
+prestadorRoutes.get('/', cacheMiddleware.checkCache('prestador:list'),  prestadorControllers.getPrestadores);
+prestadorRoutes.get('/:id', cacheMiddleware.checkCache('prestador:'), prestadorControllers.getPrestadorByPk);
+prestadorRoutes.post('/', cacheMiddleware.deleteCache('prestador:list'), prestadorControllers.createPrestador);
+prestadorRoutes.delete('/:id', cacheMiddleware.deleteCache('prestador:list'), cacheMiddleware.deleteCache('prestador:'), prestadorControllers.deletePrestador);
+prestadorRoutes.put('/:id', cacheMiddleware.deleteCache('prestador:list'), cacheMiddleware.deleteCache('prestador:'), prestadorControllers.updatePrestador);
 
 //agregar middleware de validacion genericos
 
 //Telefono
-prestadorRoutes.get('/:prestadorId/telefonos', telefonoPrestadorControllers.getTelefonosByPrestador);
-prestadorRoutes.post('/:prestadorId/telefonos', validarTelefono, requireAttribute('nroTelefono', 'TelefonoPrestador'), telefonoPrestadorControllers.addTelefonoToPrestador);
+prestadorRoutes.get('/:prestadorId/telefonos', cacheMiddleware.checkCache('prestadorTelefonos:list:'), telefonoPrestadorControllers.getTelefonosByPrestador);
+prestadorRoutes.post('/:prestadorId/telefonos', cacheMiddleware.deleteCache('prestadorTelefonos:list:'),cacheMiddleware.deleteCache('prestador:'), validarTelefono, requireAttribute('nroTelefono', 'TelefonoPrestador'), telefonoPrestadorControllers.addTelefonoToPrestador);
 
 //Email
-prestadorRoutes.get('/:prestadorId/emails', emailPrestadorControllers.getEmailsByPrestador);
-prestadorRoutes.post('/:prestadorId/emails', validarEmail ,requireAttribute('descripcion', 'EmailPrestador'), emailPrestadorControllers.addEmailToPrestador);
+prestadorRoutes.get('/:prestadorId/emails', cacheMiddleware.checkCache('prestadorEmails:list:'), emailPrestadorControllers.getEmailsByPrestador);
+prestadorRoutes.post('/:prestadorId/emails', cacheMiddleware.deleteCache('prestadorEmails:list:'), cacheMiddleware.deleteCache('prestador:'), validarEmail, requireAttribute('descripcion', 'EmailPrestador'), emailPrestadorControllers.addEmailToPrestador);
 
 
 module.exports = prestadorRoutes;

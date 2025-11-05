@@ -1,7 +1,10 @@
 const { SituacionesTerapeuticas,PlanMedico,TipoDocumento, Especialidad, Prestador } = require('../db/models') 
+const redis = require('../db/config/redis.js')
+
 const getDatosParaFormulario = async (_,res)=>{
   try {
     //TIPOSD DE DOCUMENTS
+    const key = 'dataform:general';
     const tipoDocs = await TipoDocumento.findAll()
     const tiposDeDocumentos = tipoDocs.map(d=>{
       return {
@@ -27,7 +30,7 @@ const getDatosParaFormulario = async (_,res)=>{
         descripcion:s.descripcion
       }
     })
-
+    await redis.set(key, JSON.stringify(responseData), { EX: 900 });
     //RESPUESTA
     res.json({
       tiposDeDocumentos,
@@ -44,8 +47,10 @@ const getDatosParaFormulario = async (_,res)=>{
 
 const getDatosParaPrestadores = async (_, res) => {
   try {
+    const key = 'dataform:prestador';
     const especialidades = await Especialidad.findAll()
     const centrosMedicos = await Prestador.findAll({ where: {tipoPrestador: 'Centro Médico'}})
+    await redis.set(key, JSON.stringify(responseData), { EX: 900 });
     res.json({especialidades, centrosMedicos})
   } catch (error) {
     console.log('Error al obtener datos para el formulario')

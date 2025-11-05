@@ -1,7 +1,9 @@
 const { Agenda, AgendaDia, Horario, DiaDeSemana } = require("../db/models");
 const { sequelize } = require("../db/models");
+const redis = require('../db/config/redis.js')
 
-const getAgendas = async (_, res) => {
+const getAgendas = async (req, res) => {
+  const key = 'agenda:list';
   try {
     const agendas = await Agenda.findAll({
       include: [
@@ -15,6 +17,10 @@ const getAgendas = async (_, res) => {
         },
       ],
     });
+    if (agendas.length > 0) {
+      const dataToCache = JSON.stringify(agendas); 
+      await redis.set(key, dataToCache, { EX: 3600 }); 
+    }
     res.status(200).json(agendas);
   } catch (error) {
     console.error(`Error al obtener todas las agendas: ${error}`);
