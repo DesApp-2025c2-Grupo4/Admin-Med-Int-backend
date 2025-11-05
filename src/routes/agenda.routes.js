@@ -9,4 +9,6 @@ agendaRoutes.post('/', cacheMiddleware.deleteCache('agenda:list'), agendaControl
 
 agendaRoutes.delete('/:id', agendaControllers.eliminarUnaAgenda)
 
+agendaRoutes.get('/:id', agendaControllers.getAgendaById)
+
 module.exports = agendaRoutes
