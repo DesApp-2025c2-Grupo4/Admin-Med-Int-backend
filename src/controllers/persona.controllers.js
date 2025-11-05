@@ -3,10 +3,12 @@ const { crearCredencial } = require('../utils/crearCredencial');
 const {formatearSituaciones} = require('../utils/formatearSituaciones')
 const { sequelize } = require('../db/models');
 const { Op } = require('sequelize')
+const redis = require('../db/config/redis.js')
 
 //----------------------------GETTERS
 const getPersonas = async (_, res) => {
   try {
+    const key = 'persona:list:all';
     const personas = await Persona.findAll({
       include: [
         {
@@ -25,6 +27,7 @@ const getPersonas = async (_, res) => {
         }
       ],
     });
+    redis.set(key, JSON.stringify(personas), { EX: 900 });
     res.status(200).json(personas);
   } catch (error) {
     console.error(`Error al obtener todas las personas: ${error}`);
@@ -35,6 +38,7 @@ const getPersonas = async (_, res) => {
 const getPersonaByPk = async (req,res)=>{
   try {
     const {id} = req.params
+    const key = `persona:${id}`;
     //Busco la persona
     const personaBuscada = await Persona.findByPk(
       id,{
@@ -79,7 +83,9 @@ const getPersonaByPk = async (req,res)=>{
       planId: grupoPeteneciente.planMedico.planId,
       descripcion: grupoPeteneciente.planMedico.descripcion
     }
+    redis.set(key, JSON.stringify(personaFormateada), { EX: 900 });
     //Retorno
+    console.log('llego AQUÍ')
     res.json(personaFormateada)
   } catch (error) {
     console.error(`Error al obtener la persona: ${error}`);
@@ -89,6 +95,7 @@ const getPersonaByPk = async (req,res)=>{
 //Obtener los afiliados
 const getAfiliados = async(_,res)=>{
   try {
+    const key = 'afiliado:list:all';
     const afiliados = await Persona.findAll(
       {
         where:{
@@ -111,6 +118,7 @@ const getAfiliados = async(_,res)=>{
         }]
       },
     )
+    redis.set(key, JSON.stringify(afiliados), { EX: 900 });
     res.json(afiliados)
   } catch (error) {
     console.log(error)
@@ -289,7 +297,7 @@ const getAfiliadosPorPeriodo = async (req, res) => {
     if (!fechaDesde || !fechaHasta) {
       return res.status(400).json({ error: 'fechaDesde y fechaHasta son requeridos' });
     }
-
+    const key = `afiliado:list:periodo:${fechaDesde}:${fechaHasta}`;
     const desde = new Date(fechaDesde);
     const hasta = new Date(fechaHasta);
 
@@ -322,7 +330,7 @@ const getAfiliadosPorPeriodo = async (req, res) => {
         }
       ],
     });
-
+    redis.set(key, JSON.stringify(afiliadosFiltrados), { EX: 900 });
     res.json(afiliadosFiltrados);
   } catch (error) {
     console.log(error);
