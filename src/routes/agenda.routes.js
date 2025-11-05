@@ -11,4 +11,6 @@ agendaRoutes.delete('/:id', agendaControllers.eliminarUnaAgenda)
 
 agendaRoutes.get('/:id', agendaControllers.getAgendaById)
 
+agendaRoutes.put('/:id', agendaControllers.updateAgenda)
+
 module.exports = agendaRoutes
