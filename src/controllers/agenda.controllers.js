@@ -120,9 +120,80 @@ const getAgendaById = async (req, res) => {
   }
 };
 
+const updateAgenda = async (req, res) => {
+  const { id } = req.params;
+  const { prestadorId, especialidadId, direccionId, agendas } = req.body;
+
+  const transaction = await sequelize.transaction();
+
+  try {
+    const agendaExistente = await Agenda.findByPk(id, { transaction });
+
+    if (!agendaExistente) {
+      await transaction.rollback();
+      return res.status(404).json({ message: "Agenda no encontrada" });
+    }
+
+    // Actualizar datos principales de la agenda
+    await agendaExistente.update(
+      { prestadorId, especialidadId, direccionId },
+      { transaction }
+    );
+
+    // Eliminar días y horarios anteriores
+    const diasAnteriores = await AgendaDia.findAll({
+      where: { agendaId: id },
+      transaction,
+    });
+
+    for (const dia of diasAnteriores) {
+      await Horario.destroy({ where: { agendaDiaId: dia.agendaDiaId }, transaction });
+      await dia.destroy({ transaction });
+    }
+
+    // Crear nuevos días y horarios
+    for (const a of agendas) {
+      const nuevoDia = await AgendaDia.create(
+        { agendaId: id, idDia: a.idDia },
+        { transaction }
+      );
+
+      const nuevosHorarios = a.horarios.map((h) => ({
+        ...h,
+        agendaDiaId: nuevoDia.agendaDiaId,
+      }));
+
+      await Horario.bulkCreate(nuevosHorarios, { transaction });
+    }
+
+  
+    const agendaActualizada = await Agenda.findByPk(id, {
+      include: [
+        {
+          model: AgendaDia,
+          as: "agendas",
+          include: [
+            { model: Horario, as: "horarios" },
+            { model: DiaDeSemana, as: "dia" },
+          ],
+        },
+      ],
+      transaction,
+    });
+
+    await transaction.commit();
+    res.status(200).json(agendaActualizada);
+  } catch (error) {
+    await transaction.rollback();
+    console.error("Error al actualizar agenda:", error);
+    res.status(500).json({ message: "Error al actualizar la agenda" });
+  }
+};
+
 module.exports = {
   getAgendas,
   createAgenda,
   eliminarUnaAgenda,
-  getAgendaById
+  getAgendaById,
+  updateAgenda
 };
