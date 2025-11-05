@@ -93,8 +93,36 @@ const eliminarUnaAgenda = async (req, res) => {
   }
 };
 
+const getAgendaById = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const agenda = await Agenda.findByPk(id, {
+      include: [
+        {
+          model: AgendaDia,
+          as: "agendas",
+          include: [
+            { model: Horario, as: "horarios" },
+            { model: DiaDeSemana, as: "dia" },
+          ],
+        },
+      ],
+    });
+
+    if (!agenda) {
+      return res.status(404).json({ message: "Agenda no encontrada" });
+    }
+
+    res.status(200).json(agenda);
+  } catch (error) {
+    console.error("Error al obtener la agenda por ID:", error);
+    res.status(500).json({ message: "Error en el servidor al obtener la agenda" });
+  }
+};
+
 module.exports = {
   getAgendas,
   createAgenda,
-  eliminarUnaAgenda
+  eliminarUnaAgenda,
+  getAgendaById
 };
