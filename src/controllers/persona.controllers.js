@@ -117,7 +117,7 @@ const getAfiliados = async(_,res)=>{
         }]
       },
     )
-    redis.set(key, JSON.stringify(afiliados), { EX: TTL });
+    redis.set(key, JSON.stringify(afiliados), { EX: 900 });
     res.json(afiliados)
   } catch (error) {
     console.log(error)
