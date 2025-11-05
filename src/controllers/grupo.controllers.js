@@ -58,7 +58,7 @@ const getGrupos = async (_, res) => {
         }
       }
     )
-    redis.set(key, JSON.stringify(gruposFormateado), { EX: 900 });
+    redis.set(key, JSON.stringify(gruposFormateado), { EX: process.env.CACHE_TTL });
     //Devuelvo todos los grupos
     res.status(200).json(gruposFormateado);
   } catch (error) {
@@ -112,7 +112,7 @@ const getGrupoByPk = async(req,res) => {
         }
       )
     }
-    redis.set(key, JSON.stringify(grupoFormateado), { EX: 900 });
+    redis.set(key, JSON.stringify(grupoFormateado), { EX: process.env.CACHE_TTL });
     //Retorno
     res.json(grupoFormateado)
   } catch (error) {

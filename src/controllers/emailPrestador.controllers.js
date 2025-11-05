@@ -34,7 +34,7 @@ const getEmailsByPrestador = async (req, res) => {
                  return res.status(404).json({ message: `Prestador con ID ${prestadorId} no encontrada.` });
              }
         }
-        redis.set(key, JSON.stringify(emails), { EX: 900 });
+        redis.set(key, JSON.stringify(emails), { EX: process.env.CACHE_TTL });
         res.status(200).json(emails);
 
     } catch (error) {

@@ -40,7 +40,7 @@ const getTelefonosByPersona = async (req, res) => {
                  return res.status(404).json({ message: `Persona con ID ${personaId} no encontrada.` });
              }
         }
-        await redis.set(key, JSON.stringify(telefonos), { EX: 900 });
+        await redis.set(key, JSON.stringify(telefonos), { EX: process.env.CACHE_TTL });
         res.status(200).json(telefonos);
 
     } catch (error) {

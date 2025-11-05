@@ -33,7 +33,7 @@ const getDireccionesByPersona = async (req, res) => {
             where: { personaId: personaId },
         });
         if (direcciones.length > 0) {
-            await redis.set(key, JSON.stringify(direcciones), { EX: 900 });
+            await redis.set(key, JSON.stringify(direcciones), { EX: process.env.CACHE_TTL });
         }
         res.status(200).json(direcciones);
 

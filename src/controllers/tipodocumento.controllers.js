@@ -20,7 +20,7 @@ const getTipoDoc = async (req, res) => {
             attributes: ['descripcion'] 
         });
         if (tiposDocumento.length > 0) {
-            await redis.set(key, JSON.stringify(tiposDocumento), { EX: 3600 }); 
+            await redis.set(key, JSON.stringify(tiposDocumento), { EX: process.env.CACHE_TTL }); 
         }
         res.status(200).json(tiposDocumento);
     } catch (error) {

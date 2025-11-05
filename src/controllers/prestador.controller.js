@@ -116,7 +116,7 @@ const getPrestadores = async (_, res) => {
         { model: Prestador, as: 'centro', attributes: ['prestadorId', 'nombre'] } 
       ]
     });
-    redis.set(key, JSON.stringify(prestadores), { EX: 900 })
+    redis.set(key, JSON.stringify(prestadores), { EX: process.env.CACHE_TTL })
     res.status(200).json(prestadores);
   } catch (error) {
     console.error(`Error al obtener los prestadores: ${error}`);
@@ -142,7 +142,7 @@ const getPrestadorByPk = async (req, res) => {
     if (!prestador) {
       return res.status(404).json({ error: 'Prestador no encontrado' });
     }
-    redis.set(key, JSON.stringify(prestador.toJSON()), { EX: 900 })
+    redis.set(key, JSON.stringify(prestador.toJSON()), { EX: process.env.CACHE_TTL })
     res.status(200).json(prestador.toJSON());
   } catch (error) {
     console.error(`Error al obtener el prestador: ${error}`);

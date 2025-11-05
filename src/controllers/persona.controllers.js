@@ -27,7 +27,7 @@ const getPersonas = async (_, res) => {
         }
       ],
     });
-    redis.set(key, JSON.stringify(personas), { EX: 900 });
+    redis.set(key, JSON.stringify(personas), { EX: process.env.CACHE_TTL });
     res.status(200).json(personas);
   } catch (error) {
     console.error(`Error al obtener todas las personas: ${error}`);
@@ -83,7 +83,7 @@ const getPersonaByPk = async (req,res)=>{
       planId: grupoPeteneciente.planMedico.planId,
       descripcion: grupoPeteneciente.planMedico.descripcion
     }
-    redis.set(key, JSON.stringify(personaFormateada), { EX: 900 });
+    redis.set(key, JSON.stringify(personaFormateada), { EX: process.env.CACHE_TTL });
     //Retorno
     console.log('llego AQUÍ')
     res.json(personaFormateada)
@@ -118,7 +118,7 @@ const getAfiliados = async(_,res)=>{
         }]
       },
     )
-    redis.set(key, JSON.stringify(afiliados), { EX: 900 });
+    redis.set(key, JSON.stringify(afiliados), { EX: process.env.CACHE_TTL });
     res.json(afiliados)
   } catch (error) {
     console.log(error)
@@ -330,7 +330,7 @@ const getAfiliadosPorPeriodo = async (req, res) => {
         }
       ],
     });
-    redis.set(key, JSON.stringify(afiliadosFiltrados), { EX: 900 });
+    redis.set(key, JSON.stringify(afiliadosFiltrados), { EX: process.env.CACHE_TTL });
     res.json(afiliadosFiltrados);
   } catch (error) {
     console.log(error);

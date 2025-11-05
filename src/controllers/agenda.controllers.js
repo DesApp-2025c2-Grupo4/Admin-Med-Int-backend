@@ -19,7 +19,7 @@ const getAgendas = async (req, res) => {
     });
     if (agendas.length > 0) {
       const dataToCache = JSON.stringify(agendas); 
-      await redis.set(key, dataToCache, { EX: 900 }); 
+      await redis.set(key, dataToCache, { EX: process.env.CACHE_TTL}); 
     }
     res.status(200).json(agendas);
   } catch (error) {

@@ -40,7 +40,7 @@ const getTelefonosByPrestador = async (req, res) => {
                  return res.status(404).json({ message: `Prestador con ID ${prestadorId} no encontrado.` });
              }
         }
-        redis.set(key, JSON.stringify(telefonos), { EX: 900 });
+        redis.set(key, JSON.stringify(telefonos), { EX: process.env.CACHE_TTL });
         res.status(200).json(telefonos);
 
     } catch (error) {

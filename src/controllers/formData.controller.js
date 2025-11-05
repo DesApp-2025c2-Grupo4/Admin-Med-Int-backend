@@ -38,7 +38,7 @@ const getDatosParaFormulario = async (_,res)=>{
     }
 
     //Lo pongo en la caché
-    await redis.set(key, JSON.stringify(dataForm), { EX: 900 });
+    await redis.set(key, JSON.stringify(dataForm), { EX: process.env.CACHE_TTL });
 
     //RESPUESTA
     res.json(dataForm)
@@ -62,7 +62,7 @@ const getDatosParaPrestadores = async (_, res) => {
       centrosMedicos
     }
 
-    await redis.set(key, JSON.stringify(dataForm), { EX: 900 });
+    await redis.set(key, JSON.stringify(dataForm), { EX: process.env.CACHE_TTL });
     res.json(dataForm)
   } catch (error) {
     console.log('Error al obtener datos para el formulario')
