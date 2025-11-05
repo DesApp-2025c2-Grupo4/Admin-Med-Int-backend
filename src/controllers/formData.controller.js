@@ -12,7 +12,6 @@ const getDatosParaFormulario = async (_,res)=>{
         descripcion: d.descripcion
       }
     })
-
     //PLANES MEDICOS
     const planMedico = await PlanMedico.findAll()
     const planesMedicos = planMedico.map(p=>{
@@ -30,13 +29,19 @@ const getDatosParaFormulario = async (_,res)=>{
         descripcion:s.descripcion
       }
     })
-    await redis.set(key, JSON.stringify(responseData), { EX: 900 });
-    //RESPUESTA
-    res.json({
+    
+    //Datos a devolver
+    const dataForm = {
       tiposDeDocumentos,
       planesMedicos,
       situacionesTerapeuticas
-    })
+    }
+
+    //Lo pongo en la caché
+    await redis.set(key, JSON.stringify(dataForm), { EX: 900 });
+
+    //RESPUESTA
+    res.json(dataForm)
 
   } catch (error) {
     console.log('Error al obtener datos para el formulario')
@@ -50,8 +55,15 @@ const getDatosParaPrestadores = async (_, res) => {
     const key = 'dataform:prestador';
     const especialidades = await Especialidad.findAll()
     const centrosMedicos = await Prestador.findAll({ where: {tipoPrestador: 'Centro Médico'}})
-    await redis.set(key, JSON.stringify(responseData), { EX: 900 });
-    res.json({especialidades, centrosMedicos})
+
+    //Datos a devolver
+    const dataForm = {
+      especialidades,
+      centrosMedicos
+    }
+
+    await redis.set(key, JSON.stringify(dataForm), { EX: 900 });
+    res.json(dataForm)
   } catch (error) {
     console.log('Error al obtener datos para el formulario')
     res.status(500).json('Error en el servidor')

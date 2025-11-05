@@ -37,8 +37,8 @@ const getPersonas = async (_, res) => {
 //Obtener una persona
 const getPersonaByPk = async (req,res)=>{
   try {
-    const key = `persona:${id}`;
     const {id} = req.params
+    const key = `persona:${id}`;
     //Busco la persona
     const personaBuscada = await Persona.findByPk(
       id,{
@@ -85,6 +85,7 @@ const getPersonaByPk = async (req,res)=>{
     }
     redis.set(key, JSON.stringify(personaFormateada), { EX: 900 });
     //Retorno
+    console.log('llego AQUÍ')
     res.json(personaFormateada)
   } catch (error) {
     console.error(`Error al obtener la persona: ${error}`);
