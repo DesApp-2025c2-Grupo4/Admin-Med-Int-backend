@@ -172,10 +172,9 @@ const actualizarGrupo = async(req,res)=>{
   try {
     //Busco el grupo
     const grupoParaActualizar = await Grupo.findByPk(id)
-    //Actualizo
     grupoParaActualizar.planId = body.planId
-    grupoParaActualizar.fechaAlta = new Date(body.fechaAlta)
-    grupoParaActualizar.fechaBaja = body.fechaBaja === '' ? null : new Date(body.fechaBaja)
+    grupoParaActualizar.fechaAlta = new Date(`${body.fechaAlta}T00:00:00`)
+    grupoParaActualizar.fechaBaja = body.fechaBaja === '' ? null : new Date(`${body.fechaBaja}T00:00:00`)
     
     //Guardo los cabios
     await grupoParaActualizar.save()
