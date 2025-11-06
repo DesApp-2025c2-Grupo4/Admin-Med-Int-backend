@@ -104,13 +104,15 @@ const personaSchema = Joi.object({
       'any.required': 'Se debe ingresar al menos una dirección.',
     }),
 
-    telefonos: Joi.array().items(telefonoSchema).required().messages({
+    telefonos: Joi.array().items(telefonoSchema).unique("nroTelefono").required().messages({
       'array.base': 'telefonos debe ser un array',
+      'array.unique': 'Los teléfonos deben ser únicos en el array',
       'any.required': 'Se debe ingresar al menos un teléfono.',
     }),
 
-    emails: Joi.array().items(emailSchema).required().messages({
+    emails: Joi.array().items(emailSchema).unique("descripcion").required().messages({
       'array.base': 'emails debe ser un array',
+      'array.unique': 'Los emails deben ser únicos en el array',
       'any.required': 'Se debe ingresar al menos un email.',
     }),
 
