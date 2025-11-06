@@ -1,5 +1,6 @@
 const { Prestador, DireccionPrestador, TelefonoPrestador, EmailPrestador, Especialidad, PrestadorEspecialidad, sequelize} = require('../db/models');
 const redis = require('../db/config/redis.js')
+const { Op } = require('sequelize');
 
 const createPrestador = async (req, res) => {
   const transaction = await sequelize.transaction();
@@ -315,11 +316,43 @@ const updatePrestador = async (req, res) => {
   }
 };
 
+// obtener prestadores por período
+const getPrestadoresPorPeriodo = async (req, res) => {
+  try {
+    const { fechaDesde, fechaHasta } = req.query;
+
+    // Validación de fechas
+    if (!fechaDesde || !fechaHasta) {
+      return res.status(400).json({ error: 'fechaDesde y fechaHasta son requeridos' });
+    }
+    const key = `prestador:list:periodo:${fechaDesde}:${fechaHasta}`;
+    const desde = new Date(fechaDesde);
+    const hasta = new Date(fechaHasta);
+
+    if (isNaN(desde.getTime()) || isNaN(hasta.getTime()) || desde > hasta) {
+      return res.status(400).json({ error: 'Fechas inválidas' });
+    }
+
+    const prestadoresFiltrados = await Prestador.findAll({
+      where: {
+        fechaAlta: {
+          [Op.between]: [fechaDesde, fechaHasta]
+        }
+      }
+    });
+    redis.set(key, JSON.stringify(prestadoresFiltrados), { EX: process.env.CACHE_TTL });
+    res.json(prestadoresFiltrados);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: 'Error al obtener los prestadores por período' });
+  }
+};
 
 module.exports = {
   getPrestadores,
   getPrestadorByPk,
   createPrestador,
   deletePrestador,
-  updatePrestador
+  updatePrestador,
+  getPrestadoresPorPeriodo
 };

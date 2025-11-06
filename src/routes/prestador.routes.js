@@ -7,6 +7,7 @@ const prestadorRoutes = Router();
 const cacheMiddleware  = require('../middleware/redisMiddleware.js')
 
 prestadorRoutes.get('/', cacheMiddleware.checkCache('prestador:list'),  prestadorControllers.getPrestadores);
+prestadorRoutes.get('/por-periodo',cacheMiddleware.checkCache('prestador:list:periodo:'), prestadorControllers.getPrestadoresPorPeriodo);
 prestadorRoutes.get('/:id', cacheMiddleware.checkCache('prestador:'), prestadorControllers.getPrestadorByPk);
 prestadorRoutes.post('/', cacheMiddleware.deleteCache('prestador:list'), prestadorControllers.createPrestador);
 prestadorRoutes.delete('/:id', cacheMiddleware.deleteCache('prestador:list'), cacheMiddleware.deleteCache('prestador:'), prestadorControllers.deletePrestador);
