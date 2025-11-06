@@ -14,7 +14,7 @@ personaRoutes.get('/', cacheMiddleware.checkCache('persona:list:all'), personaCo
 personaRoutes.get('/afiliados',cacheMiddleware.checkCache('afiliado:list:all'), personaControllers.getAfiliados)
 personaRoutes.get('/afiliados/por-periodo',cacheMiddleware.checkCache('afiliado:list:periodo:'), personaControllers.getAfiliadosPorPeriodo);
 personaRoutes.get('/:id',cacheMiddleware.checkCache('persona:'), personaControllers.getPersonaByPk);
-personaRoutes.post('/', cacheMiddleware.deleteCache('persona:list:all'), validarDniUnico, validarTelefonosUnicos, validarEmailsUnicos ,validarPersona, personaControllers.createPersona);
+personaRoutes.post('/', cacheMiddleware.deleteCache('persona:list:all'), validarPersona, validarDniUnico, validarTelefonosUnicos, validarEmailsUnicos , personaControllers.createPersona);
 personaRoutes.delete('/:id',cacheMiddleware.deleteCache('persona:'), personaControllers.deletePersona);
 personaRoutes.put('/:id', cacheMiddleware.deleteCache('persona:'), personaControllers.actualizarPersona)
 //Telefono
