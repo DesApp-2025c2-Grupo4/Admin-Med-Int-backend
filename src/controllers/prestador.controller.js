@@ -19,7 +19,14 @@ const createPrestador = async (req, res) => {
     if (!nombre || !apellido || !tipoPrestador || !cuilCuit) {
       return res.status(400).json({ error: 'Faltan campos obligatorios: nombre, apellido, tipoPrestador o cuilCuit' });
     }
-
+    // Validacion que tenga al menos un contacto
+    if (
+        !Array.isArray(telefonos) || telefonos.length === 0 ||
+        !Array.isArray(emails) || emails.length === 0 ||
+        !Array.isArray(direcciones) || direcciones.length === 0
+    ) {
+        return res.status(400).json({error: 'Debe incluir al menos un teléfono, un email y una dirección.'});
+    }
     const tipoPrestadorDB = tipoPrestador.toLowerCase() === 'independiente' ? 'Independiente' : 'Centro Médico';
 
     const prestador = await Prestador.create(
@@ -169,147 +176,154 @@ const deletePrestador = async (req, res) => {
 
 
 const updatePrestador = async (req, res) => {
-  const prestadorId = req.params.id;
+    const prestadorId = req.params.id;
 
-  const {
-    nombre,
-    apellido,
-    cuilCuit,
-    tipoPrestador,
-    asociadoDe, 
-    emails,
-    telefonos,
-    direcciones,
-    especialidades
-  } = req.body;
+    const {
+        nombre,
+        apellido,
+        cuilCuit,
+        tipoPrestador,
+        asociadoDe, 
+        emails,
+        telefonos,
+        direcciones,
+        especialidades
+        } = req.body;
 
-  if (!prestadorId) {
-    return res.status(400).send({
-      message: "El ID del prestador es requerido"
-    });
-  }
+    if (!prestadorId) {
+        return res.status(400).send({
+        message: "El ID del prestador es requerido"
+        });
+    }
+    // Validacion que tenga al menos un contacto
+    if (
+        !Array.isArray(telefonos) || telefonos.length === 0 ||
+        !Array.isArray(emails) || emails.length === 0 ||
+        !Array.isArray(direcciones) || direcciones.length === 0
+    ) {
+        return res.status(400).json({error: 'Debe incluir al menos un teléfono, un email y una dirección.'});
+    }
+    const t = await sequelize.transaction();
 
-  const t = await sequelize.transaction();
-
-  try {
+    try {
     // normalizar tipoPrestador
-    const tipoPrestadorDB = tipoPrestador?.toLowerCase() === "independiente" 
-      ? "Independiente" 
-      : "Centro Médico";
+        const tipoPrestadorDB = tipoPrestador?.toLowerCase() === "independiente" 
+            ? "Independiente" 
+            : "Centro Médico";
 
-    // normalizar nombre y apellido
-    const nombreCompleto = req.body.nombreCompleto?.trim?.() || "";
-    const parts = nombreCompleto.split(/\s+/).filter(p => p.length > 0);
-    const nombreValido = parts[0] || nombre?.trim?.() || "";
-    const apellidoValido = parts.slice(1).join(" ") || apellido?.trim?.() || ".";
+        // normalizar nombre y apellido
+        const nombreCompleto = req.body.nombreCompleto?.trim?.() || "";
+        const parts = nombreCompleto.split(/\s+/).filter(p => p.length > 0);
+        const nombreValido = parts[0] || nombre?.trim?.() || "";
+        const apellidoValido = parts.slice(1).join(" ") || apellido?.trim?.() || ".";
 
-    await Prestador.update(
-      { 
+        await Prestador.update(
+        { 
             nombre: nombreValido, 
             apellido: apellidoValido, 
             cuilCuit: cuilCuit || null, 
             tipoPrestador: tipoPrestadorDB, 
             asociadoDe: asociadoDe || null 
         },
-      { where: { prestadorId }, transaction: t }
-    );
+        { where: { prestadorId }, transaction: t }
+        );
 
-    // emails
-    await EmailPrestador.destroy({ where: { prestadorId }, transaction: t });
-    if (emails?.length) {
-      const nuevosEmails = emails
-        .map(e => (typeof e === "string" ? (e || "").trim() : (e?.descripcion || "").trim())) // ✅ FIX
-        .filter(e => e)
-        .map(descripcion => ({ descripcion, prestadorId }));
-      if (nuevosEmails.length) await EmailPrestador.bulkCreate(nuevosEmails, { transaction: t });
-    }
+        // emails
+        await EmailPrestador.destroy({ where: { prestadorId }, transaction: t });
+            if (emails?.length) {
+                const nuevosEmails = emails
+                .map(e => (typeof e === "string" ? (e || "").trim() : (e?.descripcion || "").trim())) // ✅ FIX
+                .filter(e => e)
+                .map(descripcion => ({ descripcion, prestadorId }));
+            if (nuevosEmails.length) await EmailPrestador.bulkCreate(nuevosEmails, { transaction: t });
+        }
 
-    // telefonos
-    await TelefonoPrestador.destroy({ where: { prestadorId }, transaction: t });
-    if (telefonos?.length) {
-      const nuevosTelefonos = telefonos
-        .map(t => (typeof t === "string" ? (t || "").trim() : (t?.nroTelefono || "").trim())) // ✅ FIX
-        .filter(t => t)
-        .map(nroTelefono => ({ nroTelefono, prestadorId }));
-      if (nuevosTelefonos.length) await TelefonoPrestador.bulkCreate(nuevosTelefonos, { transaction: t });
-    }
+        // telefonos
+        await TelefonoPrestador.destroy({ where: { prestadorId }, transaction: t });
+            if (telefonos?.length) {
+                const nuevosTelefonos = telefonos
+                .map(t => (typeof t === "string" ? (t || "").trim() : (t?.nroTelefono || "").trim())) // ✅ FIX
+                .filter(t => t)
+                .map(nroTelefono => ({ nroTelefono, prestadorId }));
+            if (nuevosTelefonos.length) await TelefonoPrestador.bulkCreate(nuevosTelefonos, { transaction: t });
+        }
 
-    // direcciones
-    await DireccionPrestador.destroy({ where: { prestadorId }, transaction: t });
-    if (direcciones?.length) {
-        const nuevasDirecciones = direcciones
-            .map(dirObjeto => { 
-            // el último fragmento es el número
+        // direcciones
+        await DireccionPrestador.destroy({ where: { prestadorId }, transaction: t });
+            if (direcciones?.length) {
+                const nuevasDirecciones = direcciones
+                .map(dirObjeto => { 
+                // el último fragmento es el número
                 const partesCalle = (dirObjeto.calle || '').trim().split(/\s+/).filter(p => p.length > 0);
                 const nro = partesCalle.length > 0 ? partesCalle.pop() : null; // Se guarda el número
                 const calle = partesCalle.join(' '); // El resto es la calle
 
-            return {
-                calle: (calle || '').trim(),
-                nro: nro, 
-                codigoPostal: (dirObjeto.codigoPostal || '').trim(), 
-                prestadorId
-            };
-        })
-        .filter(dir => dir.calle && dir.codigoPostal); 
+                return {
+                    calle: (calle || '').trim(),
+                    nro: nro, 
+                    codigoPostal: (dirObjeto.codigoPostal || '').trim(), 
+                    prestadorId
+                };
+            })
+            .filter(dir => dir.calle && dir.codigoPostal); 
         
-        if (nuevasDirecciones.length) {
-            await DireccionPrestador.bulkCreate(nuevasDirecciones, { transaction: t });
+            if (nuevasDirecciones.length) {
+                await DireccionPrestador.bulkCreate(nuevasDirecciones, { transaction: t });
+            }
+        }
+
+        // especialidades
+        if (especialidades !== undefined) {
+            const especialidadIdsNuevas = especialidades
+            ?.map(id => Number(id))
+            .filter(id => !isNaN(id) && id > 0) || []; 
+
+            const prestador = await Prestador.findByPk(prestadorId, {
+                include: [{ model: Especialidad, as: 'especialidad' }], 
+                transaction: t
+            });
+              
+        if (prestador) {
+            // Obtener IDs de especialidades actuales
+            const especialidadesActuales = prestador.especialidad || [];
+            const especialidadIdsActuales = especialidadesActuales.map(e => e.especialidadId);
+
+            // Identificar cuáles agregar y cuáles eliminar
+            const idsParaAgregar = especialidadIdsNuevas.filter(
+                id => !especialidadIdsActuales.includes(id)
+            );
+            const idsParaEliminar = especialidadIdsActuales.filter(
+                id => !especialidadIdsNuevas.includes(id)
+            );
+
+            // Eliminar relaciones viejas
+            if (idsParaEliminar.length > 0) {
+                await PrestadorEspecialidad.destroy({
+                where: { prestadorId: prestadorId, especialidadId: idsParaEliminar },
+                transaction: t
+            });
+        }
+
+        // Agregar nuevas relaciones
+        if (idsParaAgregar.length > 0) {
+            const nuevasRelaciones = idsParaAgregar.map(especialidadId => ({
+                prestadorId: prestadorId,
+                especialidadId: especialidadId
+            }));
+            await PrestadorEspecialidad.bulkCreate(nuevasRelaciones, { transaction: t });
         }
     }
-
-    // especialidades
-    if (especialidades !== undefined) {
-        const especialidadIdsNuevas = especialidades
-        ?.map(id => Number(id))
-        .filter(id => !isNaN(id) && id > 0) || []; 
-
-    const prestador = await Prestador.findByPk(prestadorId, {
-        include: [{ model: Especialidad, as: 'especialidad' }], 
-        transaction: t
-    });
-    
-    if (prestador) {
-        // Obtener IDs de especialidades actuales
-        const especialidadesActuales = prestador.especialidad || [];
-        const especialidadIdsActuales = especialidadesActuales.map(e => e.especialidadId);
-
-        // Identificar cuáles agregar y cuáles eliminar
-        const idsParaAgregar = especialidadIdsNuevas.filter(
-            id => !especialidadIdsActuales.includes(id)
-        );
-        const idsParaEliminar = especialidadIdsActuales.filter(
-            id => !especialidadIdsNuevas.includes(id)
-        );
-
-        // Eliminar relaciones viejas
-        if (idsParaEliminar.length > 0) {
-            await PrestadorEspecialidad.destroy({
-                where: { prestadorId: prestadorId, especialidadId: idsParaEliminar },
-                transaction: t
-            });
-        }
-
-        // Agregar nuevas relaciones
-        if (idsParaAgregar.length > 0) {
-            const nuevasRelaciones = idsParaAgregar.map(especialidadId => ({
-                prestadorId: prestadorId,
-                especialidadId: especialidadId
-            }));
-            await PrestadorEspecialidad.bulkCreate(nuevasRelaciones, { transaction: t });
-        }
-    }
 }
-    await t.commit();
-    res.status(200).send({ message: "Prestador actualizado correctamente.", prestadorId });
-  } catch (error) {
-    await t.rollback();
-    console.error("Error al actualizar el prestador:", error);
-    res.status(500).send({
-      message: "Error al guardar los cambios del prestador.",
-      details: error.message
-    });
-  }
+    await t.commit();
+    res.status(200).send({ message: "Prestador actualizado correctamente.", prestadorId });
+    } catch (error) {
+        await t.rollback();
+        console.error("Error al actualizar el prestador:", error);
+        res.status(500).send({
+            message: "Error al guardar los cambios del prestador.",
+            details: error.message
+        });
+    }
 };
 
 
