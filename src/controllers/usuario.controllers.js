@@ -1,3 +1,4 @@
+const { where } = require('sequelize');
 const {Usuario} = require('../db/models')
 const SECRET_KEY = process.env.JWT_SECRET || 'mi_secreto_super_seguro';
 const jwt = require('jsonwebtoken');
@@ -24,6 +25,8 @@ const login = async (req,res) => {
 const registrar = async(req,res)=>{
   try {
     const {user, password} = req.body
+    const usuarioRepetido = await Usuario.findOne({where: {user}})
+    if(usuarioRepetido) return res.status(400).json({message: 'Ya existe el usuario'})
     const userCreado = await Usuario.create({user, password})
     res.json({user: userCreado.user})
   } catch (error) {
