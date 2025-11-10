@@ -11,22 +11,28 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       //Relacion con Prestador
-      Agenda.belongsTo(models.Prestador, { foreignKey: 'prestadorId', onDelete: 'CASCADE' })
+      Agenda.belongsTo(models.Prestador, {
+        foreignKey: "prestadorId",
+        onDelete: "CASCADE",
+        as:'prestador'
+      });
    
       //Relacion con Especialidad
       Agenda.belongsTo(models.Especialidad, {
-        foreignKey: 'especialidadId',
-        onDelete: 'CASCADE'
-      })
+        foreignKey: "especialidadId",
+        onDelete: "CASCADE",
+        as:'especialidad'
+      });
       Agenda.belongsTo(models.DireccionPrestador, {
-        foreignKey: 'direccionId',
-        onDelete: 'CASCADE'
-      })
+        foreignKey: "direccionId",
+        onDelete: "CASCADE",
+        as: 'direccion'
+      });
 
       Agenda.hasMany(models.AgendaDia, {
-        foreignKey: 'agendaId',
-        as: 'agendas'
-      })
+        foreignKey: "agendaId",
+        as: "agendas"
+      });
     }
   }
   Agenda.init(

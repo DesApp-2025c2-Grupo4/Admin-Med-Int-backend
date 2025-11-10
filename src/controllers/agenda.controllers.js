@@ -1,9 +1,18 @@
-const { Agenda, AgendaDia, Horario, DiaDeSemana } = require("../db/models");
+const {
+  Agenda,
+  AgendaDia,
+  Horario,
+  DiaDeSemana,
+  Prestador,
+  Especialidad,
+  DireccionPrestador,
+  TelefonoPrestador
+} = require("../db/models");
 const { sequelize } = require("../db/models");
-const redis = require('../db/config/redis.js')
+const redis = require("../db/config/redis.js");
 
 const getAgendas = async (req, res) => {
-  const key = 'agenda:list';
+  const key = "agenda:list";
   try {
     const agendas = await Agenda.findAll({
       include: [
@@ -15,11 +24,24 @@ const getAgendas = async (req, res) => {
             { model: DiaDeSemana, as: "dia" },
           ],
         },
+        {
+          model: Prestador,
+          as: "prestador",
+          include: [{ model: TelefonoPrestador, as: "telefonos" }]
+        },
+        {
+          model: Especialidad,
+          as: "especialidad",
+        },
+        {
+          model: DireccionPrestador,
+          as: "direccion",
+        },
       ],
     });
     if (agendas.length > 0) {
-      const dataToCache = JSON.stringify(agendas); 
-      await redis.set(key, dataToCache, { EX: process.env.CACHE_TTL}); 
+      const dataToCache = JSON.stringify(agendas);
+      await redis.set(key, dataToCache, { EX: process.env.CACHE_TTL });
     }
     res.status(200).json(agendas);
   } catch (error) {
@@ -38,8 +60,8 @@ const createAgenda = async (req, res) => {
       direccionId: body.direccionId,
     };
     const agendaCreada = await Agenda.create(newAgenda, { transaction });
-    console.log(agendaCreada)
-    for (const a of body.agendas){
+    console.log(agendaCreada);
+    for (const a of body.agendas) {
       const diaAgenda = await AgendaDia.create(
         { agendaId: agendaCreada.agendaId, idDia: a.idDia },
         { transaction }
@@ -50,7 +72,7 @@ const createAgenda = async (req, res) => {
       });
 
       await Horario.bulkCreate(horarios, { transaction });
-    };
+    }
 
     const nuevaAgenda = await agendaCreada.reload({
       include: [
@@ -116,7 +138,9 @@ const getAgendaById = async (req, res) => {
     res.status(200).json(agenda);
   } catch (error) {
     console.error("Error al obtener la agenda por ID:", error);
-    res.status(500).json({ message: "Error en el servidor al obtener la agenda" });
+    res
+      .status(500)
+      .json({ message: "Error en el servidor al obtener la agenda" });
   }
 };
 
@@ -147,7 +171,10 @@ const updateAgenda = async (req, res) => {
     });
 
     for (const dia of diasAnteriores) {
-      await Horario.destroy({ where: { agendaDiaId: dia.agendaDiaId }, transaction });
+      await Horario.destroy({
+        where: { agendaDiaId: dia.agendaDiaId },
+        transaction,
+      });
       await dia.destroy({ transaction });
     }
 
@@ -166,7 +193,6 @@ const updateAgenda = async (req, res) => {
       await Horario.bulkCreate(nuevosHorarios, { transaction });
     }
 
-  
     const agendaActualizada = await Agenda.findByPk(id, {
       include: [
         {
@@ -195,5 +221,5 @@ module.exports = {
   createAgenda,
   eliminarUnaAgenda,
   getAgendaById,
-  updateAgenda
+  updateAgenda,
 };
