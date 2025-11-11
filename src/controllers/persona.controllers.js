@@ -256,7 +256,8 @@ const actualizarPersona = async (req,res) => {
     personaActualizar.parentesco = personaActualizar.esTitular ? null : nuevosDatos.parentesco
     personaActualizar.dni = nuevosDatos.dni
     personaActualizar.fechaNacimiento = nuevosDatos.fechaNacimiento
-    personaActualizar.fechaBaja = nuevosDatos.fechaBaja
+    personaActualizar.fechaAlta = nuevosDatos.fechaAlta
+    personaActualizar.fechaBaja = !nuevosDatos.fechaBaja ? null : new Date(`${nuevosDatos.fechaBaja}T00:00:00`)
     personaActualizar.tipoDocId = nuevosDatos.tipoDocId
 
     //Guardo los datos
