@@ -14,7 +14,7 @@ Está diseñada para ser utilizada por el **personal administrativo** de la empr
 - **Sequelize ORM** – para la interacción con la base de datos.
 - **PostgreSQL** – base de datos relacional.
 - **Joi** – validación de datos a nivel de request.
-- **Redis** – (opcional) para caché y optimización de consultas.
+- **Redis** – para caché y optimización de consultas.
 - **Swagger** – documentación interactiva de la API.
 
 
@@ -153,7 +153,7 @@ npm run dev
 La documentación interactiva de la API se encuentra disponible a través de **Swagger**.  
 Permite visualizar los endpoints, probar requests y conocer los parámetros esperados de cada ruta.
 
-Una vez levantado el servidor, podés acceder desde: PONER ENLACE
+Una vez levantado el servidor, podés acceder desde: ``` bash http://localhost:4000/api/2 ```
 
 ---
 
