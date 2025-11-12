@@ -1,18 +1,20 @@
 const redis = require("redis");
 
-const REDIS_DEFAULT_URL = "redis://localhost:6379";
+// URL de tu instancia en Render (sin password)
+const REDIS_URL = "redis://red-d4aetdchg0os7380u3t0:6379";
 
+// Crear cliente Redis
 const redisClient = redis.createClient({
-  url: process.env.REDIS_URL ?? REDIS_DEFAULT_URL,
-  password: process.env.REDIS_PASSWORD ?? "redisPassword123",
+  url: REDIS_URL,
   socket: {
     reconnectStrategy: (retries) => {
       console.log(`🔄 Reintentando conexión a Redis (${retries})...`);
-      return Math.min(retries * 100, 3000); // Reintenta cada 0.1s, 0.2s, 0.3s... hasta 3s
+      return Math.min(retries * 100, 3000); // Reintenta cada 0.1s, 0.2s... hasta 3s
     },
   },
 });
 
+// Eventos informativos
 redisClient.on("connect", () => console.log("✅ Redis conectado correctamente"));
 redisClient.on("ready", () => console.log("⚡ Redis listo para usar"));
 redisClient.on("error", (err) => console.error("❌ Error en Redis:", err.message));
