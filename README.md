@@ -126,11 +126,17 @@ DB_NAME=db_admin_med_integral
 DB_PORT=5432
 DB_DIALECT=postgres
 
+# Ubicarse dentro del archivo src/db/app.js en la siguiente línea (nro 42).
+//await db.sequelize.sync({ force: true })
+
+# Borrar las dos barras laterales para descomentar la línea y que se generen las tablas. 
+await db.sequelize.sync({ force: true })
+
+# Guardar y volver a comentar la línea con las barras
+//await db.sequelize.sync({ force: true })
+
 # Ejecutar las seeders
 npm run seed
-
-# Descomentar la línea dentro del archivo app.js para crear las tablas. 
-
 
 # Iniciar servidor
 npm run dev
