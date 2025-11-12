@@ -51,14 +51,20 @@ module.exports = {
     await queryInterface.bulkInsert('Grupos', [
       { nroGrupo: '0000001', fechaAlta: new Date(), planId: 1 },
       { nroGrupo: '0000002', fechaAlta: new Date(), planId: 2 },
-      { nroGrupo: '0000003', fechaAlta: new Date(), planId: 3 }
+      { nroGrupo: '0000003', fechaAlta: new Date(), planId: 3 },
+      { nroGrupo: '0000004', fechaAlta: new Date(), planId: 1 },
+      { nroGrupo: '0000005', fechaAlta: new Date(), planId: 3 },
     ], {});
 
     // --- SITUACIONES TERAPÉUTICAS ---
     await queryInterface.bulkInsert('SituacionesTerapeuticas', [
       { descripcion: 'Fisioterapia' },
       { descripcion: 'Rehabilitación motora' },
-      { descripcion: 'Terapia psicológica' }
+      { descripcion: 'Terapia psicológica' },
+      { descripcion: 'Depresión' },
+      { descripcion: 'Embarazo' },
+      { descripcion: 'Resfrío' },
+      { descripcion: 'Alergia' },
     ], {});
 
     // ------------------------------ PERSONAS DEL GRUPO 1 ---------------------------------
@@ -138,14 +144,14 @@ module.exports = {
     await queryInterface.bulkInsert('SituacionPersonas', [
       { personaId: 1, situacionId: 1, esCronica: false, fechaInici: '2025-01-10', fechaFin: '2025-02-10' },
       { personaId: 2, situacionId: 2, esCronica: true, fechaInici: '2024-03-01', fechaFin: null },
-      { personaId: 3, situacionId: 3, esCronica: false, fechaInici: '2025-09-01', fechaFin: null }
+      { personaId: 3, situacionId: 3, esCronica: false, fechaInici: '2025-09-01', fechaFin: '2025-10-01' }
     ], {});
 
     // ------------------------------ PERSONAS DEL GRUPO 2 ---------------------------------
     await queryInterface.bulkInsert('Personas', [
       {
-        nombre: 'Pedro',
-        apellido: 'Carrizo',
+        nombre: 'Carlos',
+        apellido: 'Goicochea',
         dni: '12345678',
         esTitular: true,
         parentesco: 'Titular',
@@ -218,7 +224,7 @@ module.exports = {
     await queryInterface.bulkInsert('SituacionPersonas', [
       { personaId: 4, situacionId: 1, esCronica: false, fechaInici: '2025-01-10', fechaFin: '2025-02-10' },
       { personaId: 4, situacionId: 2, esCronica: true, fechaInici: '2024-03-01', fechaFin: null },
-      { personaId: 5, situacionId: 3, esCronica: false, fechaInici: '2025-09-01', fechaFin: null }
+      { personaId: 5, situacionId: 3, esCronica: false, fechaInici: '2025-09-01', fechaFin: '2025-11-01' }
     ], {});
 
     // ------------------------------ PERSONAS DEL GRUPO 3 ---------------------------------
@@ -298,10 +304,153 @@ module.exports = {
     await queryInterface.bulkInsert('SituacionPersonas', [
       { personaId: 7, situacionId: 1, esCronica: false, fechaInici: '2025-01-10', fechaFin: '2025-02-10' },
       { personaId: 8, situacionId: 2, esCronica: true, fechaInici: '2024-03-01', fechaFin: null },
-      { personaId: 9, situacionId: 3, esCronica: false, fechaInici: '2025-09-01', fechaFin: null }
+      { personaId: 9, situacionId: 3, esCronica: true, fechaInici: '2025-09-01', fechaFin: null }
+    ], {});
+
+    // ------------------------------ PERSONAS DEL GRUPO 4 ---------------------------------
+    await queryInterface.bulkInsert('Personas', [
+      {
+        nombre: 'Luana',
+        apellido: 'arias',
+        dni: '35789654',
+        esTitular: true,
+        parentesco: 'Titular',
+        fechaNacimiento: '2000-05-10',
+        fechaAlta: new Date(),
+        fechaBaja: null,
+        credencial: '0000004-01',
+        idGrupo: 4,
+        tipoDocId: 1
+      },
+      {
+        nombre: 'Pepe',
+        apellido: 'Arias',
+        dni: '50000123',
+        esTitular: false,
+        parentesco: 'Hijo/a',
+        fechaNacimiento: '2020-09-12',
+        fechaAlta: new Date(),
+        fechaBaja: null,
+        credencial: '0000004-02',
+        idGrupo: 4,
+        tipoDocId: 1
+      },
+      {
+        nombre: 'Juan',
+        apellido: 'Gonzalez',
+        dni: '37693640',
+        esTitular: false,
+        parentesco: 'Esposo/a',
+        fechaNacimiento: '1990-11-20',
+        fechaAlta: new Date(),
+        fechaBaja: null,
+        credencial: '0000004-03',
+        idGrupo: 4,
+        tipoDocId: 2
+      }
+    ], {});
+
+    // --- DIRECCIONES ---
+    await queryInterface.bulkInsert('Direccions', [
+      { calle: 'Av. Nunca Viva', nro: '742', personaId: 10 },
+      { calle: 'Av. Nunca Viva', nro: '742', personaId: 11 },
+      { calle: 'Av. Nunca Viva', nro: '742', personaId: 12 },
+    ], {});
+
+    // --- EMAILS ---
+    await queryInterface.bulkInsert('Emails', [
+      { descripcion: 'luana@example.com', personaId: 10 },
+      { descripcion: 'pepe@example.com', personaId: 11 },
+      { descripcion: 'juan@example.com', personaId: 12 },
+    ], {});
+
+    // --- TELÉFONOS ---
+    await queryInterface.bulkInsert('Telefonos', [
+      { nroTelefono: '1122334455', personaId: 10 },
+      { nroTelefono: '1122334456', personaId: 11 },
+      { nroTelefono: '1122334457', personaId: 12 },
+    ], {});
+
+    // --- RELACIÓN MUCHOS A MUCHOS (SituacionPersonas) ---
+    await queryInterface.bulkInsert('SituacionPersonas', [
+      { personaId: 10, situacionId: 4, esCronica: false, fechaInici: '2025-01-10', fechaFin: '2025-02-10' },
+      { personaId: 11, situacionId: 5, esCronica: true, fechaInici: '2024-03-01', fechaFin: null },
+      { personaId: 12, situacionId: 6, esCronica: true, fechaInici: '2025-09-01', fechaFin: null }
+    ], {});
+
+    // ------------------------------ PERSONAS DEL GRUPO 5 ---------------------------------
+    await queryInterface.bulkInsert('Personas', [
+      {
+        nombre: 'Priscila',
+        apellido: 'Becaaz',
+        dni: '44654345',
+        esTitular: true,
+        parentesco: 'Titular',
+        fechaNacimiento: '2002-03-31',
+        fechaAlta: new Date(),
+        fechaBaja: null,
+        credencial: '0000005-01',
+        idGrupo: 5,
+        tipoDocId: 1
+      },
+      {
+        nombre: 'Lionel',
+        apellido: 'Giorda',
+        dni: '58435675',
+        esTitular: false,
+        parentesco: 'Hijo/a',
+        fechaNacimiento: '2025-09-12',
+        fechaAlta: new Date(),
+        fechaBaja: null,
+        credencial: '0000005-02',
+        idGrupo: 5,
+        tipoDocId: 1
+      },
+      {
+        nombre: 'Alexis',
+        apellido: 'Giorda',
+        dni: '41730331',
+        esTitular: false,
+        parentesco: 'Esposo/a',
+        fechaNacimiento: '2001-09-07',
+        fechaAlta: new Date(),
+        fechaBaja: null,
+        credencial: '0000005-03',
+        idGrupo: 5,
+        tipoDocId: 2
+      }
+    ], {});
+
+    // --- DIRECCIONES ---
+    await queryInterface.bulkInsert('Direccions', [
+      { calle: 'Panama', nro: '2345', personaId: 13 },
+      { calle: 'Panama', nro: '2345', personaId: 14 },
+      { calle: 'Panama', nro: '2345', personaId: 15 },
+    ], {});
+
+    // --- EMAILS ---
+    await queryInterface.bulkInsert('Emails', [
+      { descripcion: 'pri@example.com', personaId: 13 },
+      { descripcion: 'Lio@example.com', personaId: 14 },
+      { descripcion: 'Ale@example.com', personaId: 15 },
+    ], {});
+
+    // --- TELÉFONOS ---
+    await queryInterface.bulkInsert('Telefonos', [
+      { nroTelefono: '1122334401', personaId: 13 },
+      { nroTelefono: '1122334402', personaId: 14 },
+      { nroTelefono: '1122334403', personaId: 15 },
+    ], {});
+
+    // --- RELACIÓN MUCHOS A MUCHOS (SituacionPersonas) ---
+    await queryInterface.bulkInsert('SituacionPersonas', [
+      { personaId: 13, situacionId: 6, esCronica: false, fechaInici: '2025-01-10', fechaFin: '2025-02-10' },
+      { personaId: 14, situacionId: 7, esCronica: true, fechaInici: '2024-03-01', fechaFin: null },
+      { personaId: 15, situacionId: 6, esCronica: true, fechaInici: '2025-09-01', fechaFin: null }
     ], {});
   },
 
+  
   async down(queryInterface, Sequelize) {
     await queryInterface.bulkDelete('SituacionPersonas', null, {});
     await queryInterface.bulkDelete('SituacionesTerapeuticas', null, {});
