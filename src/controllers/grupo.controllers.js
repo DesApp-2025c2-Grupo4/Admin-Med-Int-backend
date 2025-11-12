@@ -128,7 +128,7 @@ const createGrupo = async (req, res) => {
   try {
     //Obtengo datos de nuevo grupo
     const newGrupo = req.body;
-
+    console.log("Fecha Alta Recibida (string):", newGrupo.fechaAlta);
     //-----------------Creo el numero de grupo
     //Obtengo la cantidad de grupos
     const nroGrupoMasGrande = await Grupo.max('nroGrupo')
@@ -136,7 +136,11 @@ const createGrupo = async (req, res) => {
     const nroGrupo = crearNumeroDeGrupo(nroGrupoMasGrande)
     //Agrego el numero al grupo
     newGrupo.nroGrupo = nroGrupo
-    
+
+    if (newGrupo.fechaAlta && typeof newGrupo.fechaAlta === 'string') {
+        newGrupo.fechaAlta = new Date(newGrupo.fechaAlta + 'T00:00:00.000Z');
+    }
+
     const grupoCreated = await Grupo.create(newGrupo);
     res.status(200).json(grupoCreated);
   } catch (error) {
@@ -173,8 +177,9 @@ const actualizarGrupo = async(req,res)=>{
     //Busco el grupo
     const grupoParaActualizar = await Grupo.findByPk(id)
     grupoParaActualizar.planId = body.planId
-    grupoParaActualizar.fechaAlta = new Date(`${body.fechaAlta}T00:00:00`)
-    grupoParaActualizar.fechaBaja = !body.fechaBaja ? null : new Date(`${body.fechaBaja}T00:00:00`)
+    grupoParaActualizar.fechaAlta = new Date(`${body.fechaAlta}T00:00:00.000Z`)
+    grupoParaActualizar.fechaBaja = body.fechaBaja ? new Date(`${body.fechaBaja}T00:00:00.000Z`) : null
+
     
     //Guardo los cabios
     await grupoParaActualizar.save()

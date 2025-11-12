@@ -5,11 +5,12 @@ const validarTelefono = require("../middleware/validarTelefono.js");
 const validarEmail = require("../middleware/validarEmail.js");
 const prestadorRoutes = Router();
 const cacheMiddleware  = require('../middleware/redisMiddleware.js')
+const validarPrestador = require("../middleware/validarPrestador.js");
 
 prestadorRoutes.get('/', cacheMiddleware.checkCache('prestador:list'),  prestadorControllers.getPrestadores);
 prestadorRoutes.get('/por-periodo',cacheMiddleware.checkCache('prestador:list:periodo:'), prestadorControllers.getPrestadoresPorPeriodo);
 prestadorRoutes.get('/:id', cacheMiddleware.checkCache('prestador:'), prestadorControllers.getPrestadorByPk);
-prestadorRoutes.post('/', cacheMiddleware.deleteCache('prestador:list'), prestadorControllers.createPrestador);
+prestadorRoutes.post('/', cacheMiddleware.deleteCache('prestador:list'), validarPrestador ,prestadorControllers.createPrestador);
 prestadorRoutes.delete('/:id', cacheMiddleware.deleteCache('prestador:list'), cacheMiddleware.deleteCache('prestador:'), prestadorControllers.deletePrestador);
 prestadorRoutes.put('/:id', cacheMiddleware.deleteCache('prestador:list'), cacheMiddleware.deleteCache('prestador:'), prestadorControllers.updatePrestador);
 
