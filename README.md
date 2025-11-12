@@ -153,7 +153,7 @@ npm run dev
 La documentación interactiva de la API se encuentra disponible a través de **Swagger**.  
 Permite visualizar los endpoints, probar requests y conocer los parámetros esperados de cada ruta.
 
-Una vez levantado el servidor, podés acceder desde: ``` bash http://localhost:4000/api/2 ```
+Una vez levantado el servidor, podés acceder desde: ``` http://localhost:4000/api/2 ```
 
 ---
 
