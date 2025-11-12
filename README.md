@@ -14,7 +14,7 @@ Está diseñada para ser utilizada por el **personal administrativo** de la empr
 - **Sequelize ORM** – para la interacción con la base de datos.
 - **PostgreSQL** – base de datos relacional.
 - **Joi** – validación de datos a nivel de request.
-- **Redis** – (opcional) para caché y optimización de consultas.
+- **Redis** – para caché y optimización de consultas.
 - **Swagger** – documentación interactiva de la API.
 
 
@@ -78,10 +78,8 @@ Consultas adicionales disponibles:
 
 - Altas de afiliados por período.
 - Altas de prestadores por período.
-- Cantidad de prestadores por especialidad y código postal.
+- Búsqueda de prestadores por filtros específicos: Nombre, apellido, código postal, especialidad, etc. 
 - Reporte de situaciones terapéuticas por afiliado (incluyendo grupo familiar).
-- Prestadores sin agendas de turnos cargadas.
-- Horarios de atención de prestadores sin turnos definidos.
 
 ---
 
@@ -118,18 +116,27 @@ git clone https://github.com/DesApp-2025c2-Grupo4/Admin-Med-Int-backend
 npm install
 
 # Levantar la base en Docker
-docker-compe up -d 
+docker-compose up -d 
 
 # Configurar variables de entorno (.env)
 DB_HOST=localhost
-DB_USER=postgres
-DB_PASS=tu_clave
-DB_NAME=medicina
+DB_USER=admin
+DB_PASS=admin123
+DB_NAME=db_admin_med_integral
 DB_PORT=5432
+DB_DIALECT=postgres
 
-# Ejecutar migraciones y seeders
-npx sequelize db:migrate
-npx sequelize db:seed:all
+# Ubicarse dentro del archivo src/db/app.js en la siguiente línea (nro 42).
+//await db.sequelize.sync({ force: true })
+
+# Borrar las dos barras laterales para descomentar la línea y que se generen las tablas. 
+await db.sequelize.sync({ force: true })
+
+# Guardar y volver a comentar la línea con las barras
+//await db.sequelize.sync({ force: true })
+
+# Ejecutar las seeders
+npm run seed
 
 # Iniciar servidor
 npm run dev
@@ -143,7 +150,7 @@ npm run dev
   - Node.js.
 
 
-## 🎨 Fron-End disponible en: 
+## 🎨 Front-End disponible en: 
 ```bash
  https://github.com/DesApp-2025c2-Grupo4/Admin-Med-Int-frontend
 ```
@@ -153,7 +160,7 @@ npm run dev
 La documentación interactiva de la API se encuentra disponible a través de **Swagger**.  
 Permite visualizar los endpoints, probar requests y conocer los parámetros esperados de cada ruta.
 
-Una vez levantado el servidor, podés acceder desde: PONER ENLACE
+Una vez levantado el servidor, podés acceder desde: ``` http://localhost:4000/api/2 ```
 
 ---
 
