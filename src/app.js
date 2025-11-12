@@ -47,6 +47,11 @@ app.listen(PORT, async () => {
 
       await require('./db/seeders/20251015225226-persona-data.js')
       .up(db.sequelize.getQueryInterface(), db.Sequelize);
+      await require('./db/seeders/20251021120000-prestadores-data.js')
+      .up(db.sequelize.getQueryInterface(), db.Sequelize);
+      await require('./db/seeders/20251024000019-dias-de-la-semana-data.js')
+      .up(db.sequelize.getQueryInterface(), db.Sequelize);
+      
       console.log("✅ Seeders ejecutados correctamente");
     }
 
