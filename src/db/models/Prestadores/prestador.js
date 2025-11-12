@@ -30,6 +30,18 @@ module.exports = (sequelize, DataTypes) => {
       Prestador.hasMany(models.EmailPrestador, {foreignKey:'prestadorId', as:'email', onDelete:'CASCADE'})
     
       Prestador.hasMany(models.Agenda, { foreignKey:'prestadorId', as:'agendas', onDelete:'CASCADE' })
+
+      //Relacion con si mismo
+      Prestador.hasMany(models.Prestador, {
+        foreignKey: 'asociadoDe',
+        as: 'asociados',
+        onDelete: 'SET NULL'
+      });
+
+      Prestador.belongsTo(models.Prestador, {
+        foreignKey: 'asociadoDe',
+        as: 'centro',
+      });
     }
   }
 
@@ -62,6 +74,14 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         defaultValue: DataTypes.NOW,
       },
+      asociadoDe: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: {
+          model: 'Prestadors',
+          key: 'prestadorId'
+        }
+      }
     },
     {
       sequelize,

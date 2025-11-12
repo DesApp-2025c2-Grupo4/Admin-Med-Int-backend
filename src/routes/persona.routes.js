@@ -7,28 +7,31 @@ const validarEmail = require("../middleware/validarEmail.js");
 const validarDireccion = require("../middleware/validarDireccion.js");
 const validarSituacion = require("../middleware/validarSituacion.js");
 const personaRoutes = Router();
+const cacheMiddleware  = require('../middleware/redisMiddleware.js')
+const { validarDniUnico, validarTelefonosUnicos, validarEmailsUnicos } = require("../middleware/validarCamposUnicos.js");
 
-personaRoutes.get('/',personaControllers.getPersonas);
-personaRoutes.get('/afiliados', personaControllers.getAfiliados)
-personaRoutes.get('/:id', personaControllers.getPersonaByPk);
-personaRoutes.post('/', validarPersona, personaControllers.createPersona);
-personaRoutes.delete('/:id', personaControllers.deletePersona);
-personaRoutes.put('/:id', personaControllers.actualizarPersona)
+personaRoutes.get('/', cacheMiddleware.checkCache('persona:list:all'), personaControllers.getPersonas);
+personaRoutes.get('/afiliados',cacheMiddleware.checkCache('afiliado:list:all'), personaControllers.getAfiliados)
+personaRoutes.get('/afiliados/por-periodo',cacheMiddleware.checkCache('afiliado:list:periodo:'), personaControllers.getAfiliadosPorPeriodo);
+personaRoutes.get('/:id',cacheMiddleware.checkCache('persona:'), personaControllers.getPersonaByPk);
+personaRoutes.post('/', cacheMiddleware.deleteCache('persona:list:all'), validarPersona, validarDniUnico, validarTelefonosUnicos, validarEmailsUnicos , personaControllers.createPersona);
+personaRoutes.delete('/:id',cacheMiddleware.deleteCache('persona:'), personaControllers.deletePersona);
+personaRoutes.put('/:id', cacheMiddleware.deleteCache('persona:'), personaControllers.actualizarPersona)
 //Telefono
-personaRoutes.get('/:personaId/telefonos', telefonoControllers.getTelefonosByPersona);
-personaRoutes.post('/:personaId/telefonos', validarTelefono, requireAttribute('nroTelefono', 'Telefono'), ifPersonaExists, telefonoControllers.addTelefonoToPersona);
+personaRoutes.get('/:personaId/telefonos', cacheMiddleware.checkCache('telefono:list:'), telefonoControllers.getTelefonosByPersona);
+personaRoutes.post('/:personaId/telefonos', cacheMiddleware.deleteCache('telefono:list:'), cacheMiddleware.deleteCache('persona:'), validarTelefono, requireAttribute('nroTelefono', 'Telefono'), ifPersonaExists, telefonoControllers.addTelefonoToPersona);
 
 //Email
-personaRoutes.get('./:personaId/emails', emailControllers.getEmailsByPersona);
-personaRoutes.post('/:personaId/emails', validarEmail ,requireAttribute('descripcion', 'Email'), ifPersonaExists, emailControllers.addEmailToPersona);
+personaRoutes.get('./:personaId/emails', cacheMiddleware.checkCache('email:list:'), emailControllers.getEmailsByPersona);
+personaRoutes.post('/:personaId/emails', validarEmail, cacheMiddleware.deleteCache('email:list:'), cacheMiddleware.deleteCache('persona:'), requireAttribute('descripcion', 'Email'), ifPersonaExists, emailControllers.addEmailToPersona);
 
 //Direccion
-personaRoutes.get('./:personaId/direcciones', direccionControllers.getDireccionesByPersona);
-personaRoutes.post('/:personaId/direcciones', validarDireccion ,requireAttribute('calle', 'Dirección'), requireAttribute('nro', 'Dirección'), ifPersonaExists, direccionControllers.addDireccionToPersona);
+personaRoutes.get('./:personaId/direcciones', cacheMiddleware.checkCache('direccion:list:'), direccionControllers.getDireccionesByPersona);
+personaRoutes.post('/:personaId/direcciones', validarDireccion, cacheMiddleware.deleteCache('direccion:list:'), cacheMiddleware.deleteCache('persona:'), requireAttribute('calle', 'Dirección'), requireAttribute('nro', 'Dirección'), ifPersonaExists, direccionControllers.addDireccionToPersona);
 
 //Situacion
-personaRoutes.get("/:personaId/situaciones", ifPersonaExists, situacionPersonaControllers.getSituacionesByPersona);
-personaRoutes.post("/:personaId/situaciones/:situacionId", validarSituacion ,ifPersonaExists, situacionPersonaControllers.addSituacionToPersona);
-personaRoutes.delete("/:personaId/situaciones/:situacionId", ifPersonaExists, situacionPersonaControllers.deleteSituacionFromPersona);
+personaRoutes.get("/:personaId/situaciones", ifPersonaExists, cacheMiddleware.checkCache('situacion:list:'), situacionPersonaControllers.getSituacionesByPersona);
+personaRoutes.post("/:personaId/situaciones/:situacionId", validarSituacion, cacheMiddleware.deleteCache('situacion:list:'), cacheMiddleware.deleteCache('persona:'), ifPersonaExists, situacionPersonaControllers.addSituacionToPersona);
+personaRoutes.delete("/:personaId/situaciones/:situacionId", ifPersonaExists, cacheMiddleware.deleteCache('situacion:list:'), cacheMiddleware.deleteCache('persona:'), situacionPersonaControllers.deleteSituacionFromPersona);
 
 module.exports = personaRoutes;

@@ -1,4 +1,5 @@
 const { Direccion } = require('../db/models'); 
+const redis = require("../db/config/redis.js")
 
 const addDireccionToPersona = async (req, res) => {
     const { calle, nro } = req.body; 
@@ -10,6 +11,10 @@ const addDireccionToPersona = async (req, res) => {
             nro: nro,
             personaId: id
         });
+        //  Borra la caché de la Persona individual
+        await redis.del(`persona:${id}`);
+        // Borrar la caché de la lista de direcciones
+        await redis.del(`personaDirecciones:list:${id}`);
         res.status(201).json(nuevaDireccion);
     } catch (error) {
         console.error('Error al agregar la dirección a la persona:', error);
@@ -22,10 +27,14 @@ const addDireccionToPersona = async (req, res) => {
 
 const getDireccionesByPersona = async (req, res) => {
     const personaId = req.params.personaId; 
+    const key = `personaDirecciones:list:${personaId}`;
     try {
         const direcciones = await Direccion.findAll({
             where: { personaId: personaId },
         });
+        if (direcciones.length > 0) {
+            await redis.set(key, JSON.stringify(direcciones), { EX: process.env.CACHE_TTL });
+        }
         res.status(200).json(direcciones);
 
     } catch (error) {
@@ -48,7 +57,9 @@ const deleteDireccion = async (req, res) => {
         if (deletedRows === 0) {
             return res.status(404).json({ message: `Dirección con ID ${direccionId} no encontrada.` });
         }
-
+        const personaId = direccionAEliminar.personaId;
+        await redis.del(`persona:${personaId}`);
+        await redis.del(`personaDirecciones:list:${personaId}`);
         res.status(200).json(direccionAEliminar); 
     } catch (error) {
         console.error('Error al eliminar la dirección:', error);
@@ -69,6 +80,9 @@ const updateDireccion = async (req, res)=>{
         await direccionAEditar.save()
         //Recargo
         await direccionAEditar.reload()
+        const personaId = direccionAEditar.personaId;
+        await redis.del(`persona:${personaId}`);
+        await redis.del(`personaDirecciones:list:${personaId}`);
         res.status(200).json(direccionAEditar); 
     } catch (error) {
         console.error('Error al editar el Direccion:', error);

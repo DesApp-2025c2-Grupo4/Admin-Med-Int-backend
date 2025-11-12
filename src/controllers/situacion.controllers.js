@@ -1,5 +1,8 @@
 const { SituacionesTerapeuticas } = require('../db/models');
+const redis= require('../db/config/redis.js')
+
 const getSituaciones = async (req, res) => {
+    const key = 'situacion:list';
     try {
         const situaciones = await SituacionesTerapeuticas.findAll({
             attributes: ['situacionId', 'descripcion', 'esCronica']

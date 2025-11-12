@@ -11,17 +11,21 @@ module.exports = {
 
     //especialidades
     const especialidades = await queryInterface.bulkInsert('Especialidads', [
-      { descripcion: 'Clínico' },
-      { descripcion: 'Cardiólogo' },
-      { descripcion: 'Traumatólogo' }
+      { descripcion: 'Medicina General' },
+      { descripcion: 'Cardiología' },
+      { descripcion: 'Traumatología' },
+      { descripcion: 'Psicología' },
+      { descripcion: 'Psiquiatría' },
+      { descripcion: 'Ginecología' },
+      { descripcion: 'Pediatría' },
     ], { returning: true });
 
     //prestadores
     const prestadores = await queryInterface.bulkInsert('Prestadors', [
       {
         nombre: 'Laura',
+        tipoPrestador:'Independiente',
         apellido: 'Soria',
-        tipoPrestador: 'Independiente',
         cuilCuit: '27-12345678-9',
         fechaAlta: new Date(),
       },
@@ -34,8 +38,8 @@ module.exports = {
       },
       {
         nombre: 'Mauro',
-        apellido: 'Pérez',
         tipoPrestador: 'Independiente',
+        apellido: 'Pérez',
         cuilCuit: '20-11223344-5',
         fechaAlta: new Date(),
       }

@@ -9,13 +9,14 @@ const {
 } = require("../db/models");
 const {formatearSituaciones} = require('../utils/formatearSituaciones')
 const {crearNumeroDeGrupo} = require('../utils/crearNumeroDeGrupo');
+const redis = require('../db/config/redis.js')
 
 //----------------------------GETTERS -------------------
 
 //Todos los grupos
 const getGrupos = async (_, res) => {
   try {
-
+    const key = 'grupo:list:all';
     //Consulta a la base de datos
     const grupos = await Grupo.findAll({
       include: [
@@ -57,6 +58,7 @@ const getGrupos = async (_, res) => {
         }
       }
     )
+    redis.set(key, JSON.stringify(gruposFormateado), { EX: process.env.CACHE_TTL });
     //Devuelvo todos los grupos
     res.status(200).json(gruposFormateado);
   } catch (error) {
@@ -68,7 +70,7 @@ const getGrupos = async (_, res) => {
 const getGrupoByPk = async(req,res) => {
   const {id} = req.params
   try {
-
+    const key = `grupo:${id}`;
     //Consulta a la base de datos
     const grupoBuscado = await Grupo.findByPk(id,{
       include:[
@@ -110,7 +112,7 @@ const getGrupoByPk = async(req,res) => {
         }
       )
     }
-
+    redis.set(key, JSON.stringify(grupoFormateado), { EX: process.env.CACHE_TTL });
     //Retorno
     res.json(grupoFormateado)
   } catch (error) {
@@ -170,10 +172,9 @@ const actualizarGrupo = async(req,res)=>{
   try {
     //Busco el grupo
     const grupoParaActualizar = await Grupo.findByPk(id)
-    //Actualizo
     grupoParaActualizar.planId = body.planId
-    grupoParaActualizar.fechaAlta = body.fechaAlta
-    grupoParaActualizar.fechaBaja = body.fechaBaja === '' ? null : body.fechaBaja
+    grupoParaActualizar.fechaAlta = new Date(`${body.fechaAlta}T00:00:00`)
+    grupoParaActualizar.fechaBaja = !body.fechaBaja ? null : new Date(`${body.fechaBaja}T00:00:00`)
     
     //Guardo los cabios
     await grupoParaActualizar.save()

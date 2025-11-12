@@ -1,4 +1,5 @@
 const { TelefonoPrestador, Prestador} = require('../db/models');
+const redis = require('../db/config/redis.js')
 
 const addTelefonoToPrestador = async (req, res) => {
     const { nroTelefono } = req.body; 
@@ -8,6 +9,11 @@ const addTelefonoToPrestador = async (req, res) => {
             nroTelefono: nroTelefono,
             prestadorId: prestadorId 
         });
+        // Borra caché de Prestador individual
+        await redis.del(`prestador:${prestadorId}`);
+        // Borrarcaché de la lista de teléfonos
+        await redis.del(`prestadorTelefonos:list:${prestadorId}`);
+
         res.status(201).json(nuevoTelefono);
 
     } catch (error) {
@@ -22,6 +28,7 @@ const addTelefonoToPrestador = async (req, res) => {
 
 const getTelefonosByPrestador = async (req, res) => {
     const prestadorId = req.params.prestadorId; 
+    const key = `prestadorTelefonos:list:${prestadorId}`;
     try {
         const telefonos = await TelefonoPrestador.findAll({
             where: { prestadorId: prestadorId },
@@ -33,7 +40,7 @@ const getTelefonosByPrestador = async (req, res) => {
                  return res.status(404).json({ message: `Prestador con ID ${prestadorId} no encontrado.` });
              }
         }
-
+        redis.set(key, JSON.stringify(telefonos), { EX: process.env.CACHE_TTL });
         res.status(200).json(telefonos);
 
     } catch (error) {
@@ -55,6 +62,9 @@ const deleteTelefonoPrestador = async (req, res) => {
         if (deletedRows === 0) {
             return res.status(404).json({ message: `Teléfono con ID ${telefonoId} no encontrado.` });
         }
+        const prestadorId = telefonoAEliminar.prestadorId;
+        await redis.del(`prestador:${prestadorId}`);
+        await redis.del(`prestadorTelefonos:list:${prestadorId}`);
         res.status(204).send(); 
     } catch (error) {
         console.error('Error al eliminar el teléfono:', error);

@@ -1,4 +1,5 @@
 const { Telefono, Persona } = require('../db/models');
+const redis = require("../db/config/redis.js")
 
 const addTelefonoToPersona = async (req, res) => {
     const { nroTelefono } = req.body; 
@@ -8,6 +9,11 @@ const addTelefonoToPersona = async (req, res) => {
             nroTelefono: nroTelefono,
             personaId: personaId 
         });
+        await redis.del(`persona:${personaId}`);
+        // Borra caché de Persona individual
+        await redis.del(`persona:${personaId}`);
+        // Borra caché de la lista de teléfonos
+        await redis.del(`personaTelefonos:list:${personaId}`);
         res.status(201).json(nuevoTelefono);
 
     } catch (error) {
@@ -22,6 +28,7 @@ const addTelefonoToPersona = async (req, res) => {
 
 const getTelefonosByPersona = async (req, res) => {
     const personaId = req.params.personaId; 
+    const key = `personaTelefonos:list:${personaId}`;
     try {
         const telefonos = await Telefono.findAll({
             where: { personaId: personaId },
@@ -33,7 +40,7 @@ const getTelefonosByPersona = async (req, res) => {
                  return res.status(404).json({ message: `Persona con ID ${personaId} no encontrada.` });
              }
         }
-
+        await redis.set(key, JSON.stringify(telefonos), { EX: process.env.CACHE_TTL });
         res.status(200).json(telefonos);
 
     } catch (error) {
@@ -55,6 +62,9 @@ const updateTelefono = async (req, res) => {
         await telefonoAEditar.save()
         //Recargo
         await telefonoAEditar.reload()
+        const personaId = telefonoAEditar.personaId;
+        await redis.del(`persona:${personaId}`);
+        await redis.del(`personaTelefonos:list:${personaId}`);
         res.status(200).json(telefonoAEditar); 
     } catch (error) {
         console.error('Error al editar el teléfono:', error);
@@ -75,6 +85,9 @@ const deleteTelefono = async (req, res) => {
         if (deletedRows === 0) {
             return res.status(404).json({ message: `Teléfono con ID ${telefonoId} no encontrado.` });
         }
+        const personaId = telefonoEliminado.personaId;
+        await redis.del(`persona:${personaId}`);
+        await redis.del(`personaTelefonos:list:${personaId}`);
         res.status(200).json(telefonoEliminado); 
     } catch (error) {
         console.error('Error al eliminar el teléfono:', error);

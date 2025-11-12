@@ -23,12 +23,15 @@ const situacionSchema = Joi.object({
         }),
 
     fechaFin: Joi.date()
+        .allow(null)
         .iso() // formato ISO ('1990-01-01')
         .optional()
         .messages({
           'date.base': 'fechaFin debe ser una fecha válida',
           'date.format': 'fechaFin debe estar en formato ISO (YYYY-MM-DD)',
         }),
+    
+    descripcion: Joi.string()
 })
 
 module.exports = situacionSchema;

@@ -2,11 +2,13 @@ const { Persona, Grupo,SituacionPersona, PlanMedico, Telefono, Email, Direccion,
 const { crearCredencial } = require('../utils/crearCredencial');
 const {formatearSituaciones} = require('../utils/formatearSituaciones')
 const { sequelize } = require('../db/models');
-const { where } = require('sequelize');
+const { Op } = require('sequelize')
+const redis = require('../db/config/redis.js')
 
 //----------------------------GETTERS
 const getPersonas = async (_, res) => {
   try {
+    const key = 'persona:list:all';
     const personas = await Persona.findAll({
       include: [
         {
@@ -25,6 +27,7 @@ const getPersonas = async (_, res) => {
         }
       ],
     });
+    redis.set(key, JSON.stringify(personas), { EX: process.env.CACHE_TTL });
     res.status(200).json(personas);
   } catch (error) {
     console.error(`Error al obtener todas las personas: ${error}`);
@@ -35,6 +38,7 @@ const getPersonas = async (_, res) => {
 const getPersonaByPk = async (req,res)=>{
   try {
     const {id} = req.params
+    const key = `persona:${id}`;
     //Busco la persona
     const personaBuscada = await Persona.findByPk(
       id,{
@@ -79,7 +83,9 @@ const getPersonaByPk = async (req,res)=>{
       planId: grupoPeteneciente.planMedico.planId,
       descripcion: grupoPeteneciente.planMedico.descripcion
     }
+    redis.set(key, JSON.stringify(personaFormateada), { EX: process.env.CACHE_TTL });
     //Retorno
+    console.log('llego AQUÍ')
     res.json(personaFormateada)
   } catch (error) {
     console.error(`Error al obtener la persona: ${error}`);
@@ -89,6 +95,7 @@ const getPersonaByPk = async (req,res)=>{
 //Obtener los afiliados
 const getAfiliados = async(_,res)=>{
   try {
+    const key = 'afiliado:list:all';
     const afiliados = await Persona.findAll(
       {
         where:{
@@ -111,6 +118,7 @@ const getAfiliados = async(_,res)=>{
         }]
       },
     )
+    redis.set(key, JSON.stringify(afiliados), { EX: process.env.CACHE_TTL });
     res.json(afiliados)
   } catch (error) {
     console.log(error)
@@ -189,8 +197,13 @@ const createPersona = async (req, res) => {
     
     //Asocio a la persona
     const situacionesAsociadas = situaciones.map(s=>{
+      console.log(s)
+      const fechaInici = s.fechaInicio
+      console.log('Fecha inicio: ', fechaInici)
+      delete s.fechaInicio
       return {
         ...s,
+        fechaInici:fechaInici,
         personaId: personaCreated.personaId
       }
     })
@@ -243,7 +256,8 @@ const actualizarPersona = async (req,res) => {
     personaActualizar.parentesco = personaActualizar.esTitular ? null : nuevosDatos.parentesco
     personaActualizar.dni = nuevosDatos.dni
     personaActualizar.fechaNacimiento = nuevosDatos.fechaNacimiento
-    personaActualizar.fechaBaja = nuevosDatos.fechaBaja
+    personaActualizar.fechaAlta = nuevosDatos.fechaAlta
+    personaActualizar.fechaBaja = !nuevosDatos.fechaBaja ? null : new Date(`${nuevosDatos.fechaBaja}T00:00:00`)
     personaActualizar.tipoDocId = nuevosDatos.tipoDocId
 
     //Guardo los datos
@@ -274,11 +288,62 @@ const actualizarPersona = async (req,res) => {
     res.status(500).json({message:'Error al actualizar'})
   }
 }
+
+// obtener afiliados por período
+const getAfiliadosPorPeriodo = async (req, res) => {
+  try {
+    const { fechaDesde, fechaHasta } = req.query;
+
+    // Validación de fechas
+    if (!fechaDesde || !fechaHasta) {
+      return res.status(400).json({ error: 'fechaDesde y fechaHasta son requeridos' });
+    }
+    const key = `afiliado:list:periodo:${fechaDesde}:${fechaHasta}`;
+    const desde = new Date(fechaDesde);
+    const hasta = new Date(fechaHasta);
+
+    if (isNaN(desde.getTime()) || isNaN(hasta.getTime()) || desde > hasta) {
+      return res.status(400).json({ error: 'Fechas inválidas' });
+    }
+
+    //filtra por esTitular y fechaAlta
+    const afiliadosFiltrados = await Persona.findAll({
+      where: {
+        esTitular: true,
+        fechaAlta: {
+          [Op.between]: [fechaDesde, fechaHasta]
+        }
+      },
+      include: [
+        {
+          model: Grupo,
+          as: 'grupo',
+          include: [
+            {
+              model: PlanMedico,
+              as: 'planMedico'
+            },
+          ],
+        },
+        {
+          model: Email,
+          as: 'email'
+        }
+      ],
+    });
+    redis.set(key, JSON.stringify(afiliadosFiltrados), { EX: process.env.CACHE_TTL });
+    res.json(afiliadosFiltrados);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: 'Error al obtener los afiliados por período' });
+  }
+};
 module.exports = { 
   getPersonas, 
   createPersona, 
   deletePersona,
   getPersonaByPk,
   getAfiliados,
-  actualizarPersona
+  actualizarPersona,
+  getAfiliadosPorPeriodo
 };

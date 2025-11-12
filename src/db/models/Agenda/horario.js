@@ -10,8 +10,7 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // Relacion con Agenda
-      Horario.belongsTo(models.DiaDeSemana, { foreignKey: "idDia", as: "dia" });
+      Horario.belongsTo(models.AgendaDia, { foreignKey:'agendaDiaId'})
     }
   }
   Horario.init(
@@ -20,6 +19,15 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
+      },
+      agendaDiaId: {
+        type: DataTypes.INTEGER,
+        references: {
+          model: 'AgendaDia',
+          key: 'agendaDiaId'
+        },
+        onDelete: 'CASCADE', 
+        allowNull: false
       },
       horarioInicio: {
         type: DataTypes.STRING,
