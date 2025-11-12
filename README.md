@@ -78,10 +78,8 @@ Consultas adicionales disponibles:
 
 - Altas de afiliados por período.
 - Altas de prestadores por período.
-- Cantidad de prestadores por especialidad y código postal.
+- Búsqueda de prestadores por filtros específicos: Nombre, apellido, código postal, especialidad, etc. 
 - Reporte de situaciones terapéuticas por afiliado (incluyendo grupo familiar).
-- Prestadores sin agendas de turnos cargadas.
-- Horarios de atención de prestadores sin turnos definidos.
 
 ---
 
@@ -118,18 +116,21 @@ git clone https://github.com/DesApp-2025c2-Grupo4/Admin-Med-Int-backend
 npm install
 
 # Levantar la base en Docker
-docker-compe up -d 
+docker-compose up -d 
 
 # Configurar variables de entorno (.env)
 DB_HOST=localhost
-DB_USER=postgres
-DB_PASS=tu_clave
-DB_NAME=medicina
+DB_USER=admin
+DB_PASS=admin123
+DB_NAME=db_admin_med_integral
 DB_PORT=5432
+DB_DIALECT=postgres
 
-# Ejecutar migraciones y seeders
-npx sequelize db:migrate
-npx sequelize db:seed:all
+# Ejecutar las seeders
+npm run seed
+
+# Descomentar la línea dentro del archivo app.js para crear las tablas. 
+
 
 # Iniciar servidor
 npm run dev
@@ -143,7 +144,7 @@ npm run dev
   - Node.js.
 
 
-## 🎨 Fron-End disponible en: 
+## 🎨 Front-End disponible en: 
 ```bash
  https://github.com/DesApp-2025c2-Grupo4/Admin-Med-Int-frontend
 ```
