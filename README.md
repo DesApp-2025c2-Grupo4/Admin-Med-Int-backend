@@ -1,4 +1,4 @@
-# 🩺 Aplicación de Administración de Medicina Integral (BACKEND)
+# Backend: 🩺 Aplicación de Administración de Medicina Integral ()
 
 ## 📋 Descripción general
 La aplicación **Administración de Medicina Integral** tiene como propósito gestionar la información de **afiliados** y **prestadores médicos**, incluyendo la administración de grupos familiares, agendas de turnos y horarios de atención.  
@@ -134,6 +134,19 @@ npx sequelize db:seed:all
 
 # Iniciar servidor
 npm run dev
+```
+
+## 🛠️ Instalación y ejecución del backend
+
+### Requisitos previos
+- Tener instalado y corriendo:
+  - Docker. 
+  - Node.js.
+
+
+### Fron-End disponible en: 
+```bash
+ https://github.com/DesApp-2025c2-Grupo4/Admin-Med-Int-frontend
 ```
 
 ## 📚 Documentación de la API
