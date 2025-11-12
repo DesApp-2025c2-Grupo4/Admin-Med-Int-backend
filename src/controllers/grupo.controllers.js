@@ -44,6 +44,9 @@ const getGrupos = async (_, res) => {
           ]
         }
       ],
+      order: [
+        [{ model: Persona, as: 'integrantes' }, 'credencial', 'ASC']
+      ]
     });
 
     //Reconstruyo situaciones
