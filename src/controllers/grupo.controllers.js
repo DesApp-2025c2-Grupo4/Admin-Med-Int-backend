@@ -179,6 +179,7 @@ const actualizarGrupo = async(req,res)=>{
     grupoParaActualizar.planId = body.planId
     grupoParaActualizar.fechaAlta = new Date(`${body.fechaAlta}T00:00:00.000Z`)
     grupoParaActualizar.fechaBaja = body.fechaBaja ? new Date(`${body.fechaBaja}T00:00:00.000Z`) : null
+
     
     //Guardo los cabios
     await grupoParaActualizar.save()
