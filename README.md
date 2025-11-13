@@ -142,14 +142,6 @@ npm run seed
 npm run dev
 ```
 
-## 🛠️ Instalación y ejecución del backend
-
-### Requisitos previos
-- Tener instalado y corriendo:
-  - Docker. 
-  - Node.js.
-
-
 ## 🎨 Front-End disponible en: 
 ```bash
  https://github.com/DesApp-2025c2-Grupo4/Admin-Med-Int-frontend
