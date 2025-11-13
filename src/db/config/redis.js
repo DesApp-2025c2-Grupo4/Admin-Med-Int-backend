@@ -1,7 +1,7 @@
 const redis = require("redis");
 
 // URL de tu instancia en Render (sin password)
-const REDIS_URL = "redis://red-d4aetdchg0os7380u3t0:6379";
+const REDIS_URL = "redis://red-d4b21b24d50c73cvmv9g:6379";
 
 // Crear cliente Redis
 const redisClient = redis.createClient({
