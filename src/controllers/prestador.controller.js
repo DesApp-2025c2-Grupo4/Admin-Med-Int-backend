@@ -430,10 +430,10 @@ const updatePrestador = async (req, res) => {
         }
       }
     }
+    await redis.del(`prestador:${prestadorId}`);
+    await redis.del(`prestador:list:`);
     await t.commit();
 
-    await redis.del(`prestador:${id}`);
-    await redis.del(`prestador:list:`);
     res
       .status(200)
       .send({ message: "Prestador actualizado correctamente.", prestadorId });
