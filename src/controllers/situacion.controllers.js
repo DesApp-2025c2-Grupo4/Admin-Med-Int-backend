@@ -1,5 +1,7 @@
 const { SituacionesTerapeuticas } = require('../db/models');
-const redis= require('../db/config/redis.js')
+const redis = require('../db/config/redis.js')
+const dotenv = require("dotenv");
+dotenv.config();
 
 const getSituaciones = async (req, res) => {
     const key = 'situacion:list';

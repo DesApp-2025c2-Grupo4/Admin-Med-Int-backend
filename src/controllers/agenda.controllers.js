@@ -10,7 +10,8 @@ const {
 } = require("../db/models");
 const { sequelize } = require("../db/models");
 const redis = require("../db/config/redis.js");
-
+const dotenv = require("dotenv");
+dotenv.config();
 const getAgendas = async (req, res) => {
   const key = "agenda:list";
   try {
@@ -41,7 +42,7 @@ const getAgendas = async (req, res) => {
     });
     if (agendas.length > 0) {
       const dataToCache = JSON.stringify(agendas);
-      await redis.set(key, dataToCache, { EX: process.env.CACHE_TTL });
+      await redis.set(key, dataToCache, {EX: Number(process.env.CACHE_TTL)});
     }
     res.status(200).json(agendas);
   } catch (error) {
@@ -88,7 +89,10 @@ const createAgenda = async (req, res) => {
       transaction,
     });
     await transaction.commit();
+    await redis.del(`agenda:list`);
     res.json(nuevaAgenda);
+    
+      
   } catch (error) {
     await transaction.rollback();
     console.error("Error al crear agenda:", error);
@@ -104,6 +108,9 @@ const eliminarUnaAgenda = async (req, res) => {
         agendaId: id,
       },
     });
+    
+      await redis.del(`agenda:${id}`);
+      await redis.del(`agenda:list`);
     if (agendaDelete === 1) {
       res.status(200).json(agendaDelete);
     } else {
@@ -153,6 +160,8 @@ const updateAgenda = async (req, res) => {
   try {
     const agendaExistente = await Agenda.findByPk(id, { transaction });
 
+      await redis.del(`agenda:${id}`);
+      await redis.del(`agenda:list`);
     if (!agendaExistente) {
       await transaction.rollback();
       return res.status(404).json({ message: "Agenda no encontrada" });
