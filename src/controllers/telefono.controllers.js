@@ -1,5 +1,7 @@
 const { Telefono, Persona } = require('../db/models');
 const redis = require("../db/config/redis.js")
+const dotenv = require("dotenv");
+dotenv.config();
 
 const addTelefonoToPersona = async (req, res) => {
     const { nroTelefono } = req.body; 
@@ -40,7 +42,9 @@ const getTelefonosByPersona = async (req, res) => {
                  return res.status(404).json({ message: `Persona con ID ${personaId} no encontrada.` });
              }
         }
-        await redis.set(key, JSON.stringify(telefonos), { EX: process.env.CACHE_TTL });
+        await redis.set(key, JSON.stringify(telefonos), {
+          EX: Number(process.env.CACHE_TTL),
+        });
         res.status(200).json(telefonos);
 
     } catch (error) {

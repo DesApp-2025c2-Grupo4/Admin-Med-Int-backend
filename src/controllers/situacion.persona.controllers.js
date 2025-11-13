@@ -2,6 +2,8 @@ const { Persona, SituacionesTerapeuticas } = require('../db/models');
 const KEY_PERSONA = (id) => `persona:${id}`;
 const KEY_SITUACIONES_LIST = (id) => `personaSituaciones:list:${id}`;
 const redis = require("../db/config/redis.js");
+const dotenv = require("dotenv");
+dotenv.config();
 
 const addSituacionToPersona = async (req, res) => {
     const personaId = req.params.personaId; 
@@ -30,7 +32,9 @@ const getSituacionesByPersona = async (req, res) => {
         const situaciones = await persona.getSituacionesTerapeuticas({
         });
         if (situaciones.length > 0) {
-            await redis.set(key, JSON.stringify(situaciones), { EX: process.env.CACHE_TTL });
+            await redis.set(key, JSON.stringify(situaciones), {
+              EX: Number(process.env.CACHE_TTL),
+            });
         }
         res.status(200).json(situaciones);
     } catch (error) {
