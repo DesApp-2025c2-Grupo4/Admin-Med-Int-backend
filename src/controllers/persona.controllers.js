@@ -148,6 +148,7 @@ const createPersona = async (req, res) => {
     const credencial = crearCredencial(grupo.nroGrupo, ultimoNumero);
 
     newPersona.credencial = credencial;
+    newPersona.fechaNacimiento.setDate(newPersona.fechaNacimiento.getDate() + 1);
     //Controlo que no sea haya o no un titular
 
     const cantidadIntegrantes = await Persona.count({
