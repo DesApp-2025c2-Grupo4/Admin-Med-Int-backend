@@ -1,6 +1,7 @@
 const { TelefonoPrestador, Prestador} = require('../db/models');
 const redis = require('../db/config/redis.js')
-
+const dotenv = require("dotenv");
+dotenv.config();
 const addTelefonoToPrestador = async (req, res) => {
     const { nroTelefono } = req.body; 
     const prestadorId = req.params.prestadorId; 
@@ -40,7 +41,9 @@ const getTelefonosByPrestador = async (req, res) => {
                  return res.status(404).json({ message: `Prestador con ID ${prestadorId} no encontrado.` });
              }
         }
-        redis.set(key, JSON.stringify(telefonos), { EX: process.env.CACHE_TTL });
+        redis.set(key, JSON.stringify(telefonos), {
+          EX: Number(process.env.CACHE_TTL),
+        });
         res.status(200).json(telefonos);
 
     } catch (error) {

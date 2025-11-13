@@ -1,5 +1,7 @@
 const { SituacionesTerapeuticas,PlanMedico,TipoDocumento, Especialidad, Prestador } = require('../db/models') 
 const redis = require('../db/config/redis.js')
+const dotenv = require("dotenv");
+dotenv.config();
 
 const getDatosParaFormulario = async (_,res)=>{
   try {
@@ -38,7 +40,9 @@ const getDatosParaFormulario = async (_,res)=>{
     }
 
     //Lo pongo en la caché
-    await redis.set(key, JSON.stringify(dataForm), { EX: process.env.CACHE_TTL });
+    await redis.set(key, JSON.stringify(dataForm), {
+      EX: Number(process.env.CACHE_TTL),
+    });
 
     //RESPUESTA
     res.json(dataForm)
@@ -62,7 +66,9 @@ const getDatosParaPrestadores = async (_, res) => {
       centrosMedicos
     }
 
-    await redis.set(key, JSON.stringify(dataForm), { EX: process.env.CACHE_TTL });
+    await redis.set(key, JSON.stringify(dataForm), {
+      EX: Number(process.env.CACHE_TTL),
+    });
     res.json(dataForm)
   } catch (error) {
     console.log('Error al obtener datos para el formulario')

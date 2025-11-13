@@ -1,5 +1,7 @@
 const { EmailPrestador, Prestador } = require('../db/models');
 const redis = require('../db/config/redis.js')
+const dotenv = require("dotenv");
+dotenv.config();
 
 const addEmailToPrestador = async (req, res) => {
     const { descripcion } = req.body; 
@@ -34,7 +36,9 @@ const getEmailsByPrestador = async (req, res) => {
                  return res.status(404).json({ message: `Prestador con ID ${prestadorId} no encontrada.` });
              }
         }
-        redis.set(key, JSON.stringify(emails), { EX: process.env.CACHE_TTL });
+        redis.set(key, JSON.stringify(emails), {
+          EX: Number(process.env.CACHE_TTL),
+        });
         res.status(200).json(emails);
 
     } catch (error) {
