@@ -8,7 +8,7 @@ const {
   sequelize,
 } = require("../db/models");
 const redis = require("../db/config/redis.js");
-const { Op } = require("sequelize");
+const { Op, where } = require("sequelize");
 const dotenv = require("dotenv");
 dotenv.config();
 
@@ -350,86 +350,81 @@ const updatePrestador = async (req, res) => {
     }
 
     // direcciones
-    await DireccionPrestador.destroy({
-      where: { prestadorId },
-      transaction: t,
-    });
-    if (direcciones?.length) {
-      const nuevasDirecciones = direcciones
-        .map((dirObjeto) => {
-          // el último fragmento es el número
-          const partesCalle = (dirObjeto.calle || "")
-            .trim()
-            .split(/\s+/)
-            .filter((p) => p.length > 0);
-          const nro = partesCalle.length > 0 ? partesCalle.pop() : null; // Se guarda el número
-          const calle = partesCalle.join(" "); // El resto es la calle
 
-          return {
-            calle: (calle || "").trim(),
-            nro: nro,
-            codigoPostal: (dirObjeto.codigoPostal || "").trim(),
-            prestadorId,
-          };
-        })
-        .filter((dir) => dir.calle && dir.codigoPostal);
+    //Busco las direcciones a eliminar
+    const direccionesDelPrestador = await DireccionPrestador.findAll({where:{prestadorId}}, t) //Obtengo todas las direcciones del prestador
+    const direccionesMapeadas = direccionesDelPrestador.map(d=>d.toJSON()) //Transformo a un array de objetos para poder manipular
+    //Obtengo las ids de las direcciones enviadas del front
+    const idsExistentes = direcciones
+      .map(d => Number(d.direccionId))
+      .filter(d => d!==-1);
+    //Filtro las direcciones actuales del backend y solo dejo las que no coincidan 
+    const direccionesAEliminar = direccionesMapeadas.filter(d=> !idsExistentes.includes(Number(d.direccionId))) //Obtengo las direcciones a eliminar
 
-      if (nuevasDirecciones.length) {
-        await DireccionPrestador.bulkCreate(nuevasDirecciones, {
-          transaction: t,
-        });
-      }
+
+    //Elimino las direcciones
+    for(dir of direccionesAEliminar){
+      await DireccionPrestador.destroy({where: {direccionId: dir.direccionId}})
+    }
+
+    //Obtengo las direcciones a agregar
+    const direccionesAAgregar = direcciones.filter(d=>d.direccionId ===-1).map(d=>(
+      {
+        calle:d.calle,
+        nro: d.nro,
+        codigoPostal: d.codigoPostal,
+        prestadorId:prestadorId
+      })
+    )
+    if (direccionesAAgregar.length>0) {
+      await DireccionPrestador.bulkCreate(direccionesAAgregar, {
+        transaction: t,
+      });
     }
 
     // especialidades
-    if (especialidades !== undefined) {
-      const especialidadIdsNuevas =
-        especialidades
-          ?.map((id) => Number(id))
-          .filter((id) => !isNaN(id) && id > 0) || [];
 
-      const prestador = await Prestador.findByPk(prestadorId, {
-        include: [{ model: Especialidad, as: "especialidad" }],
-        transaction: t,
-      });
-      if (prestador) {
-        // Obtener IDs de especialidades actuales
-        const especialidadesActuales = prestador.especialidad || [];
-        const especialidadIdsActuales = especialidadesActuales.map(
-          (e) => e.especialidadId
-        );
+    //Obtengo las especialidades
+    const especialidadesDelPrestador = await Prestador.findByPk(prestadorId, {
+      include:[{
+        model:Especialidad,
+        as:'especialidad',
+        transaction:t
+      }]
+    })
+    //Mapeo las especialidades
+    const especialidadesDelPrestadorMapeada = especialidadesDelPrestador?.especialidad.map(e => e.toJSON())
+ 
+    //Obtengo los ids de las especialidades del front
+    const idsDelFront = especialidades
 
-        // Identificar cuáles agregar y cuáles eliminar
-        const idsParaAgregar = especialidadIdsNuevas.filter(
-          (id) => !especialidadIdsActuales.includes(id)
-        );
-        const idsParaEliminar = especialidadIdsActuales.filter(
-          (id) => !especialidadIdsNuevas.includes(id)
-        );
+    //Obtengo las especialidades a eliminar
+    const especialidadesAEliminar = especialidadesDelPrestadorMapeada.filter(e=> !idsDelFront.includes(e.especialidadId))
 
-        // Eliminar relaciones viejas
-        if (idsParaEliminar.length > 0) {
-          await PrestadorEspecialidad.destroy({
-            where: {
-              prestadorId: prestadorId,
-              especialidadId: idsParaEliminar,
-            },
-            transaction: t,
-          });
+    //Elimino
+    for(esp of especialidadesAEliminar){
+      await PrestadorEspecialidad.destroy({
+        where:{
+          prestadorId:prestadorId,
+          especialidadId: esp.especialidadId
         }
-
-        // Agregar nuevas relaciones
-        if (idsParaAgregar.length > 0) {
-          const nuevasRelaciones = idsParaAgregar.map((especialidadId) => ({
-            prestadorId: prestadorId,
-            especialidadId: especialidadId,
-          }));
-          await PrestadorEspecialidad.bulkCreate(nuevasRelaciones, {
-            transaction: t,
-          });
-        }
-      }
+      })
     }
+    await especialidadesDelPrestador.reload() //Recargo especialidades
+
+    //Obtengo las ids de las especialidades que ya estan cargadas en el prestador
+    const idsDeEspecialidadesGuardadas = especialidadesDelPrestador.especialidad.map(e=>e.toJSON()).map(e=>e.especialidadId)
+
+    //Filtro las ids que tengo que agregar
+    const idsAgregar = idsDelFront.filter(id => !idsDeEspecialidadesGuardadas.includes(id))
+
+    for(idEs of idsAgregar){
+      await PrestadorEspecialidad.create({
+        prestadorId:prestadorId,
+        especialidadId:idEs
+      })
+    }
+
     await redis.del(`prestador:${prestadorId}`);
     await redis.del(`prestador:list:`);
     await t.commit();
@@ -478,7 +473,7 @@ const getPrestadoresPorPeriodo = async (req, res) => {
     });
     res.json(prestadoresFiltrados);
   } catch (error) {
-    console.log(error);
+    console.error(error);
     res
       .status(500)
       .json({ message: "Error al obtener los prestadores por período" });
