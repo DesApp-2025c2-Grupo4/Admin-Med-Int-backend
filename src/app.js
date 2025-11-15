@@ -33,6 +33,10 @@ app.use(
     origin: "http://localhost:5173", 
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
+  },{
+    origin: "https://sami-medicina-git-deploy-alvaro-66b76f5a.vercel.app", 
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
