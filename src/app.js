@@ -30,7 +30,7 @@ app.use(express.json())
 
 app.use(
   cors({
-    origin: ["https://sami-nu.vercel.app","http://localhost:5173"], 
+    origin: ["https://sami-chi.vercel.app","http://localhost:5173"], 
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
