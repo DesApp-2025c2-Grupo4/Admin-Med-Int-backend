@@ -30,7 +30,7 @@ app.use(express.json())
 
 app.use(
   cors({
-    origin: "https://sami-medicina-git-deploy-alvaro-66b76f5a.vercel.app", 
+    origin: "https://sami-nu.vercel.app/", 
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
