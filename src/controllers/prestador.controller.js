@@ -92,38 +92,14 @@ const createPrestador = async (req, res) => {
       )
     ); // Crear direcciones
 
-    await Promise.all(
-      direcciones.map((dirObjeto) => {
-        if (!dirObjeto || !dirObjeto.calle || !dirObjeto.codigoPostal)
-          return Promise.resolve(null);
-
-        const partesCalle = (dirObjeto.calle || "")
-          .trim()
-          .split(/\s+/)
-          .filter((p) => p.length > 0);
-        let nroExtraido = null;
-        let calleFinal = dirObjeto.calle;
-        const ultimoFragmento = partesCalle[partesCalle.length - 1];
-
-        if (ultimoFragmento && /^\d+$/.test(ultimoFragmento)) {
-          nroExtraido = partesCalle.pop();
-          calleFinal = partesCalle.join(" ");
-        } else {
-          nroExtraido = null;
-          calleFinal = dirObjeto.calle;
-        }
-
-        return DireccionPrestador.create(
-          {
-            prestadorId: prestador.prestadorId,
-            calle: (calleFinal || "").trim(),
-            nro: nroExtraido,
-            codigoPostal: (dirObjeto.codigoPostal || "").trim(),
-          },
-          { transaction }
-        );
-      })
-    ); // Manejar especialidades
+    await DireccionPrestador.bulkCreate(
+      direcciones.map(d => ({
+        ...d,
+        prestadorId: prestador.prestadorId
+      })),
+      { transaction }
+    );    
+    // Manejar especialidades
 
     if (especialidades.length > 0) {
       const especialidadesParaCrear = especialidades.map((id) => ({
@@ -371,7 +347,7 @@ const updatePrestador = async (req, res) => {
     const direccionesAAgregar = direcciones.filter(d=>d.direccionId ===-1).map(d=>(
       {
         calle:d.calle,
-        nro: d.nro,
+        nro: d.nro === '' ? null : d.nro,
         codigoPostal: d.codigoPostal,
         prestadorId:prestadorId
       })

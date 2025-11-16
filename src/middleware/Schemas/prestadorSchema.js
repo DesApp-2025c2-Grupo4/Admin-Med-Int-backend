@@ -8,6 +8,14 @@ const direccionSchema = Joi.object({
     "string.empty": "La calle no puede estar vacía.",
     "any.required": "La calle es obligatoria.",
   }),
+  nro: Joi.number()
+    .integer()
+    .allow(null)
+    .optional()
+    .messages({
+      "number.base": "El campo 'nro' debe ser un número entero.",
+      "number.integer": "El campo 'nro' debe ser un entero válido.",
+  }),
   codigoPostal: Joi.string()
     .pattern(/^\d{4}$/)
     .required()
@@ -33,7 +41,12 @@ const prestadorSchema = Joi.object({
       "any.only": 'El tipo de prestador debe ser "Independiente" o "Centro Médico".',
       "any.required": "El tipo de prestador es obligatorio.",
     }),
-  asociadoDe: Joi.number().integer().positive().optional().messages({
+  asociadoDe: Joi.number()
+  .integer()
+  .positive()
+  .allow(null)
+  .optional()
+  .messages({
     "number.base": "El ID de asociado debe ser un número entero.",
     "number.positive": "El ID de asociado debe ser un número positivo.",
   }),
