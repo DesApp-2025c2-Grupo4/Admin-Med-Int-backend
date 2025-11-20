@@ -126,29 +126,46 @@ const getAgendaById = async (req, res) => {
   const { id } = req.params;
   try {
     const agenda = await Agenda.findByPk(id, {
-      include: [
-        {
-          model: AgendaDia,
-          as: "agendas",
-          include: [
-            { model: Horario, as: "horarios" },
-            { model: DiaDeSemana, as: "dia" },
-          ],
-        },
-      ],
-    });
+    include: [
+        {
+          model: AgendaDia,
+          as: "agendas",
+          include: [
+            { model: Horario, as: "horarios" },
+            { model: DiaDeSemana, as: "dia" },
+          ],
+        },
+        
+        // 2. INCLUSIÓN DE Prestador (Nivel 1, al mismo nivel que AgendaDia)
+        {
+          model: Prestador,
+          as: "prestador", 
+          // Asegúrate de que el alias 'prestador' coincida con tu asociación en el modelo Agenda
+          include: [{ model: TelefonoPrestador, as: "telefonos" }] 
+        },
+        // 3. Opcional: Incluir Especialidad y Dirección al mismo nivel
+        {
+          model: Especialidad,
+          as: "especialidad",
+        },
+        {
+          model: DireccionPrestador,
+          as: "direccion",
+        },
+      ],
+    });
 
-    if (!agenda) {
-      return res.status(404).json({ message: "Agenda no encontrada" });
-    }
+    if (!agenda) {
+      return res.status(404).json({ message: "Agenda no encontrada" });
+    }
 
-    res.status(200).json(agenda);
-  } catch (error) {
-    console.error("Error al obtener la agenda por ID:", error);
-    res
-      .status(500)
-      .json({ message: "Error en el servidor al obtener la agenda" });
-  }
+    res.status(200).json(agenda);
+  } catch (error) {
+    console.error("Error al obtener la agenda por ID:", error);
+    res
+      .status(500)
+      .json({ message: "Error en el servidor al obtener la agenda" });
+  }
 };
 
 const updateAgenda = async (req, res) => {

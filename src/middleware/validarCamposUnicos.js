@@ -1,4 +1,4 @@
-const { Persona, Telefono, Email } = require('../db/models');
+const { Persona, Telefono, Email, Prestador } = require('../db/models');
 
 // Middleware para validar DNI único
 const validarDniUnico = async (req, res, next) => {
@@ -77,8 +77,29 @@ const validarEmailsUnicos = async (req, res, next) => {
   }
 };
 
+// Middleware para validar CUIL/CUIT único
+const   validarCuilCuitUnico = async (req, res, next) => {
+  const { cuilCuit } = req.body;
+  try {
+    const prestadorExistente = await Prestador.findOne({ where: { cuilCuit } });
+    if (prestadorExistente) {
+      return res.status(400).json({
+        error: 'Error de campo único',
+        details: [`El CUIL/CUIT '${cuilCuit}' ya existe.`],
+      });
+    }
+    next();
+  } catch (error) {
+    console.error('Error al verificar el campo único CUIL/CUIT:', error);
+    return res.status(500).json({
+      error: 'Error interno del servidor al verificar campo único CUIL/CUIT.',
+    });
+  }
+};
+
 module.exports = {
   validarDniUnico,
   validarTelefonosUnicos,
   validarEmailsUnicos,
+  validarCuilCuitUnico
 };
