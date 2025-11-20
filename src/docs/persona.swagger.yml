@@ -1,0 +1,218 @@
+tags:
+  - name: Persona
+    description: Peticiones para realizar sobre personas.
+
+paths:
+  /persona/{id}:
+    get:
+      tags:
+        - Persona
+      summary: Obtiene una persona por Id.
+      description: Obtiene una persona por su Id que recibe por url.
+      operationID: getPersonaByPk
+      parameters:
+        - name: id
+          in: path
+          description: Id de una persona
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Persona obtenida exitosamente.
+        '404':
+          description: No se encontró una persona con el Id dado.
+        '500':
+          description: Error interno del servidor al procesar la solicitud.
+    put:
+      tags: 
+       - Persona
+      summary: Actualiza los datos de una persona por su Id.
+      description: Actualiza los datos de una persona por su Id que recibe por url.
+      operationId: actualizarPersona
+      parameters:
+       - name: id
+         in: path
+         description: Id de una persona
+         required: true
+         schema:
+          type: integer
+      requestBody:
+        description: Editar una persona.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PersonaEdit'
+        required: true
+      responses:
+        '200':
+          description: Persona editada exitosamente.
+        '404':
+          description: No se encontró la persona con el Id dado.
+        '500':
+          description: Error interno del servidor al procesar la solicitud.
+    delete:
+      tags:
+        - Persona
+      summary: Elimina una persona por Id.
+      description: Elimina una persona por el Id mandado por url.
+      operationId: deletePersona
+      parameters:
+        - name: id
+          in: path
+          description: Id de una persona
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Persona eliminada exitosamente.
+        '500':
+          description: Error interno del servido al procesar la solicitud.
+  /persona:
+    post: 
+      tags: 
+        - Persona
+      summary: Permite crear una persona.
+      description: Permite crear una persona en la base de datos, retornando la persona agregada (Debe haber previamente un grupo creado existente en la base de datos).
+      operationId: createPersona
+      requestBody:
+        description: Crea una persona.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PersonaPost' 
+        required: true
+      responses:
+        '201':
+          description: Persona creada.
+        '400':
+          description: Error de campo.
+        '500':
+          description: Error interno en el servidor. 
+  
+
+#Schemas
+components:
+  schemas:
+  #Esquema de un email
+    Email:
+      type: object
+      properties:
+        descripcion: 
+          type: string
+          example: 'lionel123@gamil.com'
+
+  #Esquema de un telefono
+    Telefono:
+      type: object
+      properties:
+        nroTelefono:
+          type: string
+          example: "1184569725"
+
+  #Esquema de una direccion
+    Direccion:
+      type: object
+      properties:
+        calle:
+          type: string
+          example: "Av. Libertador"
+        nro:
+          type: integer
+          example: 4258
+
+  #Esquema de una situación terapeutica
+    SituacionTerapeutica:
+      type: object
+      properties:
+        esCronica: 
+          type: bool
+          example: false
+        fechaFin:
+          type: string
+          example: '2026-03-01'
+        fechaInicio:
+          type: string
+          example: '2025-02-12'
+        situacionId:
+          type: integer
+          example: 2
+
+  #Esquema para crear una persona
+    PersonaPost:
+      type: object
+      properties:
+        tipoDocId:
+          type: integer
+          example: 1
+        idGrupo:
+          type: integer
+          example: 1
+        dni: 
+          type: string
+          example: '42528965'
+        nombre: 
+          type: string
+          example: 'Lionel'
+        apellido: 
+          type: string
+          example: 'Messi'
+        parentesco: 
+          type: string 
+          example: 'Titular'
+        fechaAlta: 
+          type: string
+          example: '2025-02-15'
+        fechaBaja:
+          type: string
+          example: '2026-09-12'
+        fechaNacimiento: 
+          type: string
+          example: '1999-05-14'
+        telefonos: 
+          type: array
+          items: 
+            $ref: '#/components/schemas/Telefono'
+        emails: 
+          type: array
+          items:
+            $ref: '#/components/schemas/Email'
+        direcciones:
+          type: array
+          items: 
+            $ref: '#/components/schemas/Direccion'
+        situacionesTerapeuticas:
+          type: array
+          items: 
+            $ref: '#/components/schemas/SituacionTerapeutica'
+
+        
+  #Esquema de una persona
+    PersonaEdit:
+      type: object
+      properties:
+        tipoDocId:
+          type: integer
+          example: 1
+        dni: 
+          type: string
+          example: '42528965'
+        nombre: 
+          type: string
+          example: 'Lionel Andres'
+        apellido: 
+          type: string
+          example: 'Messi'
+        parentesco: 
+          type: string 
+          example: 'Nieto/a'
+        fechaAlta: 
+          type: string
+          example: '2025-02-15'
+        fechaBaja:
+          type: string
+          example: '2026-09-12'
+        fechaNacimiento: 
+          type: string
+          example: '1999-05-14'
