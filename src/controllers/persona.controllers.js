@@ -106,7 +106,7 @@ const getPersonaByPk = async (req, res) => {
       EX: Number(process.env.CACHE_TTL),
     });
     //Retorno
-    res.json(personaFormateada);
+    res.status(200).json(personaFormateada);
   } catch (error) {
     console.error(`Error al obtener la persona: ${error}`);
     res.status(500).json({ error: "Error al obtener una Persona" });
