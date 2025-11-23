@@ -1,0 +1,132 @@
+tags:
+  - name: Grupo
+    description: Peticiones para realizar sobre un grupo familiar.
+
+paths:
+  /grupo:
+    get:
+      tags:
+        - Grupo
+      summary: Obtiene todos los grupos.
+      description: Obtiene un array de objetos que contiene todos los grupos.
+      operationId: getGrupos
+      responses: 
+        '200':
+          description: Listado de grupos obtenido exitosamente.
+        '500':
+          description: Error en el servidor al solicitar los grupos.
+    post:
+      tags:
+        - Grupo
+      summary: Permite crear un grupo.
+      description: Permite crear un grupo en la base de datos.
+      operationId: createGrupo
+      requestBody:
+        description: Crea un nuevo grupo.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GrupoPost'
+        required: true
+      responses:
+        '200':
+          description: Grupo creado exitosamente.
+        '500': 
+          description: Error en el servidor al crear un nuevo grupo.
+  /grupo/{id}:
+    get:
+      tags: 
+        - Grupo
+      summary: Obtiene un grupo por Id.
+      description: Obtiene un grupo por el Id mandado por url.
+      operationId: getGrupoByPk
+      parameters:
+        - name: id
+          in: path
+          description: Id de un grupo.
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Grupo obtenido exitosamente.
+        '500':
+          description: Error interno del servido al procesar la solicitud.
+    put:
+      tags:
+        - Grupo
+      summary: Actualiza los datos de un grupo por su Id.
+      description: Actualiza los datos de un grupo por su Id que recibe por url.
+      operationId: actualizarGrupo
+      parameters:
+        - name: id
+          in: path
+          description: Id de un grupo.
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Edita un grupo.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GrupoEdit'
+        required: true
+      responses:
+        '200':
+          description: Grupo editado exitosamente.
+        '500':
+          description: Error en el servidor al editar un grupo.
+    delete:
+      tags:
+       - Grupo
+      summary: Elimina un grupo familiar por Id.
+      description: Elimina un grupo familiar por el Id mandado por url.
+      operationId: deleteGrupo
+      parameters:
+        - name: id
+          in: path
+          description: Id de un grupo.
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Grupo eliminado exitosamente.
+        '404':
+          description: No se encontró el id del grupo.
+        '500':
+          description: Error interno del servido al procesar la solicitud.
+
+#Schemas
+components:
+  schemas:
+  #Esquema para crear un grupo
+    GrupoPost:
+      type: object
+      properties:
+        fechaAlta:
+          type: string
+          example: "2025-02-13"
+        fechaBaja: 
+          type: string
+          example: "2026-03-12"
+        planId:
+          type: integer
+          example: 3
+
+  #Esquemapara editar un grupo
+    GrupoEdit:
+      type: object
+      properties:
+        fechaAlta:
+          type: string
+          example: "2025-02-13"
+        fechaBaja: 
+          type: string
+          example: "2026-03-12"
+        planId:
+          type: integer
+          example: 1
+
+      
