@@ -1,0 +1,18 @@
+tags:
+  - name: Prestador
+    description: Peticiones para realizar sobre prestadores.
+
+paths:
+  /prestador:
+    get:
+      tags:
+        - Prestador
+      summary: Obtiene todos los prestadores.
+      description: Obtiene un array de todos los prestadores.
+      operationID: getPrestadores
+      responses:
+        '200':
+          description: Prestadores obtenidos exitosamente.
+        '500':
+          description: Error interno del servidor al procesar la solicitud.
+    
