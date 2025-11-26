@@ -1,0 +1,183 @@
+tags:
+  - name: Agenda
+    description: Peticiones para realizar sobre agendas.
+
+paths:
+  /agenda:
+    get:
+      tags:
+        - Agenda
+      summary: Obtiene todas las agendas.
+      description: Obtiene un array de objetos que contiene todas las agendas.
+      operationId: getAgendas
+      responses:
+        '200':
+          description: Listado de agendas obtenido exitosamente.
+        '500':
+          description: Error interno del servidor al procesar la solicitud.
+    post:
+      tags:
+        - Agenda
+      summary: Permite crear una agenda.
+      description: Permite crear una agenda en la base de datos con sus días y horarios asociados. Valida que no haya superposición de horarios y que el prestador no tenga agendas existentes en los mismos días.
+      operationId: createAgenda
+      requestBody:
+        description: Crea una nueva agenda.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AgendaPost'
+        required: true
+      responses:
+        '200':
+          description: Agenda creada exitosamente.
+        '400':
+          description: Error de validación. Puede ser por datos inválidos, superposición de horarios o prestador ya tiene agenda en ese día.
+        '500':
+          description: Error interno del servidor.
+  /agenda/{id}:
+    get:
+      tags:
+        - Agenda
+      summary: Obtiene una agenda por Id.
+      description: Obtiene una agenda por su Id que recibe por url.
+      operationId: getAgendaById
+      parameters:
+        - name: id
+          in: path
+          description: Id de una agenda
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Agenda obtenida exitosamente.
+        '404':
+          description: No se encontró una agenda con el Id dado.
+        '500':
+          description: Error interno del servidor al procesar la solicitud.
+    put:
+      tags:
+        - Agenda
+      summary: Actualiza los datos de una agenda por su Id.
+      description: Actualiza los datos de una agenda por su Id que recibe por url.
+      operationId: updateAgenda
+      parameters:
+        - name: id
+          in: path
+          description: Id de una agenda
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Editar una agenda.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AgendaPost'
+        required: true
+      responses:
+        '200':
+          description: Agenda editada exitosamente.
+        '400':
+          description: Error de validación. Puede ser por datos inválidos o superposición de horarios.
+        '404':
+          description: No se encontró la agenda con el Id dado.
+        '500':
+          description: Error interno del servidor al procesar la solicitud.
+    delete:
+      tags:
+        - Agenda
+      summary: Elimina una agenda por Id.
+      description: Elimina una agenda por el Id mandado por url.
+      operationId: eliminarUnaAgenda
+      parameters:
+        - name: id
+          in: path
+          description: Id de una agenda
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Agenda eliminada exitosamente.
+        '404':
+          description: No se encontró la agenda con el Id dado.
+        '500':
+          description: Error interno del servidor al procesar la solicitud.
+
+components:
+  schemas:
+    # Esquema de un horario
+    Horario:
+      type: object
+      required:
+        - horarioInicio
+        - horarioFinal
+        - duracionTurno
+      properties:
+        horarioInicio:
+          type: string
+          pattern: '^([01]\d|2[0-3]):([0-5]\d)$'
+          example: "09:00"
+          description: Hora de inicio en formato HH:MM (ej. 09:00)
+        horarioFinal:
+          type: string
+          pattern: '^([01]\d|2[0-3]):([0-5]\d)$'
+          example: "17:00"
+          description: Hora de finalización en formato HH:MM (ej. 17:00)
+        duracionTurno:
+          type: string
+          pattern: '^(0[1-9]|[1-5][0-9]|60)$'
+          example: "30"
+          description: Duración del turno en minutos (01-60)
+
+    # Esquema de un día de agenda
+    AgendaDia:
+      type: object
+      required:
+        - idDia
+        - horarios
+      properties:
+        idDia:
+          type: integer
+          minimum: 1
+          example: 1
+          description: ID del día de la semana
+        horarios:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/Horario'
+          description: Lista de horarios disponibles para ese día
+
+    # Esquema para crear/editar una agenda
+    AgendaPost:
+      type: object
+      required:
+        - prestadorId
+        - especialidadId
+        - direccionId
+        - agendas
+      properties:
+        prestadorId:
+          type: integer
+          minimum: 1
+          example: 1
+          description: ID del prestador (profesional de salud)
+        especialidadId:
+          type: integer
+          minimum: 1
+          example: 2
+          description: ID de la especialidad médica
+        direccionId:
+          type: integer
+          minimum: 1
+          example: 3
+          description: ID de la dirección donde se atiende
+        agendas:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/AgendaDia'
+          description: Lista de días con sus horarios correspondientes
