@@ -1,0 +1,15 @@
+tags:
+  - name: Afiliado
+    description: Peticiones para realizar sobre afiliados activos.
+
+paths:
+  /persona/afiliados:
+    get:
+      tags:
+        - Afiliado
+      summary: Obtiene todos los afiliados.
+      description: Obtiene un array de objetos que contiene todos los afiliados.
+      operationId: getAfiliados
+      responses: 
+        '500':
+          description: Error en el servidor al solicitar los grupos.
