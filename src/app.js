@@ -31,7 +31,7 @@ app.use('/api-docs/', swaggerUi.serve, swaggerUi.setup(openapiSpecification));
 
 app.use(
   cors({
-    origin: "http://localhost:5173", 
+    origin: ["https://sami-chi.vercel.app","http://localhost:5173"], 
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
@@ -40,13 +40,26 @@ app.use(
 //-------------- Listo
 app.listen(PORT, async () => {
   try {
-    //await db.sequelize.sync({ force: true })
-    console.log(`Servidor Corriendo en http://localhost:${PORT}`)
-    await redisClient.connect();
+    console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
+
+    if (process.env.NODE_ENV === 'production') {
+      //await db.sequelize.sync({force:true}); // crea tablas
+      console.log("🗂️ Tablas listas");
+
+      //await require('./db/seeders/20251015225226-persona-data.js')
+      //.up(db.sequelize.getQueryInterface(), db.Sequelize);
+      //await require('./db/seeders/20251021120000-prestadores-data.js')
+      //.up(db.sequelize.getQueryInterface(), db.Sequelize);
+      //await require('./db/seeders/20251024000019-dias-de-la-semana-data.js')
+      //.up(db.sequelize.getQueryInterface(), db.Sequelize);
+      
+      console.log("✅ Seeders ejecutados correctamente");
+    }
+
   } catch (error) {
-    console.log(error)
+    console.error("❌ Error al iniciar servidor:", error);
   }
-})
+});
 
 // ------------ Exporto
 module.exports = {
