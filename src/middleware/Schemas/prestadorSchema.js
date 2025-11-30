@@ -17,10 +17,10 @@ const direccionSchema = Joi.object({
       "number.integer": "El campo 'nro' debe ser un entero válido.",
   }),
   codigoPostal: Joi.string()
-    .pattern(/^\d{4}$/)
+    .pattern(/^[a-zA-Z0-9]{4,8}$/)
     .required()
     .messages({
-      "string.pattern.base": "El código postal debe tener exactamente 4 dígitos.",
+      "string.pattern.base": "El código postal debe tener entre 4 y 8 caracteres alfanuméricos.",
       "any.required": "El código postal es obligatorio.",
     }),
 });
