@@ -11,12 +11,11 @@ const { validarCuilCuitUnico } = require("../middleware/validarCamposUnicos.js")
 prestadorRoutes.get('/', cacheMiddleware.checkCache('prestador:list'),  prestadorControllers.getPrestadores);
 prestadorRoutes.get('/por-periodo',cacheMiddleware.checkCache('prestador:list:periodo:'), prestadorControllers.getPrestadoresPorPeriodo);
 prestadorRoutes.get('/por-especialidad/:especialidadId', cacheMiddleware.checkCache('prestador:list:especialidad:'), prestadorControllers.getPrestadoresPorEspecialidad);
+prestadorRoutes.get('/por-codigo-postal/:codigoPostal', cacheMiddleware.checkCache('prestador:list:codigoPostal:'), prestadorControllers.getPrestadoresPorCodigoPostal);
 prestadorRoutes.get('/:id', cacheMiddleware.checkCache('prestador:'), prestadorControllers.getPrestadorByPk);
 prestadorRoutes.post('/', cacheMiddleware.deleteCache('prestador:list'),validarCuilCuitUnico, validarPrestador ,prestadorControllers.createPrestador);
 prestadorRoutes.delete('/:id', cacheMiddleware.deleteCache('prestador:list'), cacheMiddleware.deleteCache('prestador:'), prestadorControllers.deletePrestador);
 prestadorRoutes.put('/:id', cacheMiddleware.deleteCache('prestador:list'), cacheMiddleware.deleteCache('prestador:'), prestadorControllers.updatePrestador);
-
-//agregar middleware de validacion genericos
 
 //Telefono
 prestadorRoutes.get('/:prestadorId/telefonos', cacheMiddleware.checkCache('prestadorTelefonos:list:'), telefonoPrestadorControllers.getTelefonosByPrestador);
