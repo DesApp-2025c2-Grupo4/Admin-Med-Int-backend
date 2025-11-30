@@ -13,7 +13,8 @@ const {
   prestadorRoutes, 
   agendaRoutes,
   loginRoutes,
-  registerRoutes
+  registerRoutes,
+  especialidadRoutes
 } = require('./routes') 
 
 //Uso de las rutas
@@ -30,3 +31,4 @@ app.use('/prestador', prestadorRoutes)
 app.use('/agenda', agendaRoutes)
 app.use('/login', loginRoutes)
 app.use('/register', registerRoutes)
+app.use('/especialidad', especialidadRoutes)
