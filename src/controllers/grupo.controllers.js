@@ -128,7 +128,7 @@ const getGrupoByPk = async (req, res) => {
       EX: Number(process.env.CACHE_TTL),
     });
     //Retorno
-    res.json(grupoFormateado);
+    res.status(200).json(grupoFormateado);
   } catch (error) {
     console.error(`Error al obtener el grupo: ${error}`);
     res.status(500).json({ error: "Error al obtener el grupo" });
@@ -211,7 +211,7 @@ const actualizarGrupo = async (req, res) => {
     await grupoParaActualizar.reload({
       include: [{ model: PlanMedico, as: "planMedico" }],
     });
-    res.json(grupoParaActualizar);
+    res.status(200).json(grupoParaActualizar);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error En el servidor" });

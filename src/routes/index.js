@@ -11,6 +11,7 @@ const prestadorRoutes = require('./prestador.routes.js');
 const agendaRoutes = require('./agenda.routes.js')
 const loginRoutes = require('./login.routes.js')
 const registerRoutes = require('./register.routes.js')
+const especialidadRoutes = require('./especialidad.routes.js')
 module.exports = {
     personaRoutes,
     grupoRoutes,
@@ -24,5 +25,6 @@ module.exports = {
     prestadorRoutes,
     agendaRoutes,
     loginRoutes,
-    registerRoutes
+    registerRoutes,
+    especialidadRoutes
 };

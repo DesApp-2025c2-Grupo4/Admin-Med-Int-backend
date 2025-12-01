@@ -13,6 +13,7 @@ const telefonoPrestadorControllers = require('./telefonoPrestador.controllers');
 const emailPrestadorControllers = require('./emailPrestador.controllers');
 const agendaControllers = require('./agenda.controllers')
 const usuarioControllers = require('./usuario.controllers')
+const especialidadControllers = require('./especialidad.controllers')
 module.exports = {
     personaControllers,
     grupoControllers,
@@ -28,5 +29,6 @@ module.exports = {
     telefonoPrestadorControllers,
     emailPrestadorControllers,
     agendaControllers,
-    usuarioControllers
+    usuarioControllers,
+    especialidadControllers
 };

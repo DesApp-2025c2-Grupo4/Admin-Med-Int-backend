@@ -456,6 +456,72 @@ const getPrestadoresPorPeriodo = async (req, res) => {
   }
 };
 
+const getPrestadoresPorEspecialidad = async (req, res) => {
+  try {
+    const { especialidadId } = req.params;
+
+    if (!especialidadId) {
+      return res.status(400).json({ error: "especialidadId es requerido" });
+    }
+
+    const key = `prestador:list:especialidad:${especialidadId}`;
+
+    const prestadores = await Prestador.findAll({
+      attributes: ['prestadorId', 'nombre', 'apellido', 'tipoPrestador'],
+      include: [
+        {
+          model: Especialidad,
+          as: "especialidad",
+          through: { attributes: [] },
+          where: { especialidadId: especialidadId }
+        },
+      ],
+    });
+
+    redis.set(key, JSON.stringify(prestadores), {
+      EX: Number(process.env.CACHE_TTL),
+    });
+
+    res.status(200).json(prestadores);
+  } catch (error) {
+    console.error(`Error al obtener prestadores por especialidad: ${error}`);
+    res.status(500).json({ error: "Error al obtener prestadores por especialidad" });
+  }
+};
+
+const getPrestadoresPorCodigoPostal = async (req, res) => {
+  try {
+    const { codigoPostal } = req.params;
+
+    if (!codigoPostal) {
+      return res.status(400).json({ error: "codigoPostal es requerido" });
+    }
+
+    const key = `prestador:list:codigoPostal:${codigoPostal}`;
+
+    const prestadores = await Prestador.findAll({
+      attributes: ['prestadorId', 'nombre', 'apellido', 'tipoPrestador'],
+      include: [
+        {
+          model: DireccionPrestador,
+          as: "direccion",
+          attributes: ['calle', 'nro', 'codigoPostal'],
+          where: { codigoPostal: codigoPostal }
+        },
+      ],
+    });
+
+    redis.set(key, JSON.stringify(prestadores), {
+      EX: Number(process.env.CACHE_TTL),
+    });
+
+    res.status(200).json(prestadores);
+  } catch (error) {
+    console.error(`Error al obtener prestadores por código postal: ${error}`);
+    res.status(500).json({ error: "Error al obtener prestadores por código postal" });
+  }
+};
+
 module.exports = {
   getPrestadores,
   getPrestadorByPk,
@@ -463,4 +529,6 @@ module.exports = {
   deletePrestador,
   updatePrestador,
   getPrestadoresPorPeriodo,
+  getPrestadoresPorEspecialidad,
+  getPrestadoresPorCodigoPostal
 };
