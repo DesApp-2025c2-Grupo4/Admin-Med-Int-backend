@@ -5,6 +5,7 @@ const {
   EmailPrestador,
   Especialidad,
   PrestadorEspecialidad,
+  Agenda,
   sequelize,
 } = require("../db/models");
 const redis = require("../db/config/redis.js");
@@ -522,6 +523,42 @@ const getPrestadoresPorCodigoPostal = async (req, res) => {
   }
 };
 
+const getPrestadoresSinAgenda = async (req, res) => {
+  try {
+    const key = `prestador:list:sin-agenda`;
+
+    // Obtener todos los prestadores que NO tienen agendas
+    const prestadores = await Prestador.findAll({
+      attributes: ['prestadorId', 'nombre', 'apellido', 'tipoPrestador'],
+      include: [
+        {
+          model: DireccionPrestador,
+          as: "direccion",
+          attributes: ['calle', 'nro', 'codigoPostal'],
+        },
+        {
+          model: Agenda,
+          as: "agendas",
+          attributes: [],
+          required: false,
+        }
+      ],
+      where: {
+        '$agendas.agendaId$': null // Filtrar solo los que NO tienen agendas
+      }
+    });
+
+    redis.set(key, JSON.stringify(prestadores), {
+      EX: Number(process.env.CACHE_TTL),
+    });
+
+    res.status(200).json(prestadores);
+  } catch (error) {
+    console.error(`Error al obtener prestadores sin agenda: ${error}`);
+    res.status(500).json({ error: "Error al obtener prestadores sin agenda" });
+  }
+};
+
 module.exports = {
   getPrestadores,
   getPrestadorByPk,
@@ -530,5 +567,6 @@ module.exports = {
   updatePrestador,
   getPrestadoresPorPeriodo,
   getPrestadoresPorEspecialidad,
-  getPrestadoresPorCodigoPostal
+  getPrestadoresPorCodigoPostal,
+  getPrestadoresSinAgenda
 };
