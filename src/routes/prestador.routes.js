@@ -12,6 +12,7 @@ prestadorRoutes.get('/', cacheMiddleware.checkCache('prestador:list'),  prestado
 prestadorRoutes.get('/por-periodo',cacheMiddleware.checkCache('prestador:list:periodo:'), prestadorControllers.getPrestadoresPorPeriodo);
 prestadorRoutes.get('/por-especialidad/:especialidadId', cacheMiddleware.checkCache('prestador:list:especialidad:'), prestadorControllers.getPrestadoresPorEspecialidad);
 prestadorRoutes.get('/por-codigo-postal/:codigoPostal', cacheMiddleware.checkCache('prestador:list:codigoPostal:'), prestadorControllers.getPrestadoresPorCodigoPostal);
+prestadorRoutes.get('/sin-agenda', cacheMiddleware.checkCache('prestador:list:sin-agenda'), prestadorControllers.getPrestadoresSinAgenda);
 prestadorRoutes.get('/:id', cacheMiddleware.checkCache('prestador:'), prestadorControllers.getPrestadorByPk);
 prestadorRoutes.post('/', cacheMiddleware.deleteCache('prestador:list'),validarCuilCuitUnico, validarPrestador ,prestadorControllers.createPrestador);
 prestadorRoutes.delete('/:id', cacheMiddleware.deleteCache('prestador:list'), cacheMiddleware.deleteCache('prestador:'), prestadorControllers.deletePrestador);
