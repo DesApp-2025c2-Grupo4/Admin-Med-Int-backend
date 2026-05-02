@@ -43,15 +43,15 @@ app.listen(PORT, async () => {
     console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
 
     if (process.env.NODE_ENV === 'production') {
-      //await db.sequelize.sync({force:true}); // crea tablas
+      await db.sequelize.sync({force:true}); // crea tablas
       console.log("🗂️ Tablas listas");
 
-      //await require('./db/seeders/20251015225226-persona-data.js')
-      //.up(db.sequelize.getQueryInterface(), db.Sequelize);
-      //await require('./db/seeders/20251021120000-prestadores-data.js')
-      //.up(db.sequelize.getQueryInterface(), db.Sequelize);
-      //await require('./db/seeders/20251024000019-dias-de-la-semana-data.js')
-      //.up(db.sequelize.getQueryInterface(), db.Sequelize);
+      await require('./db/seeders/20251015225226-persona-data.js')
+      .up(db.sequelize.getQueryInterface(), db.Sequelize);
+      await require('./db/seeders/20251021120000-prestadores-data.js')
+      .up(db.sequelize.getQueryInterface(), db.Sequelize);
+      await require('./db/seeders/20251024000019-dias-de-la-semana-data.js')
+      .up(db.sequelize.getQueryInterface(), db.Sequelize);
       
       console.log("✅ Seeders ejecutados correctamente");
     }
